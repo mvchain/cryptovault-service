@@ -1,0 +1,43 @@
+spring:
+  redis:
+    database: 1
+    host: 192.168.15.31
+    timeout: 1000ms
+    jedis:
+      pool:
+        max-idle: 8
+        max-active: 8
+        min-idle: 0
+
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+  thymeleaf:
+    cache: false
+  profiles:
+    include: "mockjson"
+  mvc:
+    async:
+      request-timeout: 10ms
+logging:
+  level:
+    org: info
+server:
+  port: 10086
+  tomcat:
+    max-threads: 5000
+    min-spare-threads: 1000
+    max-connections: 5000
+  connection-timeout: 1000ms
+
+
+
+hystrix.command.default.execution:
+  isolation.thread.timeoutInMilliseconds: 500
+  timeout.enabled: true
+
+
+
+swaggermock.switchOn: true
+swaggermock.retry: 5000

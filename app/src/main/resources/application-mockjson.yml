@@ -1,0 +1,41 @@
+ad:
+  #获取首屏广告图片
+  screen: '{"code":200,"message":"OK","data":[{"imageUrl":"https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1541430739081&di=4cff33b6e3bfc0301198a49fbcec6315&imgtype=0&src=http%3A%2F%2F5b0988e595225.cdn.sohucs.com%2Fimages%2F20170615%2F1920c925718e423988ea98f4657ee6f8.png", "width":383,"height":617, "link":"http://www.baidu.com", "wait":1000}]}'
+asset:
+  #获取余额,传入币种编号返回对应列表,建议缓存
+  all: '{"code":200,"data":[{"tokenId":1,"ratio":1,"tokenName":"USDT","value":1000},{"tokenId":2,"ratio":6.8,"tokenName":"BTC","value":1000}],"message":"OK"}'
+  #获取资产总值,观察列表中不存在但是余额存在的也会被统计.统一以USDT为单位返回,客户端根据币种自行转换.建议缓存
+  balance: '{"code":200,"data":123456789.11,"message":"OK"}'
+  #获取资产转账列表
+  transactions: '{"code":200,"data":[{"createdAt":1541575190102,"ratio":1,"tokenId":1,"tokenName":"USDT","transactionType":0,"value":1000},{"createdAt":1541575190103,"ratio":6.8,"tokenId":2,"tokenName":"BTC","transactionType":1,"value":1000}],"message":"OK"}'
+  #根据转账交易ID获取转账详情
+  transactionDetail: '{"code":200,"data":{"createdAt":1541576021586,"depth":6,"fee":0.00040,"feeTokenType":"BTC","fromAddress":["5bd6c3434c0d29728751b54a","1bd6c3434c0d29728751b54a"],"hash":"5bd6c3434c0d29728751b54a","hashLink":"http://www.baidu.com","status":2,"toAddress":"5bd6c3434c0d29728751b54a","tokenType":"BTC","updatedAt":1541576021590,"value":0.1},"message":"OK"}'
+  #根据币种缩写获取收款地址,不区分大小写,建议缓存
+  address: '{"code":200,"data":"5bd6c3434c0d29728751b54a","message":"OK"}'
+  #划账余额获取,没有可选币种,固定
+  debitBalance: '{"code":200,"data":123456789.11,"message":"OK"}'
+  #划账,没有可选币种,固定
+  debit: '{"code":200,"data"j:true,"message":"OK"}'
+  #传入币种缩写获取转账信息，不区分大小写
+  transactionInfo: '{"code":200,"data":{"balance":111.11,"fee":0.001,"feeTokenName":"BTC"},"message":"OK"}'
+  #发起转账
+  transaction: '{"code":200,"data"j:true,"message":"OK"}'
+user:
+  #用户登录
+  login: '{"code":200,"data"j:true,"message":"OK"}'
+  #用户信息获取
+  info: '{"code":200,"data":{"headImage":"https://upload.jianshu.io/users/upload_avatars/8818451/83d1f0a4-3574-42f6-9e94-aefc2306883a?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96","nickname":"人工智障","username":"188****8888"},"message":"OK"}'
+token:
+  #获取币种列表,需要传入时间戳,必须缓存.添加移除时本地记录并保存顺序.如果返回内容为空则代表无变化,否则需要刷新本地数据库(全量刷新).搜索时本地搜索
+  all: '{"code":200,"data":[{"tokenFullname":"USDT","tokenId":1,"tokenImage":"https://img.xiaopiu.com/userImages/img21093166c388c748.png","tokenName":"USDT"},{"tokenFullname":"Bitcoin","tokenId":2,"tokenImage":"https://img.xiaopiu.com/userImages/img15412166afeaf170.png","tokenName":"BTC"}],"message":"OK"}'
+  #获取币种比值,用于计算资产总值.以USDT为基础货币.建议缓存
+  base: '{"code":200,"data":[{"ratio":1,"tokenId":1,"tokenName":"USDT"},{"ratio":6.5,"tokenId":0,"tokenName":"CNY"}],"message":"OK"}'
+projcet:
+  #获取项目列表
+  all: ''
+  #获取预约列表
+  reservation: ''
+  #通过项目id获取项目购买信息
+  purchase: ''
+  #"购买项目
+  buy: ''
