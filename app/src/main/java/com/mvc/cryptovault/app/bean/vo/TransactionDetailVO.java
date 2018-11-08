@@ -50,4 +50,7 @@ public class TransactionDetailVO {
     @ApiModelProperty("转出地址，可能为多个")
     private String[] fromAddress;
 
+    @ApiModelProperty("交易分类[0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）]3划账")
+    private Integer classify;
+
 }

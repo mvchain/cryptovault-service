@@ -1,4 +1,4 @@
-package com.mvc.cryptovault;
+package com.mvc.cryptovault.common;
 
 /**
  * @author qiyichen

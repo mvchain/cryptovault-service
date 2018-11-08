@@ -26,4 +26,7 @@ public class TransactionDTO {
     @ApiModelProperty("交易密码")
     @NotNull(message = "{PASSWORD_NULL}")
     private BigDecimal password;
+
+    @ApiModelProperty("币种缩写")
+    private String tokenName;
 }

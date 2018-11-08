@@ -7,9 +7,9 @@ asset:
   #获取资产总值,观察列表中不存在但是余额存在的也会被统计.统一以USDT为单位返回,客户端根据币种自行转换.建议缓存
   balance: '{"code":200,"data":123456789.11,"message":"OK"}'
   #获取资产转账列表
-  transactions: '{"code":200,"data":[{"createdAt":1541575190102,"ratio":1,"tokenId":1,"tokenName":"USDT","transactionType":0,"value":1000},{"createdAt":1541575190103,"ratio":6.8,"tokenId":2,"tokenName":"BTC","transactionType":1,"value":1000}],"message":"OK"}'
+  transactions: '{"code":200,"data":[{"classify": 0,"createdAt":1541575190102,"ratio":1,"tokenId":1,"tokenName":"USDT","transactionType":0,"value":1000, "status": 2},{"classify": 0,"createdAt":1541575190103,"ratio":6.8,"tokenId":2,"tokenName":"BTC","transactionType":1,"value":1000, "status": 2}],"message":"OK"}'
   #根据转账交易ID获取转账详情
-  transactionDetail: '{"code":200,"data":{"createdAt":1541576021586,"depth":6,"fee":0.00040,"feeTokenType":"BTC","fromAddress":["5bd6c3434c0d29728751b54a","1bd6c3434c0d29728751b54a"],"hash":"5bd6c3434c0d29728751b54a","hashLink":"http://www.baidu.com","status":2,"toAddress":"5bd6c3434c0d29728751b54a","tokenType":"BTC","updatedAt":1541576021590,"value":0.1},"message":"OK"}'
+  transactionDetail: '{"code":200,"data":{"classify": 0,"createdAt":1541576021586,"depth":6,"fee":0.00040,"feeTokenType":"BTC","fromAddress":["5bd6c3434c0d29728751b54a","1bd6c3434c0d29728751b54a"],"hash":"5bd6c3434c0d29728751b54a","hashLink":"http://www.baidu.com","status":2,"toAddress":"5bd6c3434c0d29728751b54a","tokenType":"BTC","updatedAt":1541576021590,"value":0.1},"message":"OK"}'
   #根据币种缩写获取收款地址,不区分大小写,建议缓存
   address: '{"code":200,"data":"5bd6c3434c0d29728751b54a","message":"OK"}'
   #划账余额获取,没有可选币种,固定
@@ -32,10 +32,28 @@ token:
   base: '{"code":200,"data":[{"ratio":1,"tokenId":1,"tokenName":"USDT"},{"ratio":6.5,"tokenId":0,"tokenName":"CNY"}],"message":"OK"}'
 projcet:
   #获取项目列表
-  all: ''
+  all: '{"code":200,"data":[{"baseTokenId":1,"baseTokenName":"VRT","createdAt":1541666555688,"projectId":1,"projectImage":"https://img.xiaopiu.com/userImages/img21093166c388c748.png","projectLimit":1500,"projectName":"项目1","ratio":0.08,"releaseValue":1.0,"startedAt":1541666555688,"status":1,"stopAt":1541666555688,"total":50000000,"updatedAt":1541666555688},{"baseTokenId":2,"baseTokenName":"VRT","createdAt":1541666555688,"projectId":2,"projectImage":"https://img.xiaopiu.com/userImages/img21093166c388c748.png","projectLimit":1500,"projectName":"项目2","ratio":0.08,"releaseValue":1.0,"startedAt":1541666555688,"status":1,"stopAt":1541666555688,"total":50000000,"updatedAt":1541666555688}],"message":"OK"}'
   #获取预约列表
-  reservation: ''
+  reservation: '{"code":200,"data":[{"createdAt":1541667204123,"id":1,"price":20,"projectId":1,"projectName":"项目1","publishAt":1541667204123,"ratio":0.8,"releaseValue":1.0,"reservationType":0,"value":20},{"createdAt":1541667204123,"id":1,"price":20,"projectId":1,"projectName":"项目2","publishAt":1541667204123,"ratio":0.8,"releaseValue":1.0,"reservationType":0,"value":20}],"message":"OK"}'
   #通过项目id获取项目购买信息
-  purchase: ''
+  purchase: '{"code":200,"data":{"balance":100,"limitValue":1300},"message":"OK"}'
   #"购买项目
-  buy: ''
+  buy: '{"code":200,"data"j:true,"message":"OK"}'
+transacion:
+  #获取交易对,传入时间戳,很少变动,本地必须缓存
+  pair: '{"code":200,"data":[{"increase":10.1,"pair":"USDT/VRT","ratio":6.5,"tokenImage":"https://upload.jianshu.io/users/upload_avatars/8818451/83d1f0a4-3574-42f6-9e94-aefc2306883a?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96","tokenName":"USDT"},{"increase":-10.1,"pair":"USDT/余额","ratio":6.5,"tokenImage":"https://upload.jianshu.io/users/upload_avatars/8818451/83d1f0a4-3574-42f6-9e94-aefc2306883a?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96","tokenName":"USDT"}],"message":"OK"}'
+  #获取挂单列表,无法查询所有深度,最多只有20条
+  list: '{"code":200,"data":[{"headImage":"https://upload.jianshu.io/users/upload_avatars/8818451/83d1f0a4-3574-42f6-9e94-aefc2306883a?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96","limitValue":6.5,"nickname":"aaa","orderId":1,"total":6.5},{"headImage":"https://upload.jianshu.io/users/upload_avatars/8818451/83d1f0a4-3574-42f6-9e94-aefc2306883a?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96","limitValue":6.5,"nickname":"bbb","orderId":2,"total":6.5}],"message":"OK"}'
+  #获取交易K线
+  kline: '{"code":200,"data":{"timeX":[1541636296002,1541639896002,1541643496002,1541647096002,1541650696002,1541654296002,1541657896002],"valueY":[1,2,3,4,3,2,1]},"message":"OK"}'
+  #筛选已参与订单
+  all: '{"code":200,"data":[{"deal": 100, "createdAt":1541662369021,"nickname":"用户1","orderId":1,"orderNumber":"D10000","pair":"USDT/VRT","price":6.9234,"tokenValue":100,"transactionType":1,"value":20},{"deal": 100, "createdAt":1541662369021,"nickname":"用户2","orderId":2,"orderNumber":"D10001","pair":"USDT/VRT","price":6.9234,"tokenValue":100,"transactionType":2,"value":20}],"message":"OK"}'
+  #发起挂单
+  buy: '{"code":200,"data"j:true,"message":"OK"}'
+  #挂单信息获取
+  info: '{"code":200,"data":{"balance":12346,"max":10.0,"min":-10.0,"price":12,"tokenBalance":123},"message":"OK"}'
+  #取消挂单
+  cancel: '{"code":200,"data"j:true,"message":"OK"}'
+message:
+  list: '{"code":200,"data":[{"createdAt":1541659052985,"id":1,"message":"VRT:转账成功","messageType":"TRANSACTION","status":true,"updatedAt":1541659052985},{"createdAt":1541659052985,"id":2,"message":"VRT:转账失败","messageType":"TRANSACTION","status":false,"updatedAt":1541659052985}],"message":"OK"}'
+  read: '{"code":200,"data"j:true,"message":"OK"}'

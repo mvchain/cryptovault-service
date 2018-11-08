@@ -17,7 +17,7 @@ public class TokenBalanceVO {
 
     @ApiModelProperty("令牌id")
     private BigInteger tokenId;
-    @ApiModelProperty("余额,单位为usdt,资产价值需要根据当前资产对自行计算（余额 * 对USDT比率 * USDT价值）")
+    @ApiModelProperty("余额,资产价值需要根据当前资产对自行计算（余额 * 对USDT比率 * USDT价值）")
     private BigDecimal value;
     @ApiModelProperty("令牌名称")
     private String tokenName;

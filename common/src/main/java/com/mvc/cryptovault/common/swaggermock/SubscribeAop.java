@@ -1,13 +1,15 @@
-package com.mvc.cryptovault.swaggermock;
+package com.mvc.cryptovault.common.swaggermock;
 
 import com.alibaba.fastjson.JSON;
-import com.mvc.cryptovault.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.Result;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +26,9 @@ import java.util.concurrent.ConcurrentHashMap;
 )
 public class SubscribeAop {
 
+    @Autowired
+    Environment environment;
+
     /**
      * 用于记录请求调用失败时的时间戳
      */
@@ -34,10 +39,13 @@ public class SubscribeAop {
     /**
      * 对mock注解进行拦截
      */
-    @Pointcut("@annotation(com.mvc.cryptovault.swaggermock.SwaggerMock)")
+    @Pointcut("@annotation(com.mvc.cryptovault.common.swaggermock.SwaggerMock)")
     private void annotation() {
     }
 
+    private String formatParamCode(String paramCode) {
+        return paramCode.replaceAll("\\$", "").replaceAll("\\{", "").replaceAll("\\}", "");
+    }
 
     private Result getResult(String methodName, Class<?> classTarget, ProceedingJoinPoint pjp) throws Throwable {
         Result result = null;
@@ -46,6 +54,9 @@ public class SubscribeAop {
         String key = classTarget.getSimpleName() + "." + methodName;
         SwaggerMock ann = objMethod.getAnnotation(SwaggerMock.class);
         String jsonStr = ann.value();
+        if (jsonStr.matches("(\\$\\{[^\\}]+})")) {
+            jsonStr = environment.getProperty(formatParamCode(jsonStr));
+        }
         result = JSON.parseObject(jsonStr, Result.class);
         Long time = map.get(key);
         String str = String.format("调用失败,当前为Mock数据,%s 毫秒后重新尝试, 上一次调用时间为 %s", retry, null == time ? "无" : new Date(time));
@@ -71,7 +82,7 @@ public class SubscribeAop {
             result = getResult(methodName, classTarget, pjp);
         } else {
             result = (Result) pjp.proceed();
-            if (result.getCode() != HttpStatus.OK.value()) {
+            if (null != result && result.getCode() != HttpStatus.OK.value()) {
                 result = getResult(methodName, classTarget, pjp);
                 map.put(key, System.currentTimeMillis());
             } else {

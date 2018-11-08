@@ -1,4 +1,4 @@
-package com.mvc.cryptovault.bean.vo;
+package com.mvc.cryptovault.common.bean.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
