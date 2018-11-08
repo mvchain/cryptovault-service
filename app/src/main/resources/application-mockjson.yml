@@ -7,7 +7,7 @@ asset:
   #获取资产总值,观察列表中不存在但是余额存在的也会被统计.统一以USDT为单位返回,客户端根据币种自行转换.建议缓存
   balance: '{"code":200,"data":123456789.11,"message":"OK"}'
   #获取资产转账列表
-  transactions: '{"code":200,"data":[{"classify": 0,"createdAt":1541575190102,"ratio":1,"tokenId":1,"tokenName":"USDT","transactionType":0,"value":1000, "status": 2},{"classify": 0,"createdAt":1541575190103,"ratio":6.8,"tokenId":2,"tokenName":"BTC","transactionType":1,"value":1000, "status": 2}],"message":"OK"}'
+  transactions: '{"code":200,"data":[{"transactionId":1,"classify": 0,"createdAt":1541575190102,"ratio":1,"tokenId":1,"tokenName":"USDT","transactionType":0,"value":1000, "status": 2},{"transactionId":1,"classify": 0,"createdAt":1541575190103,"ratio":6.8,"tokenId":2,"tokenName":"BTC","transactionType":1,"value":1000, "status": 2}],"message":"OK"}'
   #根据转账交易ID获取转账详情
   transactionDetail: '{"code":200,"data":{"classify": 0,"createdAt":1541576021586,"depth":6,"fee":0.00040,"feeTokenType":"BTC","fromAddress":["5bd6c3434c0d29728751b54a","1bd6c3434c0d29728751b54a"],"hash":"5bd6c3434c0d29728751b54a","hashLink":"http://www.baidu.com","status":2,"toAddress":"5bd6c3434c0d29728751b54a","tokenType":"BTC","updatedAt":1541576021590,"value":0.1},"message":"OK"}'
   #根据币种缩写获取收款地址,不区分大小写,建议缓存

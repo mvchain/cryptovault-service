@@ -31,6 +31,4 @@ public class MessageController extends BaseController {
         return mockResult;
     }
 
-
-
 }
