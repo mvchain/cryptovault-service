@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
  * @create 2018/11/8 14:23
  */
 @RestController
-@Api("消息相关")
+@Api(tags = "消息相关")
 @RequestMapping("message")
 public class MessageController extends BaseController {
 

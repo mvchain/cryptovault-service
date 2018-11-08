@@ -19,7 +19,7 @@ import java.math.BigInteger;
  * @create 2018/11/7 17:26
  */
 @RestController
-@Api("交易相关")
+@Api(tags = "交易相关")
 @RequestMapping("transacion")
 public class TransactionController extends BaseController {
 
