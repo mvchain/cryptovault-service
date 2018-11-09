@@ -42,9 +42,8 @@
         </dependency>
         <dependency>
             <groupId>com.mvc.cryptovault</groupId>
+            <version>0.0.121-SNAPSHOT</version>
             <artifactId>common</artifactId>
-            <version>0.0.12-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
