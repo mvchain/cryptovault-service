@@ -42,7 +42,7 @@
         </dependency>
         <dependency>
             <groupId>com.mvc.cryptovault2</groupId>
-            <version>0.0.121-SNAPSHOT</version>
+            <version>1.0.121-SNAPSHOT</version>
             <artifactId>common</artifactId>
         </dependency>
 
