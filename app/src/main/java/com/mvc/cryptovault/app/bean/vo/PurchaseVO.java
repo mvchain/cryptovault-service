@@ -32,7 +32,11 @@ public class PurchaseVO {
     private Long createdAt;
     @ApiModelProperty("发币时间")
     private Long publishAt;
-    @ApiModelProperty("0已预约 1成功的")
+    @ApiModelProperty("结束时间")
+    private Long stopAt;
+    @ApiModelProperty("0等待结算 1成功的 9众筹失败")
     private Integer reservationType;
+    @ApiModelProperty("众筹订单号")
+    private String projectOrderId;
 
 }
