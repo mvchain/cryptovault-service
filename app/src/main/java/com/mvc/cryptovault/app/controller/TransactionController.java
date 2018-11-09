@@ -33,7 +33,7 @@ public class TransactionController extends BaseController {
     @ApiOperation("获取挂单列表")
     @GetMapping()
     @SwaggerMock("${transaction.list}")
-    public Result<OrderVO> getTransactions(@ModelAttribute OrderDTO dto) {
+    public Result<OrderVO> gettransactions(@ModelAttribute OrderDTO dto) {
         return mockResult;
     }
 
@@ -47,7 +47,7 @@ public class TransactionController extends BaseController {
     @ApiOperation("筛选已参与订单")
     @GetMapping("partake")
     @SwaggerMock("${transaction.all}")
-    public Result<MyOrderVO> getUserTransactions(@ModelAttribute @Valid MyTransactionDTO dto) {
+    public Result<MyOrderVO> getUsertransactions(@ModelAttribute @Valid MyTransactionDTO dto) {
         return mockResult;
     }
 
