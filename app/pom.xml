@@ -41,7 +41,7 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.mvc.cryptovault</groupId>
+            <groupId>com.mvc.cryptovault2</groupId>
             <version>0.0.121-SNAPSHOT</version>
             <artifactId>common</artifactId>
         </dependency>
