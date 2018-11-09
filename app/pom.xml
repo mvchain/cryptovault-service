@@ -44,6 +44,7 @@
             <groupId>com.mvc.cryptovault2</groupId>
             <version>1.0.121-SNAPSHOT</version>
             <artifactId>common</artifactId>
+            <type>jar</type>
         </dependency>
 
         <dependency>
