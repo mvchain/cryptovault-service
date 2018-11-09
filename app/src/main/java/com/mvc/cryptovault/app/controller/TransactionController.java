@@ -20,7 +20,7 @@ import java.math.BigInteger;
  */
 @RestController
 @Api(tags = "交易相关")
-@RequestMapping("transacion")
+@RequestMapping("transaction")
 public class TransactionController extends BaseController {
 
     @ApiOperation("获取交易对,传入时间戳,很少变动,本地必须缓存")

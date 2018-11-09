@@ -8,7 +8,6 @@ spring:
         max-idle: 8
         max-active: 8
         min-idle: 0
-
   devtools:
     restart:
       enabled: true

@@ -39,7 +39,7 @@ projcet:
   purchase: '{"code":200,"data":{"balance":100,"limitValue":1300},"message":"OK"}'
   #"购买项目
   buy: '{"code":200,"data"j:true,"message":"OK"}'
-transacion:
+transaction:
   #获取交易对,传入时间戳,很少变动,本地必须缓存
   pair: '{"code":200,"data":[{"increase":10.1,"pair":"USDT/VRT","ratio":6.5,"tokenImage":"https://upload.jianshu.io/users/upload_avatars/8818451/83d1f0a4-3574-42f6-9e94-aefc2306883a?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96","tokenName":"USDT"},{"increase":-10.1,"pair":"USDT/余额","ratio":6.5,"tokenImage":"https://upload.jianshu.io/users/upload_avatars/8818451/83d1f0a4-3574-42f6-9e94-aefc2306883a?imageMogr2/auto-orient/strip|imageView2/1/w/96/h/96","tokenName":"USDT"}],"message":"OK"}'
   #获取挂单列表,无法查询所有深度,最多只有20条
