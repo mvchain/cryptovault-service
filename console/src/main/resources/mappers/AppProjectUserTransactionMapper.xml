@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvc.cryptovault.console.dao.AppProjectUserTransactionMapper">
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, user_id, project_id, created_at, updated_at, pair_id, result, value, project_order_number
+    from app_project_user_transaction
+  </select>
+</mapper>

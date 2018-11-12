@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvc.cryptovault.console.dao.AppProjectMapper">
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, project_name, base_token_id, project_image, created_at, updated_at, visiable, 
+    started_at, sopt_at, publish_at, project_total, ratio, release_value, project_limit
+    from app_project
+  </select>
+</mapper>

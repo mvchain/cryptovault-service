@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvc.cryptovault.console.dao.CommonTokenMapper">
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id, token_name, token_fullname, token_image, token_type, token_decimal, token_contract_address, 
+    index_id, visiable, withdraw, recharge, fee, transafer_fee, withdraw_min, withdraw_max, 
+    withdraw_day, delete
+    from common_token
+  </select>
+</mapper>

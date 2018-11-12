@@ -19,6 +19,7 @@
         <module>dashbord</module>
         <module>token</module>
         <module>order</module>
+        <module>console</module>
     </modules>
 
     <parent>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<!-- 配置生成器 -->
+<generatorConfiguration>
+    <!--执行generator插件生成文件的命令： call mvn mybatis-generator:generate -e -->
+    <!-- 引入配置文件 -->
+    <properties resource="mybatis-generator/mybatisGeneratorinit.properties"/>
+
+    <!-- 一个数据库一个context -->
+    <!--defaultModelType="flat" 大数据字段，不分表 -->
+    <context id="MysqlTables" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+
+        <!-- 注释 -->
+        <commentGenerator type="com.mvc.cryptovault.common.util.MyCommentGenerator">
+        </commentGenerator>
+
+        <!-- jdbc连接 -->
+        <jdbcConnection driverClass="${jdbc_driver}" connectionURL="${jdbc_url}" userId="${jdbc_user}" password="${jdbc_password}" />
+        <!-- 类型转换 -->
+        <javaTypeResolver type="com.mvc.cryptovault.common.util.MyJavaTypeResolverDefaultImpl">
+            <!-- 是否使用bigDecimal， false可自动转化以下类型（Long, Integer, Short, etc.） -->
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+
+        <!-- 生成实体类地址 -->
+        <javaModelGenerator targetPackage="com.mvc.cryptovault.console.bean" targetProject="${project}" >
+        </javaModelGenerator>
+        <!-- 生成mapxml文件 -->
+        <sqlMapGenerator targetPackage="mappers" targetProject="${resources}" >
+        </sqlMapGenerator>
+        <!-- 生成mapxml对应client，也就是接口dao -->
+        <javaClientGenerator targetPackage="com.mvc.cryptovault.console.dao" targetProject="${project}" type="XMLMAPPER">
+            <property name="enableSubPackages" value="false" />
+            <property name="rootInterface" value="com.mvc.cryptovault.console.common.MyMapper"/>
+        </javaClientGenerator>
+        <!-- table可以有多个,每个数据库中的表都可以写一个table，tableName表示要匹配的数据库表,也可以在tableName属性中通过使用%通配符来匹配所有数据库表,只有匹配的表才会自动生成文件 -->
+        <table tableName="admin_permission" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="admin_user" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="admin_user_permission" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="user_id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_kline" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_message" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_order" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_order_detail" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_project" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_project_user_transaction" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_user" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_user_address" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_user_balance" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_user_opr_log" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="app_user_transaction" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="block_height" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="block_transaction" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="common_pair" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="common_token" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="common_token_control" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="token_id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="common_token_control_next" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="token_id" sqlStatement="Mysql" identity="true" />
+        </table>
+        <table tableName="common_token_price" enableDeleteByPrimaryKey="false" enableSelectByPrimaryKey="false" enableInsert="false" enableUpdateByPrimaryKey="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
+            <!-- 数据库表主键 -->
+            <generatedKey column="token_id" sqlStatement="Mysql" identity="true" />
+        </table>
+
+    </context>
+</generatorConfiguration>

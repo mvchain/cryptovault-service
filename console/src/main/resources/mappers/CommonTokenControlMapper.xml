@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mvc.cryptovault.console.dao.CommonTokenControlMapper">
+  <select id="selectAll" resultMap="BaseResultMap">
+    select token_id, increase_min, increase_max, decrease_min, decrease_max, buy_min, 
+    buy_max, sell_min, sell_max, price_base, next_price, wave_min, wave_max
+    from common_token_control
+  </select>
+</mapper>
