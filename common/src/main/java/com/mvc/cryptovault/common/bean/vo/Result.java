@@ -19,4 +19,8 @@ public class Result<T> {
     private String message;
     private T data;
 
+    public Result(T data){
+        this.data = data;
+    }
+
 }

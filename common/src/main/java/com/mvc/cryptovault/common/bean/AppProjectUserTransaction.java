@@ -1,0 +1,220 @@
+package com.mvc.cryptovault.common.bean;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import lombok.Data;
+
+/**
+ * app_project_user_transaction
+ */
+@Table(name = "app_project_user_transaction")
+@Data
+public class AppProjectUserTransaction implements Serializable {
+    /**
+     * 
+     */
+    @Id
+    @Column(name = "id")
+    private BigInteger id;
+
+    /**
+     * 用户id
+     */
+    @Column(name = "user_id")
+    private BigInteger userId;
+
+    /**
+     * 项目id
+     */
+    @Column(name = "project_id")
+    private BigInteger projectId;
+
+    /**
+     * 创建时间
+     */
+    @Column(name = "created_at")
+    private BigInteger createdAt;
+
+    /**
+     * 修改时间
+     */
+    @Column(name = "updated_at")
+    private BigInteger updatedAt;
+
+    /**
+     * 交易对id
+     */
+    @Column(name = "pair_id")
+    private BigInteger pairId;
+
+    /**
+     * 结果-等待 1成功 4取消 9失败
+     */
+    @Column(name = "result")
+    private Integer result;
+
+    /**
+     * 参与金额
+     */
+    @Column(name = "value")
+    private BigDecimal value;
+
+    /**
+     * 订单id
+     */
+    @Column(name = "project_order_number")
+    private String projectOrderNumber;
+
+    /**
+     * app_project_user_transaction
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 
+     * @return id 
+     */
+    public BigInteger getId() {
+        return id;
+    }
+
+    /**
+     * 
+     * @param id 
+     */
+    public void setId(BigInteger id) {
+        this.id = id;
+    }
+
+    /**
+     * 用户id
+     * @return user_id 用户id
+     */
+    public BigInteger getUserId() {
+        return userId;
+    }
+
+    /**
+     * 用户id
+     * @param userId 用户id
+     */
+    public void setUserId(BigInteger userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * 项目id
+     * @return project_id 项目id
+     */
+    public BigInteger getProjectId() {
+        return projectId;
+    }
+
+    /**
+     * 项目id
+     * @param projectId 项目id
+     */
+    public void setProjectId(BigInteger projectId) {
+        this.projectId = projectId;
+    }
+
+    /**
+     * 创建时间
+     * @return created_at 创建时间
+     */
+    public BigInteger getCreatedAt() {
+        return createdAt;
+    }
+
+    /**
+     * 创建时间
+     * @param createdAt 创建时间
+     */
+    public void setCreatedAt(BigInteger createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    /**
+     * 修改时间
+     * @return updated_at 修改时间
+     */
+    public BigInteger getUpdatedAt() {
+        return updatedAt;
+    }
+
+    /**
+     * 修改时间
+     * @param updatedAt 修改时间
+     */
+    public void setUpdatedAt(BigInteger updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    /**
+     * 交易对id
+     * @return pair_id 交易对id
+     */
+    public BigInteger getPairId() {
+        return pairId;
+    }
+
+    /**
+     * 交易对id
+     * @param pairId 交易对id
+     */
+    public void setPairId(BigInteger pairId) {
+        this.pairId = pairId;
+    }
+
+    /**
+     * 结果-等待 1成功 4取消 9失败
+     * @return result 结果-等待 1成功 4取消 9失败
+     */
+    public Integer getResult() {
+        return result;
+    }
+
+    /**
+     * 结果-等待 1成功 4取消 9失败
+     * @param result 结果-等待 1成功 4取消 9失败
+     */
+    public void setResult(Integer result) {
+        this.result = result;
+    }
+
+    /**
+     * 参与金额
+     * @return value 参与金额
+     */
+    public BigDecimal getValue() {
+        return value;
+    }
+
+    /**
+     * 参与金额
+     * @param value 参与金额
+     */
+    public void setValue(BigDecimal value) {
+        this.value = value;
+    }
+
+    /**
+     * 订单id
+     * @return project_order_number 订单id
+     */
+    public String getProjectOrderNumber() {
+        return projectOrderNumber;
+    }
+
+    /**
+     * 订单id
+     * @param projectOrderNumber 订单id
+     */
+    public void setProjectOrderNumber(String projectOrderNumber) {
+        this.projectOrderNumber = projectOrderNumber;
+    }
+}

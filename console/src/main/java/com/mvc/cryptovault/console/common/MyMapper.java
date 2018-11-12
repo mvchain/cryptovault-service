@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.common;
 
 import tk.mybatis.mapper.common.BaseMapper;
 import tk.mybatis.mapper.common.ConditionMapper;
+import tk.mybatis.mapper.common.IdsMapper;
 import tk.mybatis.mapper.common.special.InsertListMapper;
 
 /**
@@ -11,6 +12,9 @@ import tk.mybatis.mapper.common.special.InsertListMapper;
  * @Date: 2018/4/23 09:35
  * @Description:
  */
-public interface MyMapper<T> extends BaseMapper<T>, ConditionMapper<T>, InsertListMapper<T> {
+public interface MyMapper<T> extends BaseMapper<T>,
+        ConditionMapper<T>,
+        IdsMapper<T>,
+        InsertListMapper<T> {
 
 }
