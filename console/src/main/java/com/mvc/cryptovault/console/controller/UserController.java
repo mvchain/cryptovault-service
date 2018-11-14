@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
-import static com.mvc.cryptovault.common.constant.RedisConstant.TEST;
+import static com.mvc.cryptovault.common.constant.RedisConstant.*;
 /**
  * @author qiyichen
  * @create 2018/11/12 14:35
@@ -22,11 +22,11 @@ public class UserController extends BaseController {
 
     @GetMapping("username")
     public Result<AppUser> getByUsername(@RequestParam String username) {
-        String key = TEST;
+        String key = APP_USER_USERNAME + username;
         String result = (String) redisTemplate.opsForHash().get(key, key);
         AppUser user = null;
         if (null == result) {
-            user = appUserService.findBy("cellphone", username);
+            user = appUserService.findOneBy("cellphone", username);
             if (null == user) {
                 //用户不存在则保存空串,防止缓存穿透
                 redisTemplate.opsForHash().put(key, key, "");

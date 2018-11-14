@@ -25,7 +25,7 @@ public class AppKline implements Serializable {
      * k线时间轴
      */
     @Column(name = "kline_time")
-    private BigInteger klineTime;
+    private Long klineTime;
 
     /**
      * 价格
@@ -58,22 +58,6 @@ public class AppKline implements Serializable {
      */
     public void setId(BigInteger id) {
         this.id = id;
-    }
-
-    /**
-     * k线时间轴
-     * @return kline_time k线时间轴
-     */
-    public BigInteger getKlineTime() {
-        return klineTime;
-    }
-
-    /**
-     * k线时间轴
-     * @param klineTime k线时间轴
-     */
-    public void setKlineTime(BigInteger klineTime) {
-        this.klineTime = klineTime;
     }
 
     /**

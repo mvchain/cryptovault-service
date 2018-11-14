@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.console.common;
 
 import org.apache.ibatis.exceptions.TooManyResultsException;
+import tk.mybatis.mapper.entity.Condition;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -57,7 +58,17 @@ public interface BaseService<T> {
      * @return
      * @throws TooManyResultsException
      */
-    T findBy(String fieldName, Object value) throws TooManyResultsException;
+    List<T> findBy(String fieldName, Object value) throws TooManyResultsException;
+
+    /**
+     * 通过Model中某个成员变量名称（非数据表中column的名称）查找,value需符合unique约束
+     *
+     * @param fieldName
+     * @param value
+     * @return
+     * @throws TooManyResultsException
+     */
+    T findOneBy(String fieldName, Object value) throws TooManyResultsException;
 
     /**
      * 通过多个ID查找//eg：ids -> “1,2,3,4”
@@ -73,7 +84,23 @@ public interface BaseService<T> {
      * @param t
      * @return
      */
-    List<T> findByCondition(T t);
+    List<T> findByEntity(T t);
+
+    /**
+     * 根据条件查找
+     *
+     * @param t
+     * @return
+     */
+    T findOneByEntity(T t);
+
+    /**
+     * 根据条件查找
+     *
+     * @param t
+     * @return
+     */
+    List<T> findByCondition(Condition t);
 
     /**
      * 获取所有

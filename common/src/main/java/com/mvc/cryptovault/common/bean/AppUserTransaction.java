@@ -31,13 +31,13 @@ public class AppUserTransaction implements Serializable {
      * 创建时间
      */
     @Column(name = "created_at")
-    private BigInteger createdAt;
+    private Long createdAt;
 
     /**
      * 更新时间
      */
     @Column(name = "updated_at")
-    private BigInteger updatedAt;
+    private Long updatedAt;
 
     /**
      * 订单号（对外展示）
@@ -82,7 +82,7 @@ public class AppUserTransaction implements Serializable {
     private BigDecimal price;
 
     /**
-     * 交易类型0转入 1转出
+     * 交易类型1购买 2出售
      */
     @Column(name = "transaction_type")
     private Integer transactionType;
@@ -128,38 +128,6 @@ public class AppUserTransaction implements Serializable {
      */
     public void setPairId(BigInteger pairId) {
         this.pairId = pairId;
-    }
-
-    /**
-     * 创建时间
-     * @return created_at 创建时间
-     */
-    public BigInteger getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * 创建时间
-     * @param createdAt 创建时间
-     */
-    public void setCreatedAt(BigInteger createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    /**
-     * 更新时间
-     * @return updated_at 更新时间
-     */
-    public BigInteger getUpdatedAt() {
-        return updatedAt;
-    }
-
-    /**
-     * 更新时间
-     * @param updatedAt 更新时间
-     */
-    public void setUpdatedAt(BigInteger updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**

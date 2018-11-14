@@ -1,9 +1,12 @@
 package com.mvc.cryptovault.console.common;
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
 import org.apache.ibatis.exceptions.TooManyResultsException;
+import org.mapdb.HTreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import tk.mybatis.mapper.entity.Condition;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
@@ -18,6 +21,8 @@ public abstract class AbstractService<T> implements BaseService<T> {
 
     @Autowired
     protected StringRedisTemplate redisTemplate;
+    @Autowired
+    protected HTreeMap hTreeMap;
 
     @Autowired
     protected MyMapper<T> mapper;
@@ -62,6 +67,7 @@ public abstract class AbstractService<T> implements BaseService<T> {
         if (null == json) {
             obj = mapper.selectByPrimaryKey(id);
             if (null == obj) {
+                //填入空内容,防止穿透
                 redisTemplate.opsForValue().set(key, "", 30, TimeUnit.MINUTES);
             } else {
                 redisTemplate.opsForValue().set(key, JSON.toJSONString(obj), 24, TimeUnit.HOURS);
@@ -75,7 +81,7 @@ public abstract class AbstractService<T> implements BaseService<T> {
     }
 
     @Override
-    public T findBy(String fieldName, Object value) throws TooManyResultsException {
+    public T findOneBy(String fieldName, Object value) throws TooManyResultsException {
         try {
             T model = modelClass.newInstance();
             Field field = modelClass.getDeclaredField(fieldName);
@@ -88,17 +94,54 @@ public abstract class AbstractService<T> implements BaseService<T> {
     }
 
     @Override
+    public List<T> findBy(String fieldName, Object value) throws TooManyResultsException {
+        try {
+            T model = modelClass.newInstance();
+            Field field = modelClass.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(model, value);
+            return mapper.select(model);
+        } catch (ReflectiveOperationException e) {
+            return null;
+        }
+    }
+
+    @Override
     public List<T> findByIds(String ids) {
         return mapper.selectByIds(ids);
     }
 
     @Override
-    public List<T> findByCondition(T t) {
+    public List<T> findByCondition(Condition t) {
+        return mapper.selectByCondition(t);
+    }
+
+    @Override
+    public List<T> findByEntity(T t) {
         return mapper.select(t);
     }
 
     @Override
-    public List<T> findAll() {
-        return mapper.selectAll();
+    public T findOneByEntity(T t) {
+        return mapper.selectOne(t);
     }
+
+    /**
+     * 通常都走单独的按条件搜索。搜索所有的都是少量数据，因此直接在堆中缓存
+     *
+     * @return
+     */
+    @Override
+    public List<T> findAll() {
+        PageHelper.startPage(0, 9999);
+        String key = modelClass.getSimpleName().toUpperCase();
+        List<T> list = null;
+        list = (List<T>) hTreeMap.get(key);
+        if (null != list) {
+            list = mapper.selectAll();
+            hTreeMap.put(key, list);
+        }
+        return list;
+    }
+
 }

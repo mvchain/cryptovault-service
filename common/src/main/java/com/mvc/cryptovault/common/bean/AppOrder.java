@@ -46,7 +46,13 @@ public class AppOrder implements Serializable {
     private String orderContentName;
 
     /**
-     * 0转入 1转出
+     * 令牌id
+     */
+    @Column(name = "token_id")
+    private BigInteger tokenId;
+
+    /**
+     * 1转入 2转出
      */
     @Column(name = "order_type")
     private Integer orderType;
@@ -55,13 +61,13 @@ public class AppOrder implements Serializable {
      * 
      */
     @Column(name = "created_at")
-    private BigInteger createdAt;
+    private Long createdAt;
 
     /**
      * 
      */
     @Column(name = "updated_at")
-    private BigInteger updatedAt;
+    private Long updatedAt;
 
     /**
      * 转账状态[0待打包 1确认中 2打包成功 9打包失败]
@@ -74,6 +80,12 @@ public class AppOrder implements Serializable {
      */
     @Column(name = "value")
     private BigDecimal value;
+
+    /**
+     * 用户id
+     */
+    @Column(name = "user_id")
+    private BigInteger userId;
 
     /**
      * 交易hash
@@ -186,38 +198,6 @@ public class AppOrder implements Serializable {
      */
     public void setOrderType(Integer orderType) {
         this.orderType = orderType;
-    }
-
-    /**
-     * 
-     * @return created_at 
-     */
-    public BigInteger getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * 
-     * @param createdAt 
-     */
-    public void setCreatedAt(BigInteger createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    /**
-     * 
-     * @return updated_at 
-     */
-    public BigInteger getUpdatedAt() {
-        return updatedAt;
-    }
-
-    /**
-     * 
-     * @param updatedAt 
-     */
-    public void setUpdatedAt(BigInteger updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**

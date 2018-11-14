@@ -31,13 +31,13 @@ public class BlockTransaction implements Serializable {
      * 创建时间
      */
     @Column(name = "created_at")
-    private BigInteger createdAt;
+    private Long createdAt;
 
     /**
      * 修改时间
      */
     @Column(name = "updated_at")
-    private BigInteger updatedAt;
+    private Long updatedAt;
 
     /**
      * 手续费
@@ -100,6 +100,12 @@ public class BlockTransaction implements Serializable {
     private String fromAddress;
 
     /**
+     * 目标地址
+     */
+    @Column(name = "to_address")
+    private String toAddress;
+
+    /**
      * block_transaction
      */
     private static final long serialVersionUID = 1L;
@@ -134,38 +140,6 @@ public class BlockTransaction implements Serializable {
      */
     public void setHash(String hash) {
         this.hash = hash;
-    }
-
-    /**
-     * 创建时间
-     * @return created_at 创建时间
-     */
-    public BigInteger getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * 创建时间
-     * @param createdAt 创建时间
-     */
-    public void setCreatedAt(BigInteger createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    /**
-     * 修改时间
-     * @return updated_at 修改时间
-     */
-    public BigInteger getUpdatedAt() {
-        return updatedAt;
-    }
-
-    /**
-     * 修改时间
-     * @param updatedAt 修改时间
-     */
-    public void setUpdatedAt(BigInteger updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**
@@ -327,4 +301,5 @@ public class BlockTransaction implements Serializable {
     public void setFromAddress(String fromAddress) {
         this.fromAddress = fromAddress;
     }
+
 }

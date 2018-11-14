@@ -28,10 +28,16 @@ public class CommonToken implements Serializable {
     private String tokenName;
 
     /**
-     * 令牌全称
+     * 令牌中文
      */
-    @Column(name = "token_fullname")
-    private String tokenFullname;
+    @Column(name = "token_cn_name")
+    private String tokenCnName;
+
+    /**
+     * 令牌英文
+     */
+    @Column(name = "token_en_name")
+    private String tokenEnName;
 
     /**
      * 令牌图片地址
@@ -44,6 +50,12 @@ public class CommonToken implements Serializable {
      */
     @Column(name = "token_type")
     private String tokenType;
+
+    /**
+     * hash前缀
+     */
+    @Column(name = "link")
+    private String link;
 
     /**
      * 令牌位数，代币使用
@@ -66,8 +78,8 @@ public class CommonToken implements Serializable {
     /**
      * 是否展示
      */
-    @Column(name = "visiable")
-    private Integer visiable;
+    @Column(name = "visible")
+    private Integer visible;
 
     /**
      * 是否可冲提
@@ -117,6 +129,11 @@ public class CommonToken implements Serializable {
     @Column(name = "delete")
     private Integer delete;
 
+    @Column(name = "created_at")
+    private BigInteger createdAt;
+
+    @Column(name = "updated_at")
+    private BigInteger updatedAt;
     /**
      * common_token
      */
@@ -152,22 +169,6 @@ public class CommonToken implements Serializable {
      */
     public void setTokenName(String tokenName) {
         this.tokenName = tokenName;
-    }
-
-    /**
-     * 令牌全称
-     * @return token_fullname 令牌全称
-     */
-    public String getTokenFullname() {
-        return tokenFullname;
-    }
-
-    /**
-     * 令牌全称
-     * @param tokenFullname 令牌全称
-     */
-    public void setTokenFullname(String tokenFullname) {
-        this.tokenFullname = tokenFullname;
     }
 
     /**
@@ -248,22 +249,6 @@ public class CommonToken implements Serializable {
      */
     public void setIndexId(Integer indexId) {
         this.indexId = indexId;
-    }
-
-    /**
-     * 是否展示
-     * @return visiable 是否展示
-     */
-    public Integer getVisiable() {
-        return visiable;
-    }
-
-    /**
-     * 是否展示
-     * @param visiable 是否展示
-     */
-    public void setVisiable(Integer visiable) {
-        this.visiable = visiable;
     }
 
     /**

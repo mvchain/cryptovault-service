@@ -1,12 +1,13 @@
 package com.mvc.cryptovault.common.bean;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.BigInteger;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Data;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * app_project
@@ -34,19 +35,35 @@ public class AppProject implements Serializable {
     private BigInteger baseTokenId;
 
     /**
+     * 基础币种名称
+     */
+    @Column(name = "base_token_name")
+    private String baseTokenName;
+
+    /**
      * 项目图片
      */
     @Column(name = "project_image")
     private String projectImage;
 
     /**
-     * 
+     * 交易对ID
+     */
+    @Column(name = "pair_id")
+    private BigInteger pairId;
+    /**
+     *
      */
     @Column(name = "created_at")
     private BigInteger createdAt;
+    /**
+     * 项目状态0即将开始 1进行中 2已结束 9取消
+     */
+    @Column(name = "status")
+    private Integer status;
 
     /**
-     * 
+     *
      */
     @Column(name = "updated_at")
     private BigInteger updatedAt;
@@ -61,19 +78,19 @@ public class AppProject implements Serializable {
      * 开始时间
      */
     @Column(name = "started_at")
-    private BigInteger startedAt;
+    private Long startedAt;
 
     /**
      * 结束时间
      */
-    @Column(name = "sopt_at")
-    private BigInteger soptAt;
+    @Column(name = "stop_at")
+    private Long stopAt;
 
     /**
      * 发币时间
      */
     @Column(name = "publish_at")
-    private BigInteger publishAt;
+    private Long publishAt;
 
     /**
      * 众筹数量
@@ -97,7 +114,7 @@ public class AppProject implements Serializable {
      * 限购数量
      */
     @Column(name = "project_limit")
-    private Double projectLimit;
+    private BigDecimal projectLimit;
 
     /**
      * app_project
@@ -106,6 +123,7 @@ public class AppProject implements Serializable {
 
     /**
      * 项目id
+     *
      * @return id 项目id
      */
     public BigInteger getId() {
@@ -114,6 +132,7 @@ public class AppProject implements Serializable {
 
     /**
      * 项目id
+     *
      * @param id 项目id
      */
     public void setId(BigInteger id) {
@@ -122,6 +141,7 @@ public class AppProject implements Serializable {
 
     /**
      * 项目名称
+     *
      * @return project_name 项目名称
      */
     public String getProjectName() {
@@ -130,6 +150,7 @@ public class AppProject implements Serializable {
 
     /**
      * 项目名称
+     *
      * @param projectName 项目名称
      */
     public void setProjectName(String projectName) {
@@ -138,6 +159,7 @@ public class AppProject implements Serializable {
 
     /**
      * 基础币种id
+     *
      * @return base_token_id 基础币种id
      */
     public BigInteger getBaseTokenId() {
@@ -146,6 +168,7 @@ public class AppProject implements Serializable {
 
     /**
      * 基础币种id
+     *
      * @param baseTokenId 基础币种id
      */
     public void setBaseTokenId(BigInteger baseTokenId) {
@@ -154,6 +177,7 @@ public class AppProject implements Serializable {
 
     /**
      * 项目图片
+     *
      * @return project_image 项目图片
      */
     public String getProjectImage() {
@@ -162,6 +186,7 @@ public class AppProject implements Serializable {
 
     /**
      * 项目图片
+     *
      * @param projectImage 项目图片
      */
     public void setProjectImage(String projectImage) {
@@ -169,32 +194,28 @@ public class AppProject implements Serializable {
     }
 
     /**
-     * 
-     * @return created_at 
+     * @return created_at
      */
     public BigInteger getCreatedAt() {
         return createdAt;
     }
 
     /**
-     * 
-     * @param createdAt 
+     * @param createdAt
      */
     public void setCreatedAt(BigInteger createdAt) {
         this.createdAt = createdAt;
     }
 
     /**
-     * 
-     * @return updated_at 
+     * @return updated_at
      */
     public BigInteger getUpdatedAt() {
         return updatedAt;
     }
 
     /**
-     * 
-     * @param updatedAt 
+     * @param updatedAt
      */
     public void setUpdatedAt(BigInteger updatedAt) {
         this.updatedAt = updatedAt;
@@ -202,6 +223,7 @@ public class AppProject implements Serializable {
 
     /**
      * 是否展示
+     *
      * @return visiable 是否展示
      */
     public Integer getVisiable() {
@@ -210,6 +232,7 @@ public class AppProject implements Serializable {
 
     /**
      * 是否展示
+     *
      * @param visiable 是否展示
      */
     public void setVisiable(Integer visiable) {
@@ -217,55 +240,8 @@ public class AppProject implements Serializable {
     }
 
     /**
-     * 开始时间
-     * @return started_at 开始时间
-     */
-    public BigInteger getStartedAt() {
-        return startedAt;
-    }
-
-    /**
-     * 开始时间
-     * @param startedAt 开始时间
-     */
-    public void setStartedAt(BigInteger startedAt) {
-        this.startedAt = startedAt;
-    }
-
-    /**
-     * 结束时间
-     * @return sopt_at 结束时间
-     */
-    public BigInteger getSoptAt() {
-        return soptAt;
-    }
-
-    /**
-     * 结束时间
-     * @param soptAt 结束时间
-     */
-    public void setSoptAt(BigInteger soptAt) {
-        this.soptAt = soptAt;
-    }
-
-    /**
-     * 发币时间
-     * @return publish_at 发币时间
-     */
-    public BigInteger getPublishAt() {
-        return publishAt;
-    }
-
-    /**
-     * 发币时间
-     * @param publishAt 发币时间
-     */
-    public void setPublishAt(BigInteger publishAt) {
-        this.publishAt = publishAt;
-    }
-
-    /**
      * 众筹数量
+     *
      * @return project_total 众筹数量
      */
     public BigDecimal getProjectTotal() {
@@ -274,6 +250,7 @@ public class AppProject implements Serializable {
 
     /**
      * 众筹数量
+     *
      * @param projectTotal 众筹数量
      */
     public void setProjectTotal(BigDecimal projectTotal) {
@@ -282,6 +259,7 @@ public class AppProject implements Serializable {
 
     /**
      * 兑换比例
+     *
      * @return ratio 兑换比例
      */
     public Float getRatio() {
@@ -290,6 +268,7 @@ public class AppProject implements Serializable {
 
     /**
      * 兑换比例
+     *
      * @param ratio 兑换比例
      */
     public void setRatio(Float ratio) {
@@ -298,6 +277,7 @@ public class AppProject implements Serializable {
 
     /**
      * 释放比例
+     *
      * @return release_value 释放比例
      */
     public Float getReleaseValue() {
@@ -306,25 +286,11 @@ public class AppProject implements Serializable {
 
     /**
      * 释放比例
+     *
      * @param releaseValue 释放比例
      */
     public void setReleaseValue(Float releaseValue) {
         this.releaseValue = releaseValue;
     }
 
-    /**
-     * 限购数量
-     * @return project_limit 限购数量
-     */
-    public Double getProjectLimit() {
-        return projectLimit;
-    }
-
-    /**
-     * 限购数量
-     * @param projectLimit 限购数量
-     */
-    public void setProjectLimit(Double projectLimit) {
-        this.projectLimit = projectLimit;
-    }
 }

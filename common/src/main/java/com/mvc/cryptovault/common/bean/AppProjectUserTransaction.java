@@ -37,13 +37,13 @@ public class AppProjectUserTransaction implements Serializable {
      * 创建时间
      */
     @Column(name = "created_at")
-    private BigInteger createdAt;
+    private Long createdAt;
 
     /**
      * 修改时间
      */
     @Column(name = "updated_at")
-    private BigInteger updatedAt;
+    private Long updatedAt;
 
     /**
      * 交易对id
@@ -52,7 +52,7 @@ public class AppProjectUserTransaction implements Serializable {
     private BigInteger pairId;
 
     /**
-     * 结果-等待 1成功 4取消 9失败
+     * 结果-0等待 1成功 4取消 9失败
      */
     @Column(name = "result")
     private Integer result;
@@ -62,6 +62,12 @@ public class AppProjectUserTransaction implements Serializable {
      */
     @Column(name = "value")
     private BigDecimal value;
+
+    /**
+     * 排序位置
+     */
+    @Column(name = "index")
+    private Integer index;
 
     /**
      * 订单id
@@ -120,38 +126,6 @@ public class AppProjectUserTransaction implements Serializable {
      */
     public void setProjectId(BigInteger projectId) {
         this.projectId = projectId;
-    }
-
-    /**
-     * 创建时间
-     * @return created_at 创建时间
-     */
-    public BigInteger getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * 创建时间
-     * @param createdAt 创建时间
-     */
-    public void setCreatedAt(BigInteger createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    /**
-     * 修改时间
-     * @return updated_at 修改时间
-     */
-    public BigInteger getUpdatedAt() {
-        return updatedAt;
-    }
-
-    /**
-     * 修改时间
-     * @param updatedAt 修改时间
-     */
-    public void setUpdatedAt(BigInteger updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**

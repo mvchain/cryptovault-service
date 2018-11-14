@@ -5,6 +5,7 @@ import java.util.Map;
 
 public interface RedisConstant {
 
-    public static final String TEST = "";
-    public static final String APP_USER_ID = "AppUser_ID_";
+    String APP_USER_USERNAME = "APP_USER_USERNAME_";
+    String APP_USER_ID = "APP_USER_ID_";
+    String COMMON_TOKEN = "COMMON_TOKEN";
 }

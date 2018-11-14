@@ -1,8 +1,8 @@
 package com.mvc.cryptovault.app.controller;
 
-import com.mvc.cryptovault.app.bean.dto.UserDTO;
-import com.mvc.cryptovault.app.bean.vo.TokenVO;
-import com.mvc.cryptovault.app.bean.vo.UserSimpleVO;
+import com.mvc.cryptovault.common.bean.dto.UserDTO;
+import com.mvc.cryptovault.common.bean.vo.TokenVO;
+import com.mvc.cryptovault.common.bean.vo.UserSimpleVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
 import io.swagger.annotations.Api;
