@@ -17,8 +17,8 @@ public class MessageVO {
     @ApiModelProperty("消息id")
     private BigInteger id;
 
-    @ApiModelProperty("转账结果（成功或失败）")
-    private Boolean status;
+    @ApiModelProperty("转账结果（0失败 1成功）")
+    private Integer status;
 
     @ApiModelProperty("消息内容")
     private String message;

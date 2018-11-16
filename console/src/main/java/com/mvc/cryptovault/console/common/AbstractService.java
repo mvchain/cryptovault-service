@@ -137,7 +137,7 @@ public abstract class AbstractService<T> implements BaseService<T> {
         String key = modelClass.getSimpleName().toUpperCase();
         List<T> list = null;
         list = (List<T>) hTreeMap.get(key);
-        if (null != list) {
+        if (null == list) {
             list = mapper.selectAll();
             hTreeMap.put(key, list);
         }

@@ -68,12 +68,9 @@ public class JwtHelper {
     }
 
 
-    public static void check(Claims claim, String uri, Boolean isFeign) throws LoginException {
+    public static void check(Claims claim, String uri) throws LoginException {
         String type = claim.get("type", String.class);
         String service = claim.get("service", String.class);
-        if (!serviceName.equalsIgnoreCase(service) && !isFeign) {
-            throw new LoginException("service is wrong");
-        }
         if (uri.indexOf("/refresh") > 0 && !"refresh".equalsIgnoreCase(type)) {
             throw new LoginException("token type is wrong");
         } else if (uri.indexOf("/refresh") < 0 && !"token".equalsIgnoreCase(type)) {

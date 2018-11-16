@@ -15,9 +15,9 @@ public class PageDTO implements Serializable {
 
     private Integer pageNum;
     private Integer pageSize = 10;
-    private BigInteger updatedStopAt;
-    private BigInteger updatedStartAt;
-    private BigInteger createdStopAt;
-    private BigInteger createdStartAt;
+    private Long updatedStopAt;
+    private Long updatedStartAt;
+    private Long createdStopAt;
+    private Long createdStartAt;
     private String orderBy;
 }

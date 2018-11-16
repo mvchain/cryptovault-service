@@ -6,6 +6,7 @@ import com.mvc.cryptovault.common.bean.dto.UserDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TokenVO;
 import com.mvc.cryptovault.common.bean.vo.UserSimpleVO;
+import com.mvc.cryptovault.common.util.BaseContextHandler;
 import com.mvc.cryptovault.common.util.JwtHelper;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.common.util.TokenErrorException;
@@ -64,5 +65,11 @@ public class UserService {
         vo.setToken(token);
         vo.setUserId(user.getId());
         return vo;
+    }
+
+    public String refresh() {
+        BigInteger userId = (BigInteger) BaseContextHandler.get("userId");
+        String username = (String) BaseContextHandler.get("username");
+        return JwtHelper.createToken(username, userId);
     }
 }

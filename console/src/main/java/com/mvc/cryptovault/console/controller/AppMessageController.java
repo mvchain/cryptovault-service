@@ -45,6 +45,7 @@ public class AppMessageController extends BaseController {
         AppMessage message = new AppMessage();
         message.setUserId(userId);
         message.setId(id);
+        message.setIsRead(1);
         appMessageService.update(message);
         return new Result<>(true);
     }

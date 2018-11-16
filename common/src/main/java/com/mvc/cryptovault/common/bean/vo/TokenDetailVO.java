@@ -23,4 +23,6 @@ public class TokenDetailVO {
     private String tokenEnName;
     @ApiModelProperty("令牌id")
     private BigInteger tokenId;
+    @ApiModelProperty
+    private Long timestamp;
 }

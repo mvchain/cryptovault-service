@@ -20,7 +20,7 @@ public class AppMessageService extends AbstractService<AppMessage> implements Ba
     public List<AppMessage> list(BigInteger userId, TimeSearchDTO timeSearchDTO, PageDTO pageDTO) {
         Condition condition = new Condition(AppMessage.class);
         Example.Criteria criteria = condition.createCriteria();
-        ConditionUtil.andCondition(criteria, "user_id", userId);
+        ConditionUtil.andCondition(criteria, "user_id = ", userId);
         PageHelper.startPage(1, pageDTO.getPageSize());
         PageHelper.orderBy("created_at desc");
         if (timeSearchDTO.getType() == 0 && null != timeSearchDTO.getTimestamp()) {

@@ -126,14 +126,14 @@ public class CommonToken implements Serializable {
     /**
      * 删除标记位
      */
-    @Column(name = "delete")
-    private Integer delete;
+    @Column(name = "delete_status")
+    private Integer deleteStatus;
 
     @Column(name = "created_at")
-    private BigInteger createdAt;
+    private Long createdAt;
 
     @Column(name = "updated_at")
-    private BigInteger updatedAt;
+    private Long updatedAt;
     /**
      * common_token
      */
@@ -361,21 +361,5 @@ public class CommonToken implements Serializable {
      */
     public void setWithdrawDay(BigDecimal withdrawDay) {
         this.withdrawDay = withdrawDay;
-    }
-
-    /**
-     * 删除标记位
-     * @return delete 删除标记位
-     */
-    public Integer getDelete() {
-        return delete;
-    }
-
-    /**
-     * 删除标记位
-     * @param delete 删除标记位
-     */
-    public void setDelete(Integer delete) {
-        this.delete = delete;
     }
 }

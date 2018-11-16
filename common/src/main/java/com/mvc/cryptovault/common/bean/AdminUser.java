@@ -48,13 +48,13 @@ public class AdminUser implements Serializable {
      * 
      */
     @Column(name = "created_at")
-    private BigInteger createdAt;
+    private Long createdAt;
 
     /**
      * 
      */
     @Column(name = "updated_at")
-    private BigInteger updatedAt;
+    private Long updatedAt;
 
     /**
      * admin_user
@@ -141,35 +141,4 @@ public class AdminUser implements Serializable {
         this.nickname = nickname;
     }
 
-    /**
-     * 
-     * @return created_at 
-     */
-    public BigInteger getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * 
-     * @param createdAt 
-     */
-    public void setCreatedAt(BigInteger createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    /**
-     * 
-     * @return updated_at 
-     */
-    public BigInteger getUpdatedAt() {
-        return updatedAt;
-    }
-
-    /**
-     * 
-     * @param updatedAt 
-     */
-    public void setUpdatedAt(BigInteger updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 }

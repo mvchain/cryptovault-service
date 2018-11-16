@@ -1,11 +1,12 @@
 package com.mvc.cryptovault.common.bean;
 
-import java.io.Serializable;
-import java.math.BigInteger;
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Data;
+import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
  * app_message
@@ -39,6 +40,12 @@ public class AppMessage implements Serializable {
     private String contentType;
 
     /**
+     * 0失败 1成功
+     */
+    @Column(name = "status")
+    private Integer status;
+
+    /**
      * 消息类型0普通消息 1推送消息
      */
     @Column(name = "message_type")
@@ -47,8 +54,8 @@ public class AppMessage implements Serializable {
     /**
      * 已读状态标记
      */
-    @Column(name = "read")
-    private Integer read;
+    @Column(name = "is_read")
+    private Integer isRead;
 
     /**
      * 是否已推送标记位
@@ -60,13 +67,13 @@ public class AppMessage implements Serializable {
      * 创建时间
      */
     @Column(name = "created_at")
-    private BigInteger createdAt;
+    private Long createdAt;
 
     /**
      * 更新时间
      */
     @Column(name = "updated_at")
-    private BigInteger updatedAt;
+    private Long updatedAt;
 
     /**
      * 推送目标用户id，位0则不区分用户，为系统推送
@@ -87,6 +94,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 消息id
+     *
      * @return id 消息id
      */
     public BigInteger getId() {
@@ -95,6 +103,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 消息id
+     *
      * @param id 消息id
      */
     public void setId(BigInteger id) {
@@ -103,6 +112,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 消息内容
+     *
      * @return message 消息内容
      */
     public String getMessage() {
@@ -111,6 +121,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 消息内容
+     *
      * @param message 消息内容
      */
     public void setMessage(String message) {
@@ -119,6 +130,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 消息关联内容id
+     *
      * @return content_id 消息关联内容id
      */
     public BigInteger getContentId() {
@@ -127,6 +139,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 消息关联内容id
+     *
      * @param contentId 消息关联内容id
      */
     public void setContentId(BigInteger contentId) {
@@ -135,6 +148,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 内容类型，用于页面跳转
+     *
      * @return content_type 内容类型，用于页面跳转
      */
     public String getContentType() {
@@ -143,6 +157,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 内容类型，用于页面跳转
+     *
      * @param contentType 内容类型，用于页面跳转
      */
     public void setContentType(String contentType) {
@@ -151,6 +166,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 消息类型0普通消息 1推送消息
+     *
      * @return message_type 消息类型0普通消息 1推送消息
      */
     public BigInteger getMessageType() {
@@ -159,6 +175,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 消息类型0普通消息 1推送消息
+     *
      * @param messageType 消息类型0普通消息 1推送消息
      */
     public void setMessageType(BigInteger messageType) {
@@ -166,23 +183,8 @@ public class AppMessage implements Serializable {
     }
 
     /**
-     * 已读状态标记
-     * @return read 已读状态标记
-     */
-    public Integer getRead() {
-        return read;
-    }
-
-    /**
-     * 已读状态标记
-     * @param read 已读状态标记
-     */
-    public void setRead(Integer read) {
-        this.read = read;
-    }
-
-    /**
      * 是否已推送标记位
+     *
      * @return send_flag 是否已推送标记位
      */
     public Integer getSendFlag() {
@@ -191,6 +193,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 是否已推送标记位
+     *
      * @param sendFlag 是否已推送标记位
      */
     public void setSendFlag(Integer sendFlag) {
@@ -198,39 +201,8 @@ public class AppMessage implements Serializable {
     }
 
     /**
-     * 创建时间
-     * @return created_at 创建时间
-     */
-    public BigInteger getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * 创建时间
-     * @param createdAt 创建时间
-     */
-    public void setCreatedAt(BigInteger createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    /**
-     * 更新时间
-     * @return updated_at 更新时间
-     */
-    public BigInteger getUpdatedAt() {
-        return updatedAt;
-    }
-
-    /**
-     * 更新时间
-     * @param updatedAt 更新时间
-     */
-    public void setUpdatedAt(BigInteger updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    /**
      * 推送目标用户id，位0则不区分用户，为系统推送
+     *
      * @return user_id 推送目标用户id，位0则不区分用户，为系统推送
      */
     public BigInteger getUserId() {
@@ -239,6 +211,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 推送目标用户id，位0则不区分用户，为系统推送
+     *
      * @param userId 推送目标用户id，位0则不区分用户，为系统推送
      */
     public void setUserId(BigInteger userId) {
@@ -247,6 +220,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 预约推送时间
+     *
      * @return push_time 预约推送时间
      */
     public BigInteger getPushTime() {
@@ -255,6 +229,7 @@ public class AppMessage implements Serializable {
 
     /**
      * 预约推送时间
+     *
      * @param pushTime 预约推送时间
      */
     public void setPushTime(BigInteger pushTime) {

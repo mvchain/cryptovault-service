@@ -66,7 +66,7 @@ public class AppProject implements Serializable {
      *
      */
     @Column(name = "updated_at")
-    private BigInteger updatedAt;
+    private Long updatedAt;
 
     /**
      * 是否展示
@@ -205,20 +205,6 @@ public class AppProject implements Serializable {
      */
     public void setCreatedAt(BigInteger createdAt) {
         this.createdAt = createdAt;
-    }
-
-    /**
-     * @return updated_at
-     */
-    public BigInteger getUpdatedAt() {
-        return updatedAt;
-    }
-
-    /**
-     * @param updatedAt
-     */
-    public void setUpdatedAt(BigInteger updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**

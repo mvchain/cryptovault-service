@@ -64,7 +64,7 @@ public interface ConsoleRemoteService {
     Result<Boolean> buy(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger id, @ModelAttribute ProjectBuyDTO dto);
 
     @GetMapping("commonToken")
-    Result<PageInfo<CommonToken>> all(@RequestParam("visiable") Integer visiable, @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize, @RequestParam("updatedStart") BigInteger timestamp);
+    Result<PageInfo<CommonToken>> all(@RequestParam("visiable") Integer visiable, @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize, @RequestParam("updatedStartAt") BigInteger timestamp);
 
     @GetMapping("commonTokenPrice")
     Result<PageInfo<CommonTokenPrice>> price();

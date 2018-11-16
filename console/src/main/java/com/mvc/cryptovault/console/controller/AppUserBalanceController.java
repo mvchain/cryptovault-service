@@ -28,7 +28,6 @@ public class AppUserBalanceController extends BaseController {
         return new Result<>(list);
     }
 
-
     @GetMapping("sum/{userId}")
     public Result<BigDecimal> getBalance(@PathVariable("userId") BigInteger userId) {
         //TODO 修改统计方式为缓存方式

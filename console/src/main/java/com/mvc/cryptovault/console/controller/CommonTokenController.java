@@ -33,7 +33,7 @@ public class CommonTokenController extends BaseController {
             stream = stream.filter(obj -> obj.getTokenName().equalsIgnoreCase(commonToken.getTokenName()));
         }
         if (null != pageDTO.getUpdatedStartAt()) {
-            stream = stream.filter(obj -> obj.getUpdatedAt().compareTo(commonToken.getUpdatedAt()) > 0);
+            stream = stream.filter(obj -> obj.getUpdatedAt().compareTo(pageDTO.getUpdatedStartAt()) > 0);
         }
         result = stream.collect(Collectors.toList());
         return new Result<>(new PageInfo<>(result));

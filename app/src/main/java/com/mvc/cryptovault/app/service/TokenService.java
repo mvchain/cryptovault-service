@@ -30,6 +30,7 @@ public class TokenService {
             vo.setTokenEnName(token.getTokenEnName());
             vo.setTokenId(token.getId());
             vo.setTokenName(token.getTokenName());
+            vo.setTimestamp(token.getUpdatedAt());
             result.add(vo);
         }
         return result;

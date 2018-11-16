@@ -44,16 +44,11 @@ public class BeanConfig {
     }
 
     @Bean
-    JwtHelper jwtHelper() {
+    public JPushClient jPushClient() {
         JwtHelper.serviceName = serviceName;
         JwtHelper.expire = expire;
         JwtHelper.refresh = refresh;
         JwtHelper.base64Secret = base64Secret;
-        return new JwtHelper();
-    }
-
-    @Bean
-    public JPushClient jPushClient() {
         JPushClient jpushClient = new JPushClient(MASTER_SECRET, APP_KEY, null, ClientConfig.getInstance());
         return jpushClient;
     }
