@@ -24,9 +24,12 @@ public class TransactionBuyDTO {
     @ApiModelProperty("挂单价格")
     private BigDecimal price;
 
-    @ApiModelProperty("订单id")
+    @ApiModelProperty("订单id，为空或0则为挂单交易")
     private BigInteger id;
 
     @ApiModelProperty("密码")
     private String password;
+
+    @ApiModelProperty("交易类型 1购买 2出售")
+    private Integer transactionType;
 }

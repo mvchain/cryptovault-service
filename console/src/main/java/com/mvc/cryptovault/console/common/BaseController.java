@@ -4,13 +4,11 @@ import com.mvc.cryptovault.console.service.*;
 import org.mapdb.HTreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author qiyichen
  * @create 2018/11/12 14:36
  */
-@RestController
 public class BaseController {
     @Autowired
     protected

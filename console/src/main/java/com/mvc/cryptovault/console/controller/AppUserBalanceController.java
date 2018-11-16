@@ -18,6 +18,7 @@ import java.util.List;
  * @author qiyichen
  * @create 2018/11/14 14:38
  */
+@RestController
 @RequestMapping("appUserBalance")
 public class AppUserBalanceController extends BaseController {
 

@@ -15,6 +15,7 @@ import java.util.List;
  * @author qiyichen
  * @create 2018/11/13 16:02
  */
+@RestController
 @RequestMapping("appMessage")
 public class AppMessageController extends BaseController {
 

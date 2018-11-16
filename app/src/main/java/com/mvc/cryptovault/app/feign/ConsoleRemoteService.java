@@ -1,0 +1,98 @@
+package com.mvc.cryptovault.app.feign;
+
+import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.*;
+import com.mvc.cryptovault.common.bean.dto.*;
+import com.mvc.cryptovault.common.bean.vo.*;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Primary;
+import org.springframework.web.bind.annotation.*;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.List;
+
+@FeignClient("console")
+public interface ConsoleRemoteService {
+
+    @GetMapping("appUserBalance/{userId}")
+    Result<List<TokenBalanceVO>> getAsset(@PathVariable("userId") BigInteger userId);
+
+    @GetMapping("appUserBalance/sum/{userId}")
+    Result<BigDecimal> getBalance(@PathVariable("userId") BigInteger userId);
+
+    @GetMapping("appOrder/user")
+    Result<List<TransactionSimpleVO>> getTransactions(@RequestParam("userId") BigInteger userId, @ModelAttribute TransactionSearchDTO transactionSearchDTO);
+
+    @GetMapping("appOrder/{id}")
+    Result<TransactionDetailVO> getTransaction(@RequestParam("userId") BigInteger userId, @PathVariable("id") BigInteger id);
+
+    @GetMapping("appUserAddress/{userId}")
+    Result<String> getAddress(@PathVariable("userId") BigInteger userId, @RequestParam("tokenId") BigInteger tokenId);
+
+    @GetMapping("appUserBalance/debit/{userId}")
+    Result<BigDecimal> debit(@PathVariable("userId") BigInteger userId);
+
+    @PostMapping("appUserBalance/debit/{userId}")
+    Result<Boolean> debit(@PathVariable("userId") BigInteger userId, @RequestBody DebitDTO debitDTO);
+
+    @GetMapping("commonToken/transactionInfo")
+    Result<TransactionTokenVO> getTransactionInfo(@RequestParam("userId") BigInteger userId, @RequestParam("tokenId") BigInteger tokenId);
+
+    @PostMapping("blockTransaction/{userId}")
+    Result<Boolean> sendTransaction(@PathVariable("userId") BigInteger userId, @RequestBody TransactionDTO transactionDTO);
+
+    @GetMapping("appMessage")
+    Result<PageInfo<AppMessage>> getlist(@RequestParam("userId") BigInteger userId, @RequestParam("timestamp") BigInteger timestamp, @RequestParam("type") Integer type, @RequestParam("pageSize") Integer pageSize);
+
+    @PutMapping("appMessage/{id}")
+    Result<Boolean> read(@RequestParam("userId") BigInteger userId, @PathVariable("id") BigInteger id);
+
+    @GetMapping("appProject")
+    Result<PageInfo<AppProject>> getProject(@ModelAttribute ProjectDTO projectDTO);
+
+    @GetMapping("appProject/{id}")
+    Result<AppProject> getProjectById(@PathVariable("id") BigInteger id);
+
+    @GetMapping("appProjectUserTransaction")
+    Result<PageInfo<PurchaseVO>> getReservation(@RequestParam("userId") BigInteger userId, @ModelAttribute ReservationDTO reservationDTO);
+
+    @GetMapping("appProjectUserTransaction/chaseInfo")
+    Result<ProjectBuyVO> getPurchaseInfo(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger id);
+
+    @PostMapping("appProjectUserTransaction/buy")
+    Result<Boolean> buy(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger id, @ModelAttribute ProjectBuyDTO dto);
+
+    @GetMapping("commonToken")
+    Result<PageInfo<CommonToken>> all(@RequestParam("visiable") Integer visiable, @RequestParam("pageNum") Integer pageNum, @RequestParam("pageSize") Integer pageSize, @RequestParam("updatedStart") BigInteger timestamp);
+
+    @GetMapping("commonTokenPrice")
+    Result<PageInfo<CommonTokenPrice>> price();
+
+    @GetMapping("commonPair")
+    Result<List<PairVO>> getPair(@RequestParam("pairType") Integer pairType);
+
+    @GetMapping("appUserTransaction")
+    Result<List<OrderVO>> getTransactions(@ModelAttribute OrderDTO dto);
+
+    @GetMapping("appKline")
+    Result<KLineVO> getTransactions(@RequestParam("pairId") BigInteger pairId);
+
+    @GetMapping("appUserTransaction/userId/{userId}")
+    Result<List<MyOrderVO>> getUserTransactions(@PathVariable("userId") BigInteger userId, @ModelAttribute MyTransactionDTO dto);
+
+    @PostMapping("appUserTransaction/userId/{userId}")
+    Result<Boolean> buy(@PathVariable("userId") BigInteger userId, @RequestBody TransactionBuyDTO dto);
+
+    @GetMapping("commonPair/userId/{userId}")
+    Result<OrderInfoVO> getInfo(@PathVariable("userId") BigInteger userId, @RequestParam("pairId") BigInteger pairId, @RequestParam("transactionType") Integer transactionType);
+
+    @PutMapping("appUserTransaction/userId/{userId}")
+    Result<Boolean> cancel(@PathVariable("userId") BigInteger userId, @RequestParam("id") BigInteger id);
+
+    @GetMapping("user/{id}")
+    Result<AppUser> getUserById(@PathVariable("id") BigInteger userId);
+
+    @GetMapping("user/username")
+    Result<AppUser> getUserByUsername(@RequestParam("username") String username);
+}

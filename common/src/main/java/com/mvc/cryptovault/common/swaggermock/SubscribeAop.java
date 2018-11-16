@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Aspect
-@Component
+//@Component
 @ConfigurationProperties(
         prefix = "swaggermock",
         ignoreUnknownFields = true

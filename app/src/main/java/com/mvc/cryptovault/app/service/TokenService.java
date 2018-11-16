@@ -1,9 +1,9 @@
 package com.mvc.cryptovault.app.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
 import com.mvc.cryptovault.common.bean.vo.TokenDetailVO;
 import com.mvc.cryptovault.common.bean.vo.TokenRatioVO;
-import com.mvc.cryptovault.app.feign.TokenRemoteService;
 import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.CommonTokenPrice;
 import com.mvc.cryptovault.common.bean.vo.Result;
@@ -18,7 +18,7 @@ import java.util.List;
 public class TokenService {
 
     @Autowired
-    TokenRemoteService tokenRemoteService;
+    ConsoleRemoteService tokenRemoteService;
 
     public List<TokenDetailVO> getTokens(BigInteger timestamp) {
         Result<PageInfo<CommonToken>> listData = tokenRemoteService.all(1, 0, 999, timestamp);

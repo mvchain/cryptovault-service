@@ -7,10 +7,7 @@ import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TransactionTokenVO;
 import com.mvc.cryptovault.console.common.BaseController;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -21,6 +18,7 @@ import java.util.stream.Stream;
  * @author qiyichen
  * @create 2018/11/13 11:44
  */
+@RestController
 @RequestMapping("commonToken")
 public class CommonTokenController extends BaseController {
 

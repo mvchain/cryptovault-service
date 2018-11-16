@@ -21,6 +21,7 @@ import java.util.List;
  * @author qiyichen
  * @create 2018/11/14 14:34
  */
+@RestController
 @RequestMapping("appUserTransaction")
 public class AppUserTransactionController extends BaseController {
 

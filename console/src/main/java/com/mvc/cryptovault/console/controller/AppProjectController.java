@@ -5,10 +5,7 @@ import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -19,6 +16,7 @@ import java.util.stream.Stream;
  * @author qiyichen
  * @create 2018/11/13 17:05
  */
+@RestController
 @RequestMapping("appProject")
 public class AppProjectController extends BaseController {
 

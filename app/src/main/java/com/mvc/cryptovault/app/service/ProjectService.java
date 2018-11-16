@@ -1,13 +1,13 @@
 package com.mvc.cryptovault.app.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
 import com.mvc.cryptovault.common.bean.dto.ProjectBuyDTO;
 import com.mvc.cryptovault.common.bean.dto.ProjectDTO;
 import com.mvc.cryptovault.common.bean.dto.ReservationDTO;
 import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
 import com.mvc.cryptovault.common.bean.vo.ProjectSimpleVO;
 import com.mvc.cryptovault.common.bean.vo.PurchaseVO;
-import com.mvc.cryptovault.app.feign.ProjectRemoteService;
 import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import org.springframework.beans.BeanUtils;
@@ -22,7 +22,7 @@ import java.util.List;
 public class ProjectService {
 
     @Autowired
-    ProjectRemoteService projectRemoteService;
+    ConsoleRemoteService projectRemoteService;
 
     public List<ProjectSimpleVO> getProject(ProjectDTO projectDTO) {
         Result<PageInfo<AppProject>> listData = projectRemoteService.getProject(projectDTO);

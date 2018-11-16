@@ -1,23 +1,25 @@
 package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
-import com.mvc.cryptovault.common.bean.AppUser;
-import com.mvc.cryptovault.common.bean.AppUserTransaction;
+import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.MyTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.OrderDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionBuyDTO;
 import com.mvc.cryptovault.common.bean.vo.MyOrderVO;
 import com.mvc.cryptovault.common.bean.vo.OrderVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
+import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,12 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     CommonPairService commonPairService;
     @Autowired
     AppUserService appUserService;
+    @Autowired
+    AppUserBalanceService appUserBalanceService;
+    @Autowired
+    CommonTokenPriceService commonTokenPriceService;
+    @Autowired
+    CommonTokenControlService commonTokenControlService;
 
     public List<OrderVO> getTransactions(OrderDTO dto) {
         Condition condition = new Condition(AppUserTransaction.class);
@@ -96,22 +104,79 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     //TODO 步骤较多,异步化
     public void buy(BigInteger userId, TransactionBuyDTO dto) {
+        CommonPair pair = commonPairService.findById(dto.getId());
+        CommonTokenPrice tokenPrice = commonTokenPriceService.findById(pair.getTokenId());
         //校验余额是否足够
-        checkBalance(userId, dto);
+        checkBalance(userId, dto, pair);
         //校验浮动范围是否正确
-        checkPrice(dto);
-        //校验可购买量是否足够
-        checkValue(dto);
-        if (null == dto.getId()) {
+        checkPrice(dto, pair, tokenPrice);
+        Long time = System.currentTimeMillis();
+        Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
+        AppUserTransaction transaction = new AppUserTransaction();
+        transaction.setUpdatedAt(time);
+        transaction.setCreatedAt(time);
+        transaction.setOrderNumber("P" + String.format("%09d", id));
+        transaction.setPairId(dto.getPairId());
+        transaction.setPrice(dto.getPrice());
+        transaction.setTransactionType(dto.getTransactionType());
+        transaction.setUserId(userId);
+        transaction.setValue(dto.getValue());
+        if (null == dto.getId() || dto.getId().equals(BigInteger.ZERO)) {
             //普通挂单
+            transaction.setStatus(0);
+            transaction.setParentId(BigInteger.ZERO);
+            transaction.setSuccessValue(BigDecimal.ZERO);
+            transaction.setTargetUserId(BigInteger.ZERO);
+            save(transaction);
         } else {
+            Long targetId = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
+            var targetTransaction = findById(dto.getId());
+            //校验可购买量是否足够
+            checkValue(dto, targetTransaction);
             //修改主单购买信息
-
+            targetTransaction.setSuccessValue(transaction.getSuccessValue().add(dto.getValue()));
+            targetTransaction.setUpdatedAt(time);
+            if (transaction.getSuccessValue().equals(transaction.getValue())) {
+                transaction.setStatus(1);
+            }
+            update(targetTransaction);
             //生成用户主动交易记录
-
+            transaction.setStatus(1);
+            transaction.setParentId(BigInteger.ZERO);
+            transaction.setSuccessValue(dto.getValue());
+            transaction.setTargetUserId(targetTransaction.getUserId());
+            save(transaction);
             //生成目标用户交易记录
-
+            var targetSubTransaction = new AppUserTransaction();
+            BeanUtils.copyProperties(transaction, targetSubTransaction);
+            targetSubTransaction.setId(null);
+            targetSubTransaction.setUserId(targetTransaction.getUserId());
+            targetSubTransaction.setTargetUserId(userId);
+            targetSubTransaction.setParentId(targetTransaction.getId());
+            targetSubTransaction.setOrderNumber("P" + String.format("%09d", targetId));
+            targetSubTransaction.setTransactionType(dto.getTransactionType().equals(1) ? 2 : 1);
+            save(targetSubTransaction);
         }
+    }
+
+    private void checkBalance(BigInteger userId, TransactionBuyDTO dto, CommonPair pair) {
+        CommonTokenPrice tokenPrice = commonTokenPriceService.findById(pair.getBaseTokenId());
+        BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId());
+        Assert.isTrue(dto.getValue().subtract(tokenPrice.getTokenPrice()).compareTo(balance)<=0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+    }
+
+    private void checkPrice(TransactionBuyDTO dto, CommonPair pair, CommonTokenPrice tokenPrice) {
+        CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
+        Float floatValue = dto.getValue().subtract(tokenPrice.getTokenPrice()).divide(dto.getValue()).floatValue();
+        if(dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)){
+            Assert.isTrue(tokenControl.getBuyMin()>=floatValue && tokenControl.getBuyMax()<=floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
+        } else {
+            Assert.isTrue(tokenControl.getSellMin()>=floatValue && tokenControl.getSellMax()<=floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
+        }
+    }
+
+    private void checkValue(TransactionBuyDTO dto, AppUserTransaction targetTransaction) {
+        Assert.isTrue(dto.getValue().add(targetTransaction.getSuccessValue()).compareTo(targetTransaction.getValue()) <= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
     }
 
     public void cancel(BigInteger userId, BigInteger id) {

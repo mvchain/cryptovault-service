@@ -19,6 +19,8 @@ spring:
   mvc:
     async:
       request-timeout: 10ms
+  application:
+    name: APP
 logging:
   level:
     org: info
@@ -30,13 +32,15 @@ server:
     max-connections: 5000
   connection-timeout: 1000ms
 
-
+service:
+  name: app
+  expire: 6048000
+  refresh: 604800000
+  base64Secret: MDk4ZjZ1iY2Q0NjIxZDM6M2hZGU0ZTgzMjYyN2I0ZjY=
 
 hystrix.command.default.execution:
   isolation.thread.timeoutInMilliseconds: 500
   timeout.enabled: true
 
-
-
-swaggermock.switchOn: true
-swaggermock.retry: 5000
+#swaggermock.switchOn: true
+#swaggermock.retry: 5000

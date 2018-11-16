@@ -1,0 +1,57 @@
+spring:
+  datasource:
+    name: test
+    url: jdbc:mysql://192.168.15.31:3306/vpay?useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC
+    username: root
+    password: 123456
+    # 使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    database: 1
+    host: 192.168.15.31
+    timeout: 1000ms
+    jedis:
+      pool:
+        max-idle: 8
+        max-active: 8
+        min-idle: 0
+  mvc:
+    async:
+      request-timeout: 10ms
+  application:
+    name: CONSOLE
+logging:
+  level:
+    org: info
+server:
+  port: 10085
+  tomcat:
+    max-threads: 5000
+    min-spare-threads: 1000
+    max-connections: 5000
+
+hystrix.command.default.execution:
+  isolation.thread.timeoutInMilliseconds: 500
+  timeout.enabled: true
+
+service:
+  name: console
+  expire: 6048000
+  refresh: 604800000
+  base64Secret: MDk4ZjZ1iY2Q0NjIxDM6M2NhZGU0ZTgzMjYyN2I0ZjY=
+
+mybatis:
+  basepackage: com.mvc.cryptovault.console.dao
+  type-aliases-package: tk.mybatis.springboot.model
+mapper:
+  mappers:
+  - com.mvc.cryptovault.console.common.MyMapper
+  not-empty: false
+  identity: MYSQL
+
+cors.allowedOrigin: '*'
+
+jpush:
+  secret: 25aa2d0fa6c0e771673d63e8
+  app_key: 66c12addf2b6efe3338d2177

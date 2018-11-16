@@ -1,11 +1,11 @@
 package com.mvc.cryptovault.app.service;
 
+import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
+import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.UserDTO;
+import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TokenVO;
 import com.mvc.cryptovault.common.bean.vo.UserSimpleVO;
-import com.mvc.cryptovault.app.feign.UserRemoteService;
-import com.mvc.cryptovault.common.bean.AppUser;
-import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.util.JwtHelper;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.common.util.TokenErrorException;
@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class UserService {
 
     @Autowired
-    UserRemoteService userRemoteService;
+    ConsoleRemoteService userRemoteService;
     @Autowired
     StringRedisTemplate redisTemplate;
 
@@ -62,6 +62,7 @@ public class UserService {
         redisTemplate.delete(redisKey);
         vo.setRefreshToken(refreshToken);
         vo.setToken(token);
+        vo.setUserId(user.getId());
         return vo;
     }
 }

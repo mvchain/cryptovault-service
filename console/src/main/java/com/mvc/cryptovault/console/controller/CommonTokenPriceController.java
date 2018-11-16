@@ -7,11 +7,13 @@ import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author qiyichen
  * @create 2018/11/13 15:34
  */
+@RestController
 @RequestMapping("commonTokenPrice")
 public class CommonTokenPriceController extends BaseController {
 

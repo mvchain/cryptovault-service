@@ -17,6 +17,7 @@ import java.util.List;
  * @author qiyichen
  * @create 2018/11/13 17:23
  */
+@RestController
 @RequestMapping("appProjectUserTransaction")
 public class AppProjectUserTransactionController extends BaseController {
 

@@ -1,6 +1,6 @@
 package com.mvc.cryptovault.app.service;
 
-import com.mvc.cryptovault.app.feign.TransactionRemoteService;
+import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
 import com.mvc.cryptovault.common.bean.dto.MyTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.OrderDTO;
 import com.mvc.cryptovault.common.bean.dto.PairDTO;
@@ -16,7 +16,7 @@ import java.util.List;
 public class TransactionService {
 
     @Autowired
-    TransactionRemoteService transactionRemoteService;
+    ConsoleRemoteService transactionRemoteService;
 
     public List<PairVO> getPair(BigInteger userId, PairDTO pairDTO) {
         Result<List<PairVO>> result = transactionRemoteService.getPair(pairDTO.getPairType());

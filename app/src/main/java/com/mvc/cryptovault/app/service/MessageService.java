@@ -1,8 +1,8 @@
 package com.mvc.cryptovault.app.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
 import com.mvc.cryptovault.common.bean.vo.MessageVO;
-import com.mvc.cryptovault.app.feign.MessageRemoteService;
 import com.mvc.cryptovault.common.bean.AppMessage;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +17,7 @@ import java.util.List;
 public class MessageService {
 
     @Autowired
-    MessageRemoteService messageRemoteService;
+    ConsoleRemoteService messageRemoteService;
 
     public List<MessageVO> getlist(BigInteger userId, BigInteger timestamp, Integer type, Integer pageSize) {
         Result<PageInfo<AppMessage>> listData = messageRemoteService.getlist(userId, timestamp, type, pageSize);

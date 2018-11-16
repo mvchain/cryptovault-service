@@ -14,6 +14,7 @@ import java.util.List;
  * @author qiyichen
  * @create 2018/11/14 14:39
  */
+@RestController
 @RequestMapping("appOrder")
 public class AppOrderController extends BaseController {
 

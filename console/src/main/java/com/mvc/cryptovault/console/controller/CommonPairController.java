@@ -4,10 +4,7 @@ import com.mvc.cryptovault.common.bean.vo.OrderInfoVO;
 import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -16,6 +13,7 @@ import java.util.List;
  * @author qiyichen
  * @create 2018/11/14 14:30
  */
+@RestController
 @RequestMapping("commonPair")
 public class CommonPairController extends BaseController {
 
