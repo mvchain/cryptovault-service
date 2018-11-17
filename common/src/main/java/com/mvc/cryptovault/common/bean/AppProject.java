@@ -3,6 +3,9 @@ package com.mvc.cryptovault.common.bean;
 import lombok.Data;
 
 import javax.persistence.Column;
+import lombok.Data;
+import lombok.Generated;
+
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -19,6 +22,7 @@ public class AppProject implements Serializable {
      * 项目id
      */
     @Id
+
     @Column(name = "id")
     private BigInteger id;
 

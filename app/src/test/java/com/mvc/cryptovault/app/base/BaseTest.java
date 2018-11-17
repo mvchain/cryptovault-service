@@ -35,6 +35,7 @@ public class BaseTest {
     @Autowired
     public WebApplicationContext wac;
     public MockMvc mockMvc;
+    //性能测试时开启
 //    @Rule
 //    public ContiPerfRule rule = new ContiPerfRule();
 

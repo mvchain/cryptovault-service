@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import javax.persistence.Column;
+import lombok.Data;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.Generated;
 
 /**
  * app_order
@@ -19,6 +21,7 @@ public class AppOrder implements Serializable {
      */
     @Id
     @Column(name = "id")
+
     private BigInteger id;
 
     /**

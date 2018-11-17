@@ -32,9 +32,9 @@ public class AppUserAddressService extends AbstractService<AppUserAddress> imple
             if (null == address) {
                 address = createAddress(userId, commonTokenService.findById(tokenId));
             }
-            redisTemplate.boundHashOps(key).put(userId, tokenId);
+            redisTemplate.boundHashOps(key).put(String.valueOf(tokenId), address.getAddress());
         }
-        String address = (String) redisTemplate.boundHashOps(key).get(tokenId);
+        String address = (String) redisTemplate.boundHashOps(key).get(String.valueOf(tokenId));
         return address;
     }
 
@@ -52,6 +52,7 @@ public class AppUserAddressService extends AbstractService<AppUserAddress> imple
         appUserAddress.setTokenId(token.getId());
         appUserAddress.setUserId(userId);
         appUserAddress.setAddress(address);
+        save(appUserAddress);
         return appUserAddress;
     }
 }

@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import javax.persistence.Column;
+import lombok.Data;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.Generated;
 
 /**
  * app_user_balance
@@ -18,6 +20,7 @@ public class AppUserBalance implements Serializable {
      * 用户id
      */
     @Id
+
     @Column(name = "user_id")
     private BigInteger userId;
 

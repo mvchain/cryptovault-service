@@ -3,9 +3,11 @@ package com.mvc.cryptovault.common.bean;
 import java.io.Serializable;
 import java.math.BigInteger;
 import javax.persistence.Column;
+import lombok.Data;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.Generated;
 
 /**
  * common_token_control
@@ -17,6 +19,7 @@ public class CommonTokenControl implements Serializable {
      * 令牌id
      */
     @Id
+
     @Column(name = "token_id")
     private BigInteger tokenId;
 

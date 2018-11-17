@@ -80,10 +80,10 @@ public class AssetController extends BaseController {
         return new Result<>(assetService.debit(getUserId(), debitDTO));
     }
 
-    @ApiOperation("传入币种缩写获取转账信息，不区分大小写")
+    @ApiOperation("传入币种id取转账所需信息，不区分大小写")
     @GetMapping("transaction")
     @SwaggerMock("${asset.transactionInfo}")
-    public Result<TransactionTokenVO> getTransactionInfo(@PathVariable BigInteger tokenId) {
+    public Result<TransactionTokenVO> getTransactionInfo(@RequestParam BigInteger tokenId) {
         return new Result<>(assetService.getTransactionInfo(getUserId(), tokenId));
     }
 

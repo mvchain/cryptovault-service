@@ -45,7 +45,7 @@ public class CommonTokenController extends BaseController {
         TransactionTokenVO vo = new TransactionTokenVO();
         vo.setBalance(appUserBalanceService.getBalanceByTokenId(userId, tokenId));
         vo.setFee(token.getTransaferFee());
-        vo.setFeeTokenName(token.getTokenType());
+        vo.setFeeTokenName(token.getTokenName());
         return new Result<>(vo);
     }
 

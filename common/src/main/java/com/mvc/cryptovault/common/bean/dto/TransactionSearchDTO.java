@@ -23,6 +23,6 @@ public class TransactionSearchDTO {
     private Integer pageSize = 10;
 
     @ApiModelProperty("0上拉 1下拉")
-    private BigInteger type;
+    private Integer type;
 }
 

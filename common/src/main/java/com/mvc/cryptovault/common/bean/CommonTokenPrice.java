@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import javax.persistence.Column;
+import lombok.Data;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.Generated;
 
 /**
  * common_token_price
@@ -18,6 +20,7 @@ public class CommonTokenPrice implements Serializable {
      * 令牌id
      */
     @Id
+
     @Column(name = "token_id")
     private BigInteger tokenId;
     /**

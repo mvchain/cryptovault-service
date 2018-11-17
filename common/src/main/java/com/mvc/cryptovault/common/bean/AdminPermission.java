@@ -3,9 +3,11 @@ package com.mvc.cryptovault.common.bean;
 import java.io.Serializable;
 import java.math.BigInteger;
 import javax.persistence.Column;
+import lombok.Data;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.Generated;
 
 /**
  * admin_permission
@@ -18,6 +20,7 @@ public class AdminPermission implements Serializable {
      */
     @Id
     @Column(name = "id")
+
     private BigInteger id;
 
     /**

@@ -58,13 +58,13 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         //TODO 暂时从数据库查询,后续优化
         Condition condition = new Condition(AppOrder.class);
         Example.Criteria criteria = condition.createCriteria();
-        ConditionUtil.andCondition(criteria, "user_id", userId);
-        ConditionUtil.andCondition(criteria, "order_type", transactionSearchDTO.getTransactionType());
+        ConditionUtil.andCondition(criteria, "user_id = ", userId);
+        ConditionUtil.andCondition(criteria, "order_type = ", transactionSearchDTO.getTransactionType());
         PageHelper.startPage(1, transactionSearchDTO.getPageSize());
         PageHelper.orderBy("id desc");
-        if (BusinessConstant.SEARCH_DIRECTION_UP.equals(transactionSearchDTO.getType()) && null != transactionSearchDTO.getId()) {
+        if (BusinessConstant.SEARCH_DIRECTION_UP.equals(transactionSearchDTO.getType()) && (null != transactionSearchDTO.getId()) && !transactionSearchDTO.getId().equals(BigInteger.ZERO)) {
             ConditionUtil.andCondition(criteria, "id > ", transactionSearchDTO.getId());
-        } else if (BusinessConstant.SEARCH_DIRECTION_DOWN.equals(transactionSearchDTO.getType())) {
+        } else if (BusinessConstant.SEARCH_DIRECTION_DOWN.equals(transactionSearchDTO.getType()) && (null != transactionSearchDTO.getId()) && !transactionSearchDTO.getId().equals(BigInteger.ZERO)) {
             ConditionUtil.andCondition(criteria, "id <", transactionSearchDTO.getId());
         }
         List<AppOrder> list = findByCondition(condition);
@@ -77,6 +77,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
             vo.setTokenName(token.getTokenName());
             vo.setRatio(price.getTokenPrice());
             vo.setTransactionType(obj.getOrderType());
+            result.add(vo);
         });
         return result;
     }

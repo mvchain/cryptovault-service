@@ -22,7 +22,12 @@ public interface ConsoleRemoteService {
     Result<BigDecimal> getBalance(@PathVariable("userId") BigInteger userId);
 
     @GetMapping("appOrder/user")
-    Result<List<TransactionSimpleVO>> getTransactions(@RequestParam("userId") BigInteger userId, @ModelAttribute TransactionSearchDTO transactionSearchDTO);
+    Result<List<TransactionSimpleVO>> getTransactions(
+            @RequestParam("userId") BigInteger userId,
+            @RequestParam("transactionType") Integer transactionType,
+            @RequestParam("id") BigInteger id,
+            @RequestParam("type") Integer type,
+            @RequestParam("pageSize") Integer pageSize);
 
     @GetMapping("appOrder/{id}")
     Result<TransactionDetailVO> getTransaction(@RequestParam("userId") BigInteger userId, @PathVariable("id") BigInteger id);

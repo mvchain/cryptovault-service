@@ -70,13 +70,13 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         appUserBalance.setTokenId(baseTokenId);
         appUserBalance.setUserId(userId);
         AppUserBalance userBalance = appUserBalanceMapper.selectOne(appUserBalance);
-        redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), String.valueOf(userBalance));
+        redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), String.valueOf(userBalance.getBalance()));
     }
 
     public List<TokenBalanceVO> getAsset(BigInteger userId) {
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
         if (!redisTemplate.hasKey(key)) {
-            List<AppUserBalance> list = findBy("user_id", userId);
+            List<AppUserBalance> list = findBy("userId", userId);
             if (null == list) {
                 redisTemplate.boundHashOps(key).put("1", "0");
             } else {
@@ -99,12 +99,11 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
 
     public void debit(BigInteger userId, BigDecimal value) {
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
+        appUserBalanceMapper.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE, value);
         AppUserBalance balance = new AppUserBalance();
         balance.setUserId(userId);
         balance.setTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
         balance = findOneByEntity(balance);
-        balance.setBalance(balance.getBalance().add(value));
-        update(balance);
         redisTemplate.boundHashOps(key).put(String.valueOf(balance.getTokenId()), String.valueOf(balance.getBalance()));
     }
 }

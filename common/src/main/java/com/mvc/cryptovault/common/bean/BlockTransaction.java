@@ -4,9 +4,13 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import javax.persistence.Column;
+import lombok.Data;
+
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Data;
+import lombok.Generated;
 
 /**
  * block_transaction
@@ -104,6 +108,12 @@ public class BlockTransaction implements Serializable {
      */
     @Column(name = "to_address")
     private String toAddress;
+
+    /**
+     * 对外订单id
+     */
+    @Column(name = "order_number")
+    private String orderNumber;
 
     /**
      * block_transaction

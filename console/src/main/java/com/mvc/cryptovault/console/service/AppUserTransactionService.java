@@ -111,10 +111,10 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         //校验浮动范围是否正确
         checkPrice(dto, pair, tokenPrice);
         Long time = System.currentTimeMillis();
-        Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
         AppUserTransaction transaction = new AppUserTransaction();
         transaction.setUpdatedAt(time);
         transaction.setCreatedAt(time);
+        Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
         transaction.setOrderNumber("P" + String.format("%09d", id));
         transaction.setPairId(dto.getPairId());
         transaction.setPrice(dto.getPrice());

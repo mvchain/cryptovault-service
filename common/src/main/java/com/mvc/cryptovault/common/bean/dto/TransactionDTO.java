@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * @author qiyichen
@@ -25,8 +26,8 @@ public class TransactionDTO {
 
     @ApiModelProperty("交易密码")
     @NotNull(message = "{PASSWORD_NULL}")
-    private BigDecimal password;
+    private String password;
 
-    @ApiModelProperty("币种缩写")
-    private String tokenName;
+    @ApiModelProperty("币种id")
+    private BigInteger tokenId;
 }
