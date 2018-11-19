@@ -51,6 +51,10 @@ mapper:
   identity: MYSQL
 
 cors.allowedOrigin: '*'
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8762/eureka/
 
 jpush:
   secret: 25aa2d0fa6c0e771673d63e8
