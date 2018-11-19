@@ -20,6 +20,7 @@
         <module>token</module>
         <module>order</module>
         <module>console</module>
+        <module>eureka</module>
     </modules>
 
     <parent>
