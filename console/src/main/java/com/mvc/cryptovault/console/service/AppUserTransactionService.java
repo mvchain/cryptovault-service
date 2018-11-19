@@ -45,10 +45,10 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     public List<OrderVO> getTransactions(OrderDTO dto) {
         Condition condition = new Condition(AppUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
-        ConditionUtil.andCondition(criteria, "parent_id", 0);
-        ConditionUtil.andCondition(criteria, "status", 0);
-        ConditionUtil.andCondition(criteria, "transaction_type", dto.getTransactionType());
-        ConditionUtil.andCondition(criteria, "pair_id", dto.getPairId());
+        ConditionUtil.andCondition(criteria, "parent_id = ", 0);
+        ConditionUtil.andCondition(criteria, "status = ", 0);
+        ConditionUtil.andCondition(criteria, "transaction_type = ", dto.getTransactionType());
+        ConditionUtil.andCondition(criteria, "pair_id =", dto.getPairId());
         PageHelper.startPage(1, dto.getPageSize());
         if (1 == dto.getTransactionType()) {
             PageHelper.orderBy("price asc,id desc");
@@ -78,10 +78,10 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     public List<MyOrderVO> getUserTransactions(BigInteger userId, MyTransactionDTO dto) {
         Condition condition = new Condition(AppUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
-        ConditionUtil.andCondition(criteria, "pair_id", dto.getPairId());
-        ConditionUtil.andCondition(criteria, "status", dto.getStatus());
-        ConditionUtil.andCondition(criteria, "transaction_type", dto.getTransactionType());
-        ConditionUtil.andCondition(criteria, "user_id", userId);
+        ConditionUtil.andCondition(criteria, "pair_id = ", dto.getPairId());
+        ConditionUtil.andCondition(criteria, "status = ", dto.getStatus());
+        ConditionUtil.andCondition(criteria, "transaction_type = ", dto.getTransactionType());
+        ConditionUtil.andCondition(criteria, "user_id = ", userId);
         PageHelper.startPage(1, dto.getPageSize());
         PageHelper.orderBy("id desc");
         if (dto.getType() == 0 && null != dto.getId()) {
@@ -96,7 +96,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             AppUser user = appUserService.findById(obj.getTargetUserId());
             BeanUtils.copyProperties(obj, vo);
             vo.setDeal(obj.getValue());
-            vo.setNickname(user.getNickname());
+            vo.setNickname(null == user ? "" : user.getNickname());
             result.add(vo);
         });
         return result;
@@ -104,7 +104,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     //TODO 步骤较多,异步化
     public void buy(BigInteger userId, TransactionBuyDTO dto) {
-        CommonPair pair = commonPairService.findById(dto.getId());
+        CommonPair pair = commonPairService.findById(dto.getPairId());
         CommonTokenPrice tokenPrice = commonTokenPriceService.findById(pair.getTokenId());
         //校验余额是否足够
         checkBalance(userId, dto, pair);
@@ -121,6 +121,13 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         transaction.setTransactionType(dto.getTransactionType());
         transaction.setUserId(userId);
         transaction.setValue(dto.getValue());
+        if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
+            //购买挂单时扣除基础货币价格*购买数量
+            appUserBalanceService.updateBalance(userId, pair.getBaseTokenId(), BigDecimal.ZERO.subtract(dto.getValue().multiply(dto.getPrice())));
+        } else {
+            //出售时扣除目标货币数量
+            appUserBalanceService.updateBalance(userId, pair.getTokenId(), BigDecimal.ZERO.subtract(dto.getValue()));
+        }
         if (null == dto.getId() || dto.getId().equals(BigInteger.ZERO)) {
             //普通挂单
             transaction.setStatus(0);
@@ -156,22 +163,32 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             targetSubTransaction.setOrderNumber("P" + String.format("%09d", targetId));
             targetSubTransaction.setTransactionType(dto.getTransactionType().equals(1) ? 2 : 1);
             save(targetSubTransaction);
+            //成交后根据买卖分类更新对应余额
+            if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
+                //购买成功时添加币种余额
+                appUserBalanceService.updateBalance(userId, pair.getTokenId(), dto.getValue());
+                appUserBalanceService.updateBalance(targetTransaction.getUserId(), pair.getBaseTokenId(), dto.getValue().multiply(dto.getPrice()));
+            } else {
+                //出售时添加基础货币余额
+                appUserBalanceService.updateBalance(userId, pair.getBaseTokenId(), dto.getValue().multiply(dto.getPrice()));
+                appUserBalanceService.updateBalance(targetTransaction.getUserId(), pair.getBaseTokenId(), dto.getValue());
+            }
         }
     }
 
     private void checkBalance(BigInteger userId, TransactionBuyDTO dto, CommonPair pair) {
         CommonTokenPrice tokenPrice = commonTokenPriceService.findById(pair.getBaseTokenId());
         BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId());
-        Assert.isTrue(dto.getValue().subtract(tokenPrice.getTokenPrice()).compareTo(balance)<=0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+        Assert.isTrue(dto.getValue().subtract(tokenPrice.getTokenPrice()).compareTo(balance) <= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
     }
 
     private void checkPrice(TransactionBuyDTO dto, CommonPair pair, CommonTokenPrice tokenPrice) {
         CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
-        Float floatValue = dto.getValue().subtract(tokenPrice.getTokenPrice()).divide(dto.getValue()).floatValue();
-        if(dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)){
-            Assert.isTrue(tokenControl.getBuyMin()>=floatValue && tokenControl.getBuyMax()<=floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
+        Float floatValue = dto.getPrice().subtract(tokenPrice.getTokenPrice()).divide(dto.getValue()).floatValue();
+        if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
+            Assert.isTrue(tokenControl.getBuyMin() <= floatValue && tokenControl.getBuyMax() >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
         } else {
-            Assert.isTrue(tokenControl.getSellMin()>=floatValue && tokenControl.getSellMax()<=floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
+            Assert.isTrue(tokenControl.getSellMin() <= floatValue && tokenControl.getSellMax() >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
         }
     }
 
@@ -181,9 +198,23 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     public void cancel(BigInteger userId, BigInteger id) {
         AppUserTransaction trans = findById(id);
+        if(trans.getStatus().equals(BusinessConstant.STATUS_CANCEL)){
+            return;
+        }
+         trans = findById(id);
         trans.setStatus(BusinessConstant.STATUS_CANCEL);
         trans.setUpdatedAt(System.currentTimeMillis());
         update(trans);
+        trans = findById(id);
+        CommonPair pair = commonPairService.findById(trans.getPairId());
+        //还原未购买的余额
+        if (trans.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
+            //购买
+            appUserBalanceService.updateBalance(userId, pair.getBaseTokenId(), (trans.getValue().subtract(trans.getSuccessValue())).multiply(trans.getPrice()));
+        } else {
+            //出售
+            appUserBalanceService.updateBalance(userId, pair.getTokenId(), trans.getValue().subtract(trans.getSuccessValue()));
+        }
     }
 
 }

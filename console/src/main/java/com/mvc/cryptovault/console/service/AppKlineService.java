@@ -22,7 +22,7 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
     public KLineVO getKLine(BigInteger pairId) {
         String key = "AppKline".toUpperCase() + "_" + pairId;
         List<String> list = redisTemplate.boundListOps(key).range(0, 999);
-        if (null == list) {
+        if (null == list || list.size() == 0) {
             list = resetKline(pairId);
         }
         Long[] x = new Long[list.size()];

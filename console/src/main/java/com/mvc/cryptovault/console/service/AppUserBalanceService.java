@@ -16,9 +16,7 @@ import org.springframework.util.NumberUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class AppUserBalanceService extends AbstractService<AppUserBalance> implements BaseService<AppUserBalance> {
@@ -31,6 +29,14 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
     CommonTokenService commonTokenService;
     @Autowired
     CommonTokenPriceService commonTokenPriceService;
+
+    private Comparator comparator = new Comparator<TokenBalanceVO>() {
+
+        @Override
+        public int compare(TokenBalanceVO o1, TokenBalanceVO o2) {
+            return o1.getTokenId().compareTo(o2.getTokenId());
+        }
+    };
 
     public ProjectBuyVO getBalance(BigInteger userId, AppProject appProject) {
         ProjectBuyVO vo = new ProjectBuyVO();
@@ -94,6 +100,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             vo.setTokenName(tokenPrice.getTokenName());
             result.add(vo);
         }
+        Collections.sort(result, comparator);
         return result;
     }
 

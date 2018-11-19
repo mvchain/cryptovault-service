@@ -69,7 +69,7 @@ public class AppProjectUserTransaction implements Serializable {
     /**
      * 排序位置
      */
-    @Column(name = "index")
+    @Column(name = "`index`")
     private Integer index;
 
     /**

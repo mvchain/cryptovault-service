@@ -25,7 +25,7 @@ import java.util.List;
 @RequestMapping("transaction")
 public class TransactionController extends BaseController {
 
-    @ApiOperation("获取交易对,传入时间戳,很少变动,本地必须缓存")
+    @ApiOperation("获取交易对,很少变动,本地必须缓存")
     @GetMapping("pair")
     @SwaggerMock("${transaction.pair}")
     public Result<List<PairVO>> getPair(@ModelAttribute @Valid PairDTO pairDTO) {
@@ -56,7 +56,7 @@ public class TransactionController extends BaseController {
     @ApiOperation("发起挂单")
     @PostMapping("")
     @SwaggerMock("${transaction.buy}")
-    public Result<Boolean> buy(TransactionBuyDTO dto) {
+    public Result<Boolean> buy(@RequestBody TransactionBuyDTO dto) {
         return new Result<>(transactionService.buy(getUserId(), dto));
     }
 

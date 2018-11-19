@@ -24,7 +24,7 @@ public class AppUserAddressService extends AbstractService<AppUserAddress> imple
 
     public String getAddress(BigInteger userId, BigInteger tokenId) {
         String key = "AppUserAddress".toUpperCase() + "_" + userId;
-        if (redisTemplate.boundHashOps(key).size() == 0 || null == redisTemplate.boundHashOps(key).get(tokenId)) {
+        if (redisTemplate.boundHashOps(key).size() == 0 || null == redisTemplate.boundHashOps(key).get(String.valueOf(tokenId))) {
             AppUserAddress condition = new AppUserAddress();
             condition.setUserId(userId);
             condition.setTokenId(tokenId);

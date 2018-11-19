@@ -10,7 +10,7 @@ import java.math.BigInteger;
 
 public interface CommonTokenHistoryMapper extends MyMapper<CommonTokenHistory> {
 
-    @Select("select price from common_token_history where token_id = #{tokenId} and created_at < #{createdAt} order by id asclimit 1")
+    @Select("select price from common_token_history where token_id = #{tokenId} and created_at < #{createdAt} order by id asc limit 1")
     BigDecimal get24HBefore(@Param("tokenId") BigInteger tokenId,@Param("createdAt") Long currentTimeMillis);
 
     @Select("select price from common_token_history where token_id = #{tokenId} order by id asc limit 1")

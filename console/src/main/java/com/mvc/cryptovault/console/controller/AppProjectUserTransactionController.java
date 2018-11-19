@@ -28,8 +28,8 @@ public class AppProjectUserTransactionController extends BaseController {
     }
 
     @GetMapping("chaseInfo")
-    Result<ProjectBuyVO> getPurchaseInfo(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger id) {
-        AppProject project = appProjectService.findById(id);
+    Result<ProjectBuyVO> getPurchaseInfo(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger projectId) {
+        AppProject project = appProjectService.findById(projectId);
         ProjectBuyVO vo = appUserBalanceService.getBalance(userId, project);
         return new Result<>(vo);
     }
@@ -43,7 +43,7 @@ public class AppProjectUserTransactionController extends BaseController {
      * @return
      */
     @PostMapping("buy")
-    Result<Boolean> buy(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger projectId, @ModelAttribute ProjectBuyDTO dto) {
+    Result<Boolean> buy(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger projectId, @RequestBody ProjectBuyDTO dto) {
         Boolean result = appProjectUserTransactionService.buy(userId, projectId, dto);
         return new Result<>(result);
     }

@@ -29,4 +29,6 @@ public class OrderInfoVO {
     @ApiModelProperty("浮动最大值,单位百分比")
     private Float max;
 
+    @ApiModelProperty("剩余可购买数量(仅对指定挂单进行购买时,展示为该笔订单还剩多少未成交额)")
+    private BigDecimal value;
 }

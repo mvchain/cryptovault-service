@@ -25,7 +25,7 @@ public class ProjectService {
     ConsoleRemoteService projectRemoteService;
 
     public List<ProjectSimpleVO> getProject(ProjectDTO projectDTO) {
-        Result<PageInfo<AppProject>> listData = projectRemoteService.getProject(projectDTO);
+        Result<PageInfo<AppProject>> listData = projectRemoteService.getProject(projectDTO.getProjectType(), projectDTO.getProjectId(), projectDTO.getType(), projectDTO.getPageSize());
         List<ProjectSimpleVO> result = new ArrayList<>(listData.getData().getList().size());
         for (AppProject appProject : listData.getData().getList()) {
             ProjectSimpleVO vo = new ProjectSimpleVO();

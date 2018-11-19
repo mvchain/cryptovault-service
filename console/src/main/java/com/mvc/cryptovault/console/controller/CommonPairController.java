@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.console.controller;
 
+import com.mvc.cryptovault.common.bean.dto.PairDTO;
 import com.mvc.cryptovault.common.bean.vo.OrderInfoVO;
 import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
@@ -18,8 +19,8 @@ import java.util.List;
 public class CommonPairController extends BaseController {
 
     @GetMapping("")
-    public Result<List<PairVO>> getPair(@RequestParam("pairType") Integer pairType) {
-        List<PairVO> list = commonTokenService.getPair(pairType);
+    public Result<List<PairVO>> getPair(PairDTO pairDTO) {
+        List<PairVO> list = commonTokenService.getPair(pairDTO);
         return new Result<>(list);
     }
 
@@ -30,8 +31,8 @@ public class CommonPairController extends BaseController {
      * @return
      */
     @GetMapping("userId/{userId}")
-    Result<OrderInfoVO> getInfo(@PathVariable("userId") BigInteger userId, @RequestParam("pairId") BigInteger pairId, @RequestParam Integer transactionType) {
-        OrderInfoVO vo = commonTokenService.getInfo(userId, pairId, transactionType);
+    Result<OrderInfoVO> getInfo(@PathVariable("userId") BigInteger userId, @RequestParam("pairId") BigInteger pairId, @RequestParam Integer transactionType, @RequestParam(required = false) BigInteger id) {
+        OrderInfoVO vo = commonTokenService.getInfo(userId, pairId, transactionType, id);
         return new Result<>(vo);
     }
 

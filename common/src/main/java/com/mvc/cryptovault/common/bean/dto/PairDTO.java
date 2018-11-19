@@ -14,5 +14,4 @@ public class PairDTO {
 
     @ApiModelProperty("1 VRT交易 2余额交易,不传为所有")
     private Integer pairType;
-
 }

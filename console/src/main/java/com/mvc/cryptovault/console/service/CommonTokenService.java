@@ -1,9 +1,7 @@
 package com.mvc.cryptovault.console.service;
 
-import com.mvc.cryptovault.common.bean.CommonPair;
-import com.mvc.cryptovault.common.bean.CommonToken;
-import com.mvc.cryptovault.common.bean.CommonTokenControl;
-import com.mvc.cryptovault.common.bean.CommonTokenPrice;
+import com.mvc.cryptovault.common.bean.*;
+import com.mvc.cryptovault.common.bean.dto.PairDTO;
 import com.mvc.cryptovault.common.bean.vo.OrderInfoVO;
 import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.console.common.AbstractService;
@@ -21,6 +19,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CommonTokenService extends AbstractService<CommonToken> implements BaseService<CommonToken> {
@@ -37,12 +36,15 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
     CommonTokenControlService commonTokenControlService;
     @Autowired
     AppUserBalanceService appUserBalanceService;
+    @Autowired
+    AppUserTransactionService appUserTransactionService;
 
-    public List<PairVO> getPair(Integer pairType) {
+    public List<PairVO> getPair(PairDTO pairDTO) {
         List<PairVO> result = new ArrayList<>();
-        CommonPair pair = new CommonPair();
-        pair.setBaseTokenId(BigInteger.valueOf(pairType));
-        List<CommonPair> list = commonPairService.findByEntity(pair);
+        List<CommonPair> list = commonPairService.findAll();
+        if (null != pairDTO.getPairType()) {
+            list = list.stream().filter(obj -> obj.getBaseTokenId().equals(BigInteger.valueOf(pairDTO.getPairType()))).collect(Collectors.toList());
+        }
         list.forEach(obj -> {
             CommonToken token = findById(obj.getTokenId());
             CommonTokenPrice price = commonTokenPriceService.findById(obj.getTokenId());
@@ -53,7 +55,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             vo.setTokenName(token.getTokenName());
             vo.setRatio(price.getTokenPrice());
             vo.setTokenId(token.getId());
-            vo.setPairId(pair.getId());
+            vo.setPairId(obj.getId());
             if (null == lastValue) {
                 vo.setIncrease(vo.getRatio().floatValue());
             } else {
@@ -88,7 +90,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         return price;
     }
 
-    public OrderInfoVO getInfo(BigInteger userId, BigInteger pairId, Integer transactionType) {
+    public OrderInfoVO getInfo(BigInteger userId, BigInteger pairId, Integer transactionType, BigInteger id) {
         OrderInfoVO vo = new OrderInfoVO();
         CommonPair pair = commonPairService.findById(pairId);
         CommonTokenPrice price = commonTokenPriceService.findById(pair.getTokenId());
@@ -96,6 +98,12 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         vo.setBalance(appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId()));
         vo.setTokenBalance(appUserBalanceService.getBalanceByTokenId(userId, pair.getTokenId()));
         vo.setPrice(price.getTokenPrice());
+        if(null != id && !BigInteger.ZERO.equals(id)){
+            AppUserTransaction trans = appUserTransactionService.findById(id);
+            vo.setValue(trans.getValue().subtract(trans.getSuccessValue()));
+        } else {
+            vo.setValue(BigDecimal.ZERO);
+        }
         if (transactionType.equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
             vo.setMin(tokenControl.getBuyMin());
             vo.setMax(tokenControl.getBuyMax());

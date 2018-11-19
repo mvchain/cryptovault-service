@@ -19,7 +19,7 @@ public class TransactionService {
     ConsoleRemoteService transactionRemoteService;
 
     public List<PairVO> getPair(BigInteger userId, PairDTO pairDTO) {
-        Result<List<PairVO>> result = transactionRemoteService.getPair(pairDTO.getPairType());
+        Result<List<PairVO>> result = transactionRemoteService.getPair(pairDTO);
         return result.getData();
     }
 

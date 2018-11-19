@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.console.controller;
 
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.vo.Result;
@@ -21,8 +22,9 @@ import java.util.stream.Stream;
 public class AppProjectController extends BaseController {
 
     @GetMapping()
-    Result<PageInfo<AppProject>> getProject(@RequestParam Integer projectType, @RequestParam BigInteger id, @RequestParam Integer type) {
+    Result<PageInfo<AppProject>> getProject(@RequestParam Integer projectType, @RequestParam BigInteger id, @RequestParam Integer type, @RequestParam Integer pageSize) {
         final BigInteger projectId = id == null ? BigInteger.ZERO : id;
+        PageHelper.orderBy("id desc");
         List<AppProject> list = appProjectService.findAll();
         Stream<AppProject> stream = list.stream();
         if (null != type && type.equals(BusinessConstant.SEARCH_DIRECTION_UP)) {
@@ -33,7 +35,7 @@ public class AppProjectController extends BaseController {
         if (null != projectType) {
             stream = stream.filter(obj -> obj.getStatus().equals(projectType));
         }
-        list = stream.collect(Collectors.toList());
+        list = stream.limit(pageSize).collect(Collectors.toList());
         return new Result<>(new PageInfo<>(list));
     }
 
