@@ -1,11 +1,11 @@
-package com.mvc.cryptovault.app.config;
+package com.mvc.cryptovault.dashboard.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+@Configuration
 public class SpringContextUtil implements BeanFactoryAware {
     private static BeanFactory beanFactory;
 

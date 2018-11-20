@@ -1,4 +1,4 @@
-package com.mvc.cryptovault.app.config;
+package com.mvc.cryptovault.dashboard.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +34,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("swagger-ui.html")
-                .addResourceLocations("classpath:/META-INF/resources/");
+                .addResourceLocations("classpath:/META-INF/resources/").setCachePeriod(0);
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
         super.addResourceHandlers(registry);
@@ -53,7 +53,8 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 "/v2/api-docs",
                 "/swagger-resources/**",
                 "/cache/**",
-                "/api/log/save"
+                "/api/log/save",
+                "/swagger-ui.html"
         };
         addInterceptor.excludePathPatterns(urls);
     }
@@ -63,7 +64,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.mvc.cryptovault.app"))
+                .apis(RequestHandlerSelectors.basePackage("com.mvc.cryptovault.dashboard"))
                 .paths(PathSelectors.any())
                 .build();
     }

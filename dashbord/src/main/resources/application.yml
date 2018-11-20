@@ -14,29 +14,29 @@ spring:
       additional-paths: src/main/java
   thymeleaf:
     cache: false
-  profiles:
-    include: "mockjson"
   mvc:
     async:
       request-timeout: 10ms
   application:
-    name: APP
+    name: DASHBOARD
 logging:
   level:
     org: info
 server:
-  port: 10086
+  port: 10083
   tomcat:
     max-threads: 5000
     min-spare-threads: 1000
     max-connections: 5000
   connection-timeout: 1000ms
 
+cors.allowedOrigin: '*'
+
 service:
   name: app
   expire: 6048000
   refresh: 604800000
-  base64Secret: MDk4ZjZ1iY2Q0NjIxZDM6M2hZGU0ZTgzMjYyN2I0ZjY=
+  base64Secret: LDk4ZjZ1iY2Q0NjIxZDM6M2hZGU0ZTgzMjYyN2I0ZjY=
 
 hystrix.command.default.execution:
   isolation.thread.timeoutInMilliseconds: 500
