@@ -22,6 +22,8 @@ spring:
 logging:
   level:
     org: info
+    io.swagger.models.parameters.AbstractSerializableParameter: error
+
 server:
   port: 10083
   tomcat:

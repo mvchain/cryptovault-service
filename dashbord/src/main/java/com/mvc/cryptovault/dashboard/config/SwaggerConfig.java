@@ -36,7 +36,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         registry.addResourceHandler("swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/").setCachePeriod(0);
         registry.addResourceHandler("/webjars/**")
-                .addResourceLocations("classpath:/META-INF/resources/webjars/");
+                .addResourceLocations("classpath:/META-INF/resources/webjars/").setCachePeriod(0);
         super.addResourceHandlers(registry);
     }
 
@@ -47,6 +47,10 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         // 排除配置
         addInterceptor.excludePathPatterns("/error");
         addInterceptor.excludePathPatterns("/login**");
+        addInterceptor.excludePathPatterns("/webjars/**");
+        addInterceptor.excludePathPatterns("/static/");
+        addInterceptor.excludePathPatterns("/");
+        addInterceptor.excludePathPatterns("/csrf");
         // 拦截配置
         addInterceptor.addPathPatterns("/**");
         String[] urls = {
