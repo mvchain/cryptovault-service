@@ -43,13 +43,13 @@ public class TransactionController extends BaseController {
         return;
     }
 
-    @ApiModelProperty("成交记录查询")
+    @ApiOperation("成交记录查询")
     @GetMapping("over")
     public Result<OverTransactionVO> overList(@ModelAttribute @Valid OverTransactionDTO overTransactionDTO) {
         return null;
     }
 
-    @ApiModelProperty("成交记录导出")
+    @ApiOperation("成交记录导出")
     @GetMapping("over/excel")
     @NotLogin
     public void overTransactionExport(@RequestParam String sign, @ModelAttribute @Valid PageDTO pageDTO, @ModelAttribute @Valid OverTransactionDTO overTransactionDTO) {

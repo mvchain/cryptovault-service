@@ -45,7 +45,7 @@ public class AdminController extends BaseController {
     }
 
     @ApiOperation("编辑管理员(子管理员的权限修改将被忽略)")
-    @PostMapping("{id}")
+    @PutMapping("{id}")
     public Result<Boolean> updateAdmin(@PathVariable BigInteger id, @RequestBody @Valid AdminDTO adminDTO) {
         return null;
     }
