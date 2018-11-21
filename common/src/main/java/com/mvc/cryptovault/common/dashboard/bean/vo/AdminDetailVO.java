@@ -27,5 +27,8 @@ public class AdminDetailVO implements Serializable {
     @ApiModelProperty("权限列表(逗号分隔)")
     private String permissions;
 
+    @ApiModelProperty("启用开关")
+    private Integer status;
+
 }
 
