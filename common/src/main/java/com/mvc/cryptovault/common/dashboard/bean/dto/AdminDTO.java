@@ -5,7 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigInteger;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author qiyichen
@@ -31,6 +31,6 @@ public class AdminDTO implements Serializable {
     private Integer status;
 
     @ApiModelProperty("权限列表")
-    private Map<BigInteger, Integer> permissions;
+    private List<PermissionDTO> permissionList;
 
 }

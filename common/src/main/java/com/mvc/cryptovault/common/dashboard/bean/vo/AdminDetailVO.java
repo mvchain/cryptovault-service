@@ -1,11 +1,11 @@
 package com.mvc.cryptovault.common.dashboard.bean.vo;
 
+import com.mvc.cryptovault.common.dashboard.bean.dto.PermissionDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigInteger;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author qiyichen
@@ -22,6 +22,10 @@ public class AdminDetailVO implements Serializable {
     private String username;
 
     @ApiModelProperty("权限列表")
-    private Map<BigInteger, Integer> permissions;
+    private List<PermissionDTO> permissionList;
+
+    @ApiModelProperty("权限列表(逗号分隔)")
+    private String permissions;
+
 }
 
