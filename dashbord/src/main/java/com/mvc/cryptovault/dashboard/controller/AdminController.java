@@ -62,7 +62,6 @@ public class AdminController extends BaseController {
         return null;
     }
 
-
     @ApiOperation("用户登录,缓存登录令牌.登录规则后续确定")
     @PostMapping("login")
     @NotLogin
