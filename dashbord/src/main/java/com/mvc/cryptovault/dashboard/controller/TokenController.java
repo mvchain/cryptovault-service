@@ -36,13 +36,13 @@ public class TokenController extends BaseController {
     }
 
     @ApiOperation("修改币种")
-    @PostMapping("{id}")
+    @PutMapping("{id}")
     public Result<Boolean> updateToken(@RequestBody @Valid DTokenDTO dTokenDTO) {
         return null;
     }
 
     @ApiOperation("币种参数设置")
-    @PostMapping("setting/{id}")
+    @PutMapping("setting/{id}")
     public Result<Boolean> tokenSetting(@RequestBody @Valid DTokenSettingVO dto) {
         return null;
     }
@@ -67,7 +67,7 @@ public class TokenController extends BaseController {
     }
 
     @ApiOperation("币种交易设置")
-    @PostMapping("transaction")
+    @PutMapping("transaction")
     public Result<Boolean> setTransSetting(@RequestBody @Valid DTokenTransSettingVO dto) {
         return null;
     }

@@ -36,7 +36,7 @@ public class BlockController {
     }
 
     @ApiOperation("保留金额设置（仅对eth）")
-    @PostMapping("hold")
+    @PutMapping("hold")
     public Result<Boolean> setHold(@RequestBody List<DHoldVO> list) {
         return null;
     }
@@ -48,7 +48,7 @@ public class BlockController {
     }
 
     @ApiOperation("手续费设置")
-    @PostMapping("fee")
+    @PutMapping("fee")
     public Result<List<DHoldVO>> setFee(@RequestBody List<DHoldVO> list) {
         return null;
     }

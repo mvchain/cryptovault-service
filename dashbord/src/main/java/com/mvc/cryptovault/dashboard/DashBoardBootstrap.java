@@ -22,7 +22,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableAsync
 @Configuration
 @ComponentScan({"com.mvc.cryptovault.common.swaggermock", "com.mvc.cryptovault"})
-@EnableCircuitBreaker
+//@EnableCircuitBreaker
 @EnableHystrix
 @EnableEurekaClient
 @EnableFeignClients
