@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.dashboard.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
@@ -26,37 +27,42 @@ import java.util.List;
 @RestController
 @RequestMapping("block")
 @Api(tags = "区块链相关操作")
-public class BlockController {
+public class BlockController extends BaseController {
 
 
     @ApiOperation("保留金额获取,不分页")
     @GetMapping("hold")
     public Result<List<DHoldVO>> getHold() {
-        return null;
+        List<DHoldVO> result = blockService.getHold();
+        return new Result<>(result);
     }
 
     @ApiOperation("保留金额设置（仅对eth）")
     @PutMapping("hold")
     public Result<Boolean> setHold(@RequestBody List<DHoldVO> list) {
-        return null;
+        Boolean result = blockService.setHold(list);
+        return new Result<>(result);
     }
 
     @ApiOperation("手续费列表获取")
     @GetMapping("fee")
     public Result<List<DHoldVO>> getFee() {
-        return null;
+        List<DHoldVO> result = blockService.getFee();
+        return new Result<>(result);
     }
 
     @ApiOperation("手续费设置")
     @PutMapping("fee")
     public Result<List<DHoldVO>> setFee(@RequestBody List<DHoldVO> list) {
-        return null;
+        Boolean result = blockService.setFee(list);
+        return new Result<>(list);
     }
 
     @ApiOperation("区块链交易查询")
     @GetMapping("transactions")
-    public Result<DBlockeTransactionVO> getTransactions(@ModelAttribute @Valid PageDTO pageDTO, @ModelAttribute @Valid DBlockeTransactionDTO dBlockeTransactionDTO) {
-        return null;
+    public Result<PageInfo<DBlockeTransactionVO>> getTransactions(@ModelAttribute @Valid DBlockeTransactionDTO dBlockeTransactionDTO) {
+        PageInfo<DBlockeTransactionVO> result = blockService.getTransactions(dBlockeTransactionDTO);
+        return new Result<>(result);
     }
 
     @ApiOperation("区块链交易导出")
@@ -69,16 +75,17 @@ public class BlockController {
     @ApiOperation("账户余额查看")
     @GetMapping("balance/{tokeId}")
     public Result<BigDecimal> getBalance(@PathVariable BigInteger tokenId) {
-        return null;
+        BigDecimal result = blockService.getBalance(tokenId);
+        return new Result<>(result);
     }
 
 
     @ApiOperation("批量操作(1同意 2拒绝)")
     @PutMapping("status")
     public Result<Boolean> updateStatus(DBlockStatusDTO dBlockStatusDTO) {
-        return null;
+        Boolean result = blockService.updateStatus(dBlockStatusDTO);
+        return new Result<>(result);
     }
-
 
     @ApiOperation("待签名数据导出")
     @GetMapping("transaction/export")
@@ -107,6 +114,7 @@ public class BlockController {
     @ApiOperation("账户库存数据获取")
     @GetMapping("account/count")
     public Result<Integer> accountCount(@RequestParam String tokenType) {
-        return null;
+        Integer result = blockService.accountCount(tokenType);
+        return new Result<>(result);
     }
 }

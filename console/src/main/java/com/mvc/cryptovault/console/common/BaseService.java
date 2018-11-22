@@ -108,4 +108,15 @@ public interface BaseService<T> {
      * @return
      */
     List<T> findAll();
+
+    /**
+     * 更新缓存
+     */
+    void updateAllCache();
+
+    /**
+     * 更新指定缓存
+     * @param pvKey
+     */
+    void updateCache(Object pvKey);
 }

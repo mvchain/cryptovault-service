@@ -35,7 +35,7 @@ public class DTokenDTO implements Serializable {
     @ApiModelProperty("合约地址")
     private String contractAddress;
 
-    @ApiModelProperty("区跨链类型0虚拟币种 1ERC20代币")
+    @ApiModelProperty("ETH或空.为空时代表非真实代币")
     private String blockType;
 
 }

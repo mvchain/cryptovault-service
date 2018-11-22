@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.common.dashboard.bean.dto;
 
+import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import java.io.Serializable;
  * @create 2018/11/20 17:39
  */
 @Data
-public class DBlockeTransactionDTO implements Serializable {
+public class DBlockeTransactionDTO extends PageDTO implements Serializable {
 
     private static final long serialVersionUID = -5826639195867550038L;
 

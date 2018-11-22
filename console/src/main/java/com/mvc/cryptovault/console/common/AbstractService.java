@@ -46,7 +46,9 @@ public abstract class AbstractService<T> implements BaseService<T> {
 
     @Override
     public void deleteById(BigInteger id) {
+        String key = modelClass.getSimpleName().toUpperCase() + "_" + id;
         mapper.deleteByPrimaryKey(id);
+        redisTemplate.opsForValue().set(key, "", 24, TimeUnit.HOURS);
     }
 
     @Override
@@ -144,4 +146,23 @@ public abstract class AbstractService<T> implements BaseService<T> {
         return list;
     }
 
+    @Override
+    public void updateAllCache(){
+        String key = modelClass.getSimpleName().toUpperCase();
+        PageHelper.startPage(0, 9999);
+        List<T>  list = mapper.selectAll();
+        hTreeMap.put(key, list);
+    }
+
+    @Override
+    public void updateCache(Object pvKey){
+        String key = modelClass.getSimpleName().toUpperCase() + "_" + pvKey;
+        T obj = mapper.selectByPrimaryKey(pvKey);
+        if (null == obj) {
+            //填入空内容,防止穿透
+            redisTemplate.opsForValue().set(key, "", 30, TimeUnit.MINUTES);
+        } else {
+            redisTemplate.opsForValue().set(key, JSON.toJSONString(obj), 24, TimeUnit.HOURS);
+        }
+    }
 }

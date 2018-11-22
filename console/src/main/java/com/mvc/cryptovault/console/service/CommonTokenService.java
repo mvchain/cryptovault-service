@@ -1,9 +1,15 @@
 package com.mvc.cryptovault.console.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
+import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.PairDTO;
 import com.mvc.cryptovault.common.bean.vo.OrderInfoVO;
 import com.mvc.cryptovault.common.bean.vo.PairVO;
+import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenSettingVO;
+import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenTransSettingVO;
+import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
@@ -11,8 +17,11 @@ import com.mvc.cryptovault.console.dao.CommonTokenHistoryMapper;
 import com.mvc.cryptovault.console.dao.CommonTokenMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -20,6 +29,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CommonTokenService extends AbstractService<CommonToken> implements BaseService<CommonToken> {
@@ -43,7 +53,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         List<PairVO> result = new ArrayList<>();
         List<CommonPair> list = commonPairService.findAll();
         if (null != pairDTO.getPairType()) {
-            list = list.stream().filter(obj -> obj.getBaseTokenId().equals(BigInteger.valueOf(pairDTO.getPairType()))).collect(Collectors.toList());
+            list = list.stream().filter(obj -> obj.getStatus() == 1 && obj.getBaseTokenId().equals(BigInteger.valueOf(pairDTO.getPairType()))).collect(Collectors.toList());
         }
         list.forEach(obj -> {
             CommonToken token = findById(obj.getTokenId());
@@ -98,7 +108,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         vo.setBalance(appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId()));
         vo.setTokenBalance(appUserBalanceService.getBalanceByTokenId(userId, pair.getTokenId()));
         vo.setPrice(price.getTokenPrice());
-        if(null != id && !BigInteger.ZERO.equals(id)){
+        if (null != id && !BigInteger.ZERO.equals(id)) {
             AppUserTransaction trans = appUserTransactionService.findById(id);
             vo.setValue(trans.getValue().subtract(trans.getSuccessValue()));
         } else {
@@ -112,5 +122,65 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             vo.setMax(tokenControl.getSellMax());
         }
         return vo;
+    }
+
+    public DTokenSettingVO getTokenSetting(BigInteger id) {
+        DTokenSettingVO result = new DTokenSettingVO();
+        CommonToken token = findById(id);
+        BeanUtils.copyProperties(token, result);
+        List<CommonPair> list = commonPairService.findBy("token_id", id);
+        Stream<CommonPair> stream = list.stream();
+        Long vrt = stream.filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT)).count();
+        Long balance = stream.filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE)).count();
+        result.setVrt(vrt.intValue());
+        result.setBalance(balance.intValue());
+        return result;
+    }
+
+    public DTokenTransSettingVO getTransSetting(BigInteger id) {
+        DTokenTransSettingVO result = new DTokenTransSettingVO();
+        CommonTokenControl token = commonTokenControlService.findById(id);
+        BeanUtils.copyProperties(token, result);
+        return result;
+    }
+
+    public PageInfo<DTokenSettingVO> getTokenSettings(PageDTO pageDTO, String tokenName) {
+        Condition condition = new Condition(CommonToken.class);
+        Example.Criteria criteria = condition.createCriteria();
+        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum(), pageDTO.getOrderBy());
+        ConditionUtil.andCondition(criteria, "token_name = ", tokenName);
+        ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
+        ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
+        List<CommonToken> list = findByCondition(condition);
+        List<DTokenSettingVO> vos = new ArrayList<>(list.size());
+        for (CommonToken commonToken : list) {
+            DTokenSettingVO vo = new DTokenSettingVO();
+            BeanUtils.copyProperties(commonToken, vo);
+            List<CommonPair> data = commonPairService.findBy("token_id", commonToken.getId());
+            Stream<CommonPair> stream = data.stream();
+            Long vrt = stream.filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT)).count();
+            Long balance = stream.filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE)).count();
+            vo.setVrt(vrt.intValue());
+            vo.setBalance(balance.intValue());
+            vos.add(vo);
+        }
+        PageInfo result = new PageInfo(list);
+        result.setList(vos);
+        return result;
+    }
+
+    public void setTransSetting(DTokenTransSettingVO dto) {
+        CommonTokenControl token = new CommonTokenControl();
+        BeanUtils.copyProperties(dto, token);
+        commonTokenControlService.update(token);
+        commonTokenControlService.updateCache(token.getTokenId());
+        commonTokenControlService.updateAllCache();
+    }
+
+    public void tokenSetting(DTokenSettingVO dto) {
+        CommonToken token = new CommonToken();
+        BeanUtils.copyProperties(dto, token);
+        update(token);
+        commonPairService.updatePair(dto.getId(), dto.getVrt(), dto.getBalance());
     }
 }

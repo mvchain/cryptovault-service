@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.dashboard.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
@@ -26,46 +27,52 @@ public class ProjectController extends BaseController {
 
     @ApiOperation("项目列表查询")
     @GetMapping
-    public Result<DProjectVO> projects(@ModelAttribute @Valid PageDTO pageDTO) {
-        return null;
+    public Result<PageInfo<DProjectVO>> projects(@ModelAttribute @Valid PageDTO pageDTO) {
+        PageInfo<DProjectVO> result = projectService.projects(pageDTO);
+        return new Result<>(result);
     }
 
     @ApiOperation("项目明细查询")
     @GetMapping("{id}")
     public Result<DProjectDetailVO> getDetail(@PathVariable BigInteger id) {
-        return null;
+        DProjectDetailVO result = projectService.getDetail(id);
+        return new Result<>(result);
     }
-
 
     @ApiOperation("项目新建")
     @PostMapping
     public Result<Boolean> newProject(@RequestBody @Valid DProjectDTO dProjectDTO) {
-        return null;
+        Boolean result = projectService.newProject(dProjectDTO);
+        return new Result<>(result);
     }
 
     @ApiOperation("项目编辑")
     @PutMapping
     public Result<Boolean> updateProject(@RequestBody @Valid DProjectDTO dProjectDTO) {
-        return null;
+        Boolean result = projectService.updateProject(dProjectDTO);
+        return new Result<>(result);
     }
 
     @ApiOperation("项目删除")
     @DeleteMapping("{id}")
-    public Result<Boolean> updateProject(@PathVariable BigInteger id) {
-        return null;
+    public Result<Boolean> deleteProject(@PathVariable BigInteger id) {
+        Boolean result = projectService.deleteProject(id);
+        return new Result<>(result);
     }
 
     @ApiOperation("项目预约订单查询")
     @GetMapping("order")
-    public Result<DProjectOrderVO> findOrders(@ModelAttribute @Valid PageDTO pageDTO, @ModelAttribute @Valid DProjectOrderDTO dto) {
-        return null;
+    public Result<PageInfo<DProjectOrderVO>> findOrders(@ModelAttribute @Valid DProjectOrderDTO dto) {
+        PageInfo<DProjectOrderVO> result = projectService.findOrders(dto);
+        return new Result<>(result);
     }
 
 
     @ApiOperation("项目预约订单取消")
     @DeleteMapping("order/{id}")
     public Result<Boolean> cancelOrder(@PathVariable BigInteger id) {
-        return null;
+        Boolean result = projectService.cancel(id);
+        return new Result<>(result);
     }
 
     @ApiOperation("预约订单导出")

@@ -39,8 +39,8 @@ public class DTokenTransSettingVO implements Serializable {
     private Float sellMin;
 
     @ApiModelProperty("出售上限")
-
     private Float sellMax;
+
     @ApiModelProperty("价格博定交易金额量")
     private BigInteger priceBase;
 

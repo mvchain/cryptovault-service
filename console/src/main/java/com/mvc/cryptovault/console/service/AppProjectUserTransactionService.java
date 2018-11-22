@@ -1,21 +1,30 @@
 package com.mvc.cryptovault.console.service;
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
+import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.ProjectBuyDTO;
 import com.mvc.cryptovault.common.bean.dto.ReservationDTO;
 import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
 import com.mvc.cryptovault.common.bean.vo.PurchaseVO;
+import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectOrderDTO;
+import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectOrderVO;
+import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.AppProjectUserTransactionMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.NumberUtils;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -37,6 +46,10 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
     AppOrderService appOrderService;
     @Autowired
     AppOrderDetailService appOrderDetailService;
+    @Autowired
+    CommonPairService commonPairService;
+    @Autowired
+    CommonTokenService commonTokenService;
 
     public BigDecimal getUserBuyTotal(BigInteger userId, BigInteger project) {
         String key = "AppProjectUserTransaction".toUpperCase() + "_BALANCE_" + userId;
@@ -184,5 +197,40 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
                 redisTemplate.boundListOps(listKey).rightPush(JSON.toJSONString(obj));
             });
         }
+    }
+
+    public PageInfo<DProjectOrderVO> findOrders(PageDTO pageDTO, DProjectOrderDTO dto) {
+        AppUser user = StringUtils.isBlank(dto.getCellphone()) ? null : appUserService.findOneBy("cellphone", dto.getCellphone());
+        AppProject project = StringUtils.isBlank(dto.getProjectName()) ? null : appProjectService.findOneBy("project_name", dto.getProjectName());
+        Boolean flag = null != dto.getCellphone() && null == user || null != dto.getProjectName() && null == project;
+        if (flag) {
+            return new PageInfo<>();
+        }
+        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum());
+        Condition condition = new Condition(AppProjectUserTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "user_id = ", null == user ? null : user.getId());
+        ConditionUtil.andCondition(criteria, "project_id = ", null == project ? null : project.getId());
+        ConditionUtil.andCondition(criteria, "status = ", dto.getStatus());
+        List<AppProjectUserTransaction> list = findByCondition(condition);
+        List<DProjectOrderVO> vos = new ArrayList<>(list.size());
+        for (AppProjectUserTransaction transaction : list) {
+            DProjectOrderVO vo = new DProjectOrderVO();
+            BeanUtils.copyProperties(transaction, vo);
+            user = appUserService.findById(transaction.getUserId());
+            project = appProjectService.findById(transaction.getProjectId());
+            vo.setStatus(transaction.getResult());
+            vo.setBaseTokenId(project.getBaseTokenId());
+            vo.setBaseTokenName(project.getBaseTokenName());
+            vo.setCellphone(user.getCellphone());
+            vo.setPayed(transaction.getPayed());
+            vo.setProjectName(project.getProjectName());
+            vo.setTokenId(project.getTokenId());
+            vo.setTokenName(project.getTokenName());
+            vos.add(vo);
+        }
+        PageInfo result = new PageInfo(list);
+        result.setList(vos);
+        return result;
     }
 }

@@ -1,13 +1,12 @@
 package com.mvc.cryptovault.common.bean;
 
-import java.io.Serializable;
-import java.math.BigInteger;
-import javax.persistence.Column;
 import lombok.Data;
+
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Data;
-import lombok.Generated;
+import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
  * admin_user
@@ -16,7 +15,7 @@ import lombok.Generated;
 @Data
 public class AdminUser implements Serializable {
     /**
-     * 
+     *
      */
     @Id
 
@@ -48,16 +47,22 @@ public class AdminUser implements Serializable {
     private String nickname;
 
     /**
-     * 
+     *
      */
     @Column(name = "created_at")
     private Long createdAt;
 
     /**
-     * 
+     *
      */
     @Column(name = "updated_at")
     private Long updatedAt;
+
+    /**
+     * 0超级 1普通
+     */
+    @Column(name = "admin_type")
+    private Integer adminType;
 
     /**
      * admin_user
@@ -65,16 +70,14 @@ public class AdminUser implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * 
-     * @return id 
+     * @return id
      */
     public BigInteger getId() {
         return id;
     }
 
     /**
-     * 
-     * @param id 
+     * @param id
      */
     public void setId(BigInteger id) {
         this.id = id;
@@ -82,6 +85,7 @@ public class AdminUser implements Serializable {
 
     /**
      * 用户名
+     *
      * @return username 用户名
      */
     public String getUsername() {
@@ -90,6 +94,7 @@ public class AdminUser implements Serializable {
 
     /**
      * 用户名
+     *
      * @param username 用户名
      */
     public void setUsername(String username) {
@@ -98,6 +103,7 @@ public class AdminUser implements Serializable {
 
     /**
      * 用户密码
+     *
      * @return password 用户密码
      */
     public String getPassword() {
@@ -106,6 +112,7 @@ public class AdminUser implements Serializable {
 
     /**
      * 用户密码
+     *
      * @param password 用户密码
      */
     public void setPassword(String password) {
@@ -114,6 +121,7 @@ public class AdminUser implements Serializable {
 
     /**
      * 1有效 0无效
+     *
      * @return status 1有效 0无效
      */
     public Integer getStatus() {
@@ -122,6 +130,7 @@ public class AdminUser implements Serializable {
 
     /**
      * 1有效 0无效
+     *
      * @param status 1有效 0无效
      */
     public void setStatus(Integer status) {
@@ -130,6 +139,7 @@ public class AdminUser implements Serializable {
 
     /**
      * 用户昵称
+     *
      * @return nickname 用户昵称
      */
     public String getNickname() {
@@ -138,6 +148,7 @@ public class AdminUser implements Serializable {
 
     /**
      * 用户昵称
+     *
      * @param nickname 用户昵称
      */
     public void setNickname(String nickname) {

@@ -1,13 +1,12 @@
 package com.mvc.cryptovault.common.bean;
 
-import java.io.Serializable;
-import java.math.BigInteger;
-import javax.persistence.Column;
 import lombok.Data;
+
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Data;
-import lombok.Generated;
+import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
  * common_pair
@@ -42,6 +41,20 @@ public class CommonPair implements Serializable {
     private BigInteger tokenId;
 
     /**
+     * 基础货币令牌名称
+     */
+    @Column(name = "base_token_name")
+    private String baseTokenName;
+
+    private Integer status;
+
+    /**
+     * 兑换货币名称
+     */
+    @Column(name = "token_name")
+    private String tokenName;
+
+    /**
      * 手续费
      */
     @Column(name = "fee")
@@ -54,6 +67,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 交易对id
+     *
      * @return id 交易对id
      */
     public BigInteger getId() {
@@ -62,6 +76,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 交易对id
+     *
      * @param id 交易对id
      */
     public void setId(BigInteger id) {
@@ -70,6 +85,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 交易对名称
+     *
      * @return pair_name 交易对名称
      */
     public String getPairName() {
@@ -78,6 +94,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 交易对名称
+     *
      * @param pairName 交易对名称
      */
     public void setPairName(String pairName) {
@@ -86,6 +103,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 基础货币令牌id
+     *
      * @return base_token_id 基础货币令牌id
      */
     public BigInteger getBaseTokenId() {
@@ -94,6 +112,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 基础货币令牌id
+     *
      * @param baseTokenId 基础货币令牌id
      */
     public void setBaseTokenId(BigInteger baseTokenId) {
@@ -102,6 +121,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 兑换货币id
+     *
      * @return token_id 兑换货币id
      */
     public BigInteger getTokenId() {
@@ -110,6 +130,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 兑换货币id
+     *
      * @param tokenId 兑换货币id
      */
     public void setTokenId(BigInteger tokenId) {
@@ -118,6 +139,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 手续费
+     *
      * @return fee 手续费
      */
     public Float getFee() {
@@ -126,6 +148,7 @@ public class CommonPair implements Serializable {
 
     /**
      * 手续费
+     *
      * @param fee 手续费
      */
     public void setFee(Float fee) {

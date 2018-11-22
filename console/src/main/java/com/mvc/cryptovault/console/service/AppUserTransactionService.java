@@ -1,17 +1,24 @@
 package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.MyTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.OrderDTO;
+import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionBuyDTO;
 import com.mvc.cryptovault.common.bean.vo.MyOrderVO;
 import com.mvc.cryptovault.common.bean.vo.OrderVO;
+import com.mvc.cryptovault.common.dashboard.bean.dto.DTransactionDTO;
+import com.mvc.cryptovault.common.dashboard.bean.dto.OverTransactionDTO;
+import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
+import com.mvc.cryptovault.common.dashboard.bean.vo.OverTransactionVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -149,7 +156,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             update(targetTransaction);
             //生成用户主动交易记录
             transaction.setStatus(1);
-            transaction.setParentId(BigInteger.ZERO);
+            transaction.setParentId(targetTransaction.getId());
             transaction.setSuccessValue(dto.getValue());
             transaction.setTargetUserId(targetTransaction.getUserId());
             save(transaction);
@@ -198,10 +205,10 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     public void cancel(BigInteger userId, BigInteger id) {
         AppUserTransaction trans = findById(id);
-        if(trans.getStatus().equals(BusinessConstant.STATUS_CANCEL)){
+        if (trans.getStatus().equals(BusinessConstant.STATUS_CANCEL)) {
             return;
         }
-         trans = findById(id);
+        trans = findById(id);
         trans.setStatus(BusinessConstant.STATUS_CANCEL);
         trans.setUpdatedAt(System.currentTimeMillis());
         update(trans);
@@ -217,4 +224,74 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         }
     }
 
+    public PageInfo<DTransactionVO> findTransaction(PageDTO pageDTO, DTransactionDTO dTransactionDTO) {
+        AppUser appUser = StringUtils.isBlank(dTransactionDTO.getCellphone()) ? null : appUserService.findOneBy("cellphone", dTransactionDTO.getCellphone());
+        if (StringUtils.isNotBlank(dTransactionDTO.getCellphone()) && null == appUser) {
+            return new PageInfo<>();
+        }
+        Condition condition = new Condition(AppUserTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "pair_id = ", dTransactionDTO.getPairId());
+        ConditionUtil.andCondition(criteria, "status = ", dTransactionDTO.getStatus());
+        ConditionUtil.andCondition(criteria, "transaction_type = ", dTransactionDTO.getTransactionType());
+        ConditionUtil.andCondition(criteria, "order_number = ", dTransactionDTO.getOrderNumber());
+        ConditionUtil.andCondition(criteria, "user_id = ", null == appUser ? null : appUser.getId());
+        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum(), pageDTO.getOrderBy());
+        List<AppUserTransaction> list = findByCondition(condition);
+        List<DTransactionVO> vos = new ArrayList<>(list.size());
+        PageInfo result = new PageInfo(list);
+        for (AppUserTransaction transaction : list) {
+            DTransactionVO vo = new DTransactionVO();
+            BeanUtils.copyProperties(transaction, vo);
+            appUser = appUserService.findById(transaction.getUserId());
+            CommonPair pair = commonPairService.findById(transaction.getPairId());
+            vo.setCellphone(appUser.getCellphone());
+            vo.setDeal(transaction.getSuccessValue());
+            vo.setPairName(pair.getPairName());
+            vo.setSurplus(transaction.getValue().subtract(transaction.getSuccessValue()));
+            vos.add(vo);
+        }
+        result.setList(vos);
+        return result;
+    }
+
+    public PageInfo<OverTransactionVO> overList(PageDTO pageDTO, OverTransactionDTO overTransactionDTO) {
+        AppUser appUser = StringUtils.isBlank(overTransactionDTO.getCellphone()) ? null : appUserService.findOneBy("cellphone", overTransactionDTO.getCellphone());
+        AppUserTransaction transaction = findOneBy("order_number", overTransactionDTO.getParentOrderNumber());
+        Boolean flag = StringUtils.isNotBlank(overTransactionDTO.getCellphone()) && null == appUser || StringUtils.isNotBlank(overTransactionDTO.getParentOrderNumber()) && null == transaction;
+        if (flag) {
+            return new PageInfo<>();
+        }
+        Condition condition = new Condition(AppUserTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "pair_id = ", overTransactionDTO.getPairId());
+        ConditionUtil.andCondition(criteria, "order_number = ", overTransactionDTO.getOrderNumber());
+        ConditionUtil.andCondition(criteria, "transaction_type = ", overTransactionDTO.getTransactionType());
+        ConditionUtil.andCondition(criteria, "user_id = ", null == appUser ? null : appUser.getId());
+        if (null == transaction) {
+            ConditionUtil.andCondition(criteria, "parent_id != ", BigInteger.ZERO);
+        } else {
+            ConditionUtil.andCondition(criteria, "parent_id = ", transaction.getId());
+        }
+        ConditionUtil.andCondition(criteria, "status = ", 1);
+        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum(), pageDTO.getOrderBy());
+        List<AppUserTransaction> list = findByCondition(condition);
+        List<OverTransactionVO> vos = new ArrayList<>(list.size());
+        PageInfo result = new PageInfo(list);
+        for (AppUserTransaction trans : list) {
+            OverTransactionVO vo = new OverTransactionVO();
+            BeanUtils.copyProperties(transaction, vo);
+            appUser = appUserService.findById(transaction.getUserId());
+            CommonPair pair = commonPairService.findById(transaction.getPairId());
+            AppUserTransaction parent = findById(trans.getPairId());
+            vo.setCellphone(appUser.getCellphone());
+            vo.setParentOrderNumber(parent.getOrderNumber());
+            vo.setBaseTokenName(pair.getBaseTokenName());
+            vo.setParentOrderNumber(pair.getPairName());
+            vos.add(vo);
+        }
+        result.setList(vos);
+        return result;
+
+    }
 }

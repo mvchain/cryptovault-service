@@ -7,4 +7,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AdminPermissionService extends AbstractService<AdminPermission> implements BaseService<AdminPermission> {
+
+
 }

@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
  * @author qiyichen
@@ -19,4 +20,7 @@ public class AdminPasswordDTO  implements Serializable {
 
     @ApiModelProperty("新密码")
     private String newPassword;
+
+    @ApiModelProperty
+    private BigInteger userId;
 }

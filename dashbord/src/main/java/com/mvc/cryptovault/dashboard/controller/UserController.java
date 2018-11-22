@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.dashboard.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
@@ -26,29 +27,31 @@ public class UserController extends BaseController {
 
     @ApiOperation("用户列表查询")
     @GetMapping
-    public Result<DUSerVO> findUser(@ModelAttribute @Valid PageDTO pageDTO, @RequestParam String cellphone) {
-        return null;
+    public Result<PageInfo<DUSerVO>> findUser(@ModelAttribute @Valid PageDTO pageDTO, @RequestParam String cellphone) {
+        PageInfo<DUSerVO> result = userService.findUser(pageDTO, cellphone);
+        return new Result<>(result);
     }
 
     @ApiOperation("用户详情获取")
     @GetMapping("{id}")
-    public Result<DUSerDetailVO> getUserDetail(@PathVariable BigDecimal id) {
-        return null;
+    public Result<DUSerDetailVO> getUserDetail(@PathVariable BigInteger id) {
+        DUSerDetailVO result = userService.getUserDetail(id);
+        return new Result<>(result);
     }
 
     @ApiOperation("用户资产获取,不分页")
     @GetMapping("{id}/balance")
-    public Result<List<DUserBalanceVO>> getBalance(@PathVariable BigDecimal id) {
-        return null;
+    public Result<List<DUserBalanceVO>> getBalance(@PathVariable BigInteger id) {
+        List<DUserBalanceVO> result = userService.getBalance(id);
+        return new Result<>(result);
     }
-
 
     @ApiOperation("用户操作记录查询")
     @GetMapping("{id}/log")
-    public Result<DUserLogVO> getUserLog(@PathVariable BigInteger id) {
-        return null;
+    public Result<PageInfo<DUserLogVO>> getUserLog(@ModelAttribute @Valid PageDTO pageDTO, @PathVariable BigInteger id) {
+        PageInfo<DUserLogVO> result = userService.getUserLog(id, pageDTO);
+        return new Result<>(result);
     }
-
 
     @ApiOperation("用户操作记录导出")
     @GetMapping("{id}/log/excel")

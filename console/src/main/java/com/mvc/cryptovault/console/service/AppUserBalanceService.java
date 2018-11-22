@@ -31,7 +31,6 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
     CommonTokenPriceService commonTokenPriceService;
 
     private Comparator comparator = new Comparator<TokenBalanceVO>() {
-
         @Override
         public int compare(TokenBalanceVO o1, TokenBalanceVO o2) {
             return o1.getTokenId().compareTo(o2.getTokenId());

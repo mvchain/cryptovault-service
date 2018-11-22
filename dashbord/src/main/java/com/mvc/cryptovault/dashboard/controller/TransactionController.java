@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.dashboard.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTransactionDTO;
@@ -8,7 +9,6 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.OverTransactionVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,14 +26,16 @@ public class TransactionController extends BaseController {
 
     @ApiOperation("挂单交易列表查询")
     @GetMapping
-    public Result<DTransactionVO> findTransaction(@ModelAttribute @Valid PageDTO pageDTO, @ModelAttribute @Valid DTransactionDTO dTransactionDTO) {
-        return null;
+    public Result<PageInfo<DTransactionVO>> findTransaction(@ModelAttribute @Valid DTransactionDTO dTransactionDTO) {
+        PageInfo<DTransactionVO> result = transactionService.findTransaction(dTransactionDTO);
+        return new Result<>(result);
     }
 
     @ApiOperation("挂单交易撤销")
     @GetMapping("{id}")
     public Result<Boolean> cancel(@PathVariable BigInteger id) {
-        return null;
+        Boolean result = transactionService.cancelTransaction(id);
+        return new Result<>(result);
     }
 
     @ApiOperation("挂单交易导出")
@@ -45,8 +47,9 @@ public class TransactionController extends BaseController {
 
     @ApiOperation("成交记录查询")
     @GetMapping("over")
-    public Result<OverTransactionVO> overList(@ModelAttribute @Valid OverTransactionDTO overTransactionDTO) {
-        return null;
+    public Result<PageInfo<OverTransactionVO>> overList(@ModelAttribute @Valid OverTransactionDTO overTransactionDTO) {
+        PageInfo<OverTransactionVO> result = tokenService.overList(overTransactionDTO);
+        return new Result<>(result);
     }
 
     @ApiOperation("成交记录导出")

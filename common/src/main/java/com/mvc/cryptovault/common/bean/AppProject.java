@@ -45,6 +45,18 @@ public class AppProject implements Serializable {
     private String baseTokenName;
 
     /**
+     * 币种id
+     */
+    @Column(name = "token_id")
+    private BigInteger tokenId;
+
+    /**
+     * 币种名称
+     */
+    @Column(name = "token_name")
+    private String tokenName;
+
+    /**
      * 项目图片
      */
     @Column(name = "project_image")

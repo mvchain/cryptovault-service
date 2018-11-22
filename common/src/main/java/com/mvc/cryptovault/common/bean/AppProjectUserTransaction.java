@@ -20,7 +20,6 @@ public class AppProjectUserTransaction implements Serializable {
      * 
      */
     @Id
-
     @Column(name = "id")
     private BigInteger id;
 
@@ -61,10 +60,16 @@ public class AppProjectUserTransaction implements Serializable {
     private Integer result;
 
     /**
-     * 参与金额
+     * 参与数量
      */
     @Column(name = "value")
     private BigDecimal value;
+
+    /**
+     * 参与金额
+     */
+    @Column(name = "payed")
+    private BigDecimal payed;
 
     /**
      * 排序位置

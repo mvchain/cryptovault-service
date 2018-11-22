@@ -1,17 +1,29 @@
 package com.mvc.cryptovault.console.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppOrder;
 import com.mvc.cryptovault.common.bean.AppOrderDetail;
 import com.mvc.cryptovault.common.bean.BlockTransaction;
+import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
+import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
+import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
+import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
+import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class BlockTransactionService extends AbstractService<BlockTransaction> implements BaseService<BlockTransaction> {
@@ -22,6 +34,10 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     AppOrderDetailService appOrderDetailService;
     @Autowired
     AppUserBalanceService appUserBalanceService;
+    @Autowired
+    CommonTokenService tokenService;
+    @Autowired
+    AppUserService appUserService;
 
     public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
@@ -63,5 +79,37 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         detail.setValue(transactionDTO.getValue());
         appOrderDetailService.save(detail);
         appUserBalanceService.updateBalance(userId, transaction.getTokenId(), BigDecimal.ZERO.subtract(transaction.getValue()));
+    }
+
+    public void updateStatus(DBlockStatusDTO dBlockStatusDTO) {
+        Condition condition = new Condition(BlockTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        if (dBlockStatusDTO.getIds().endsWith(",")) {
+            dBlockStatusDTO.setIds(dBlockStatusDTO.getIds().substring(0, dBlockStatusDTO.getIds().length() - 1));
+        }
+        ConditionUtil.andCondition(criteria, String.format("id in (%s)"), dBlockStatusDTO.getIds());
+        BlockTransaction transaction = new BlockTransaction();
+        transaction.setStatus(dBlockStatusDTO.getStatus());
+        mapper.updateByConditionSelective(transaction, condition);
+    }
+
+    public PageInfo<DBlockeTransactionVO> getTransactions(PageDTO pageDTO, DBlockeTransactionDTO dBlockeTransactionDTO) {
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
+        BlockTransaction transaction = new BlockTransaction();
+        transaction.setStatus(dBlockeTransactionDTO.getStatus());
+        transaction.setToAddress(dBlockeTransactionDTO.getToAddress());
+        transaction.setOrderNumber(dBlockeTransactionDTO.getOrderNumber());
+        List<BlockTransaction> list = findByEntity(transaction);
+        List<DBlockeTransactionVO> vos = new ArrayList<>(list.size());
+        PageInfo result = new PageInfo(list);
+        for (BlockTransaction blockTransaction : list) {
+            DBlockeTransactionVO vo = new DBlockeTransactionVO();
+            BeanUtils.copyProperties(blockTransaction, vo);
+            vo.setTokenName(tokenService.findById(vo.getId()).getTokenName());
+            vo.setCellphone(appUserService.findById(blockTransaction.getUserId()).getCellphone());
+            vos.add(vo);
+        }
+        result.setList(vos);
+        return result;
     }
 }

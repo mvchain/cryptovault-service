@@ -25,29 +25,26 @@ public class DBlockeTransactionVO implements Serializable {
     private Long updatedAt;
     @ApiModelProperty("令牌id")
     private BigInteger tokenId;
-
     @ApiModelProperty("令牌名称")
     private String tokenName;
     @ApiModelProperty("1充值 2提现")
     private Integer oprType;
     @ApiModelProperty("用户id")
     private BigInteger userId;
-
     @ApiModelProperty("0打包中 1确认中 2确认完毕 9失败")
     private Integer status;
-
     @ApiModelProperty("错误描述")
     private String errorMsg;
     @ApiModelProperty("错误详情")
     private String errorData;
     @ApiModelProperty("交易数量")
     private BigDecimal value;
-
     @ApiModelProperty("来源地址")
     private String fromAddress;
-
     @ApiModelProperty("目标地址")
     private String toAddress;
     @ApiModelProperty("订单id")
     private String orderNumber;
+    @ApiModelProperty("手机")
+    private String cellphone;
 }
