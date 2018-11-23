@@ -27,6 +27,12 @@ public class DProjectDTO implements Serializable {
     @ApiModelProperty("基础货币名称")
     private String baseTokenName;
 
+    @ApiModelProperty("货币id")
+    private BigInteger tokenId;
+
+    @ApiModelProperty("货币名称")
+    private String tokenName;
+
     @ApiModelProperty("项目图片")
     private String projectImage;
 
@@ -50,5 +56,8 @@ public class DProjectDTO implements Serializable {
 
     @ApiModelProperty("限购数量")
     private BigDecimal projectLimit;
+
+    @ApiModelProperty("最小购买数量")
+    private BigDecimal projectMin;
 
 }

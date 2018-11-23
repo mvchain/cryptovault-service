@@ -7,6 +7,7 @@ import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TokenVO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminPasswordDTO;
+import com.mvc.cryptovault.common.dashboard.bean.dto.DUserDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
@@ -70,7 +71,7 @@ public class AdminController extends BaseController {
     @ApiOperation("用户登录,缓存登录令牌.登录规则后续确定")
     @PostMapping("login")
     @NotLogin
-    public Result<TokenVO> login(HttpServletResponse response, @RequestBody @Valid UserDTO userDTO) {
+    public Result<TokenVO> login(HttpServletResponse response, @RequestBody @Valid DUserDTO userDTO) {
         TokenVO tokenVO = adminService.login(userDTO);
         return new Result<>(tokenVO);
     }

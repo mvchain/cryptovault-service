@@ -257,7 +257,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     public PageInfo<OverTransactionVO> overList(PageDTO pageDTO, OverTransactionDTO overTransactionDTO) {
         AppUser appUser = StringUtils.isBlank(overTransactionDTO.getCellphone()) ? null : appUserService.findOneBy("cellphone", overTransactionDTO.getCellphone());
-        AppUserTransaction transaction = findOneBy("order_number", overTransactionDTO.getParentOrderNumber());
+        AppUserTransaction transaction = findOneBy("orderNumber", overTransactionDTO.getParentOrderNumber());
         Boolean flag = StringUtils.isNotBlank(overTransactionDTO.getCellphone()) && null == appUser || StringUtils.isNotBlank(overTransactionDTO.getParentOrderNumber()) && null == transaction;
         if (flag) {
             return new PageInfo<>();
@@ -280,9 +280,9 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         PageInfo result = new PageInfo(list);
         for (AppUserTransaction trans : list) {
             OverTransactionVO vo = new OverTransactionVO();
-            BeanUtils.copyProperties(transaction, vo);
-            appUser = appUserService.findById(transaction.getUserId());
-            CommonPair pair = commonPairService.findById(transaction.getPairId());
+            BeanUtils.copyProperties(trans, vo);
+            appUser = appUserService.findById(trans.getUserId());
+            CommonPair pair = commonPairService.findById(trans.getPairId());
             AppUserTransaction parent = findById(trans.getPairId());
             vo.setCellphone(appUser.getCellphone());
             vo.setParentOrderNumber(parent.getOrderNumber());

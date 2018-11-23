@@ -51,4 +51,7 @@ public class DProjectDetailVO implements Serializable {
     @ApiModelProperty("限购数量")
     private BigDecimal projectLimit;
 
+    @ApiModelProperty("最小购买数量")
+    private BigDecimal projectMin;
+
 }

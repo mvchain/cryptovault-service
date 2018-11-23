@@ -18,4 +18,6 @@ public class ProjectBuyVO {
     private BigDecimal balance;
     @ApiModelProperty("限购额， 为项目限购额-当前已够额")
     private BigDecimal limitValue;
+    @ApiModelProperty("最小购买数量")
+    private BigDecimal projectMin;
 }

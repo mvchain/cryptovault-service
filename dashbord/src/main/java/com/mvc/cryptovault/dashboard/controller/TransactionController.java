@@ -32,7 +32,7 @@ public class TransactionController extends BaseController {
     }
 
     @ApiOperation("挂单交易撤销")
-    @GetMapping("{id}")
+    @DeleteMapping("{id}")
     public Result<Boolean> cancel(@PathVariable BigInteger id) {
         Boolean result = transactionService.cancelTransaction(id);
         return new Result<>(result);

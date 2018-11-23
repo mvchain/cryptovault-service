@@ -35,6 +35,7 @@ public class DAdminUserController extends BaseController {
         list.forEach(obj -> {
             AdminVO vo = new AdminVO();
             BeanUtils.copyProperties(obj, vo);
+            vos.add(vo);
         });
         PageInfo result = new PageInfo<>(list);
         result.setList(vos);
@@ -74,13 +75,13 @@ public class DAdminUserController extends BaseController {
         return new Result<>(user);
     }
 
-    @PostMapping("adminUser")
+    @PostMapping("")
     public   Result<Boolean> newAdmin(@RequestBody AdminDTO adminDTO) {
         adminUserService.newAdmin(adminDTO);
         return new Result<>(true);
     }
 
-    @PutMapping("adminUser")
+    @PutMapping("")
     public  Result<Boolean> updateAdmin(@RequestBody AdminDTO adminDTO) {
         adminUserService.updateAdmin(adminDTO);
         return new Result<>(true);

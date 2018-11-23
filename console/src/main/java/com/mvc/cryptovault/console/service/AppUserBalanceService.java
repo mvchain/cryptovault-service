@@ -43,6 +43,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         BigDecimal userBuyTotal = appProjectUserTransactionService.getUserBuyTotal(userId, appProject.getId());
         BigDecimal limit = appProject.getProjectLimit().subtract(userBuyTotal);
         vo.setLimitValue(limit);
+        vo.setProjectMin(appProject.getProjectMin());
         return vo;
     }
 

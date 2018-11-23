@@ -60,4 +60,12 @@ public class CommonPairService extends AbstractService<CommonPair> implements Ba
         updateCache(partBalance.getTokenId());
         updateCache(pairVrt.getTokenId());
     }
+
+    public BigInteger findByTokenId(BigInteger baseTokenId, BigInteger tokenId) {
+        CommonPair pair = new CommonPair();
+        pair.setTokenId(tokenId);
+        pair.setBaseTokenId(baseTokenId);
+        pair = findOneByEntity(pair);
+        return null == pair ? BigInteger.ZERO : pair.getId();
+    }
 }

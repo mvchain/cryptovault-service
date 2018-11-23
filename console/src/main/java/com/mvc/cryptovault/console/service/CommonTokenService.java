@@ -128,10 +128,9 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         DTokenSettingVO result = new DTokenSettingVO();
         CommonToken token = findById(id);
         BeanUtils.copyProperties(token, result);
-        List<CommonPair> list = commonPairService.findBy("token_id", id);
-        Stream<CommonPair> stream = list.stream();
-        Long vrt = stream.filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT)).count();
-        Long balance = stream.filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE)).count();
+        List<CommonPair> list = commonPairService.findBy("tokenId", id);
+        Long vrt = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT)).count();
+        Long balance = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE)).count();
         result.setVrt(vrt.intValue());
         result.setBalance(balance.intValue());
         return result;
@@ -156,10 +155,9 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         for (CommonToken commonToken : list) {
             DTokenSettingVO vo = new DTokenSettingVO();
             BeanUtils.copyProperties(commonToken, vo);
-            List<CommonPair> data = commonPairService.findBy("token_id", commonToken.getId());
-            Stream<CommonPair> stream = data.stream();
-            Long vrt = stream.filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT)).count();
-            Long balance = stream.filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE)).count();
+            List<CommonPair> data = commonPairService.findBy("tokenId", commonToken.getId());
+            Long vrt = data.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT)).count();
+            Long balance = data.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE)).count();
             vo.setVrt(vrt.intValue());
             vo.setBalance(balance.intValue());
             vos.add(vo);

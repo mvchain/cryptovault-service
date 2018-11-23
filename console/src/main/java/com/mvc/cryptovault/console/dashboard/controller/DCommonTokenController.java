@@ -72,7 +72,7 @@ public class DCommonTokenController extends BaseController {
     public Result<List<DTokenVO>> findTokens(@RequestParam(value = "tokenName", required = false) String tokenName) {
         List<CommonToken> list = null;
         if (StringUtils.isNotBlank(tokenName)) {
-            list = commonTokenService.findBy("token_name", tokenName);
+            list = commonTokenService.findBy("tokenName", tokenName);
         } else {
             list = commonTokenService.findAll();
         }
@@ -80,7 +80,7 @@ public class DCommonTokenController extends BaseController {
         for (CommonToken token : list) {
             DTokenVO vo = new DTokenVO();
             vo.setTokenId(token.getId());
-            List<CommonPair> pair = commonPairService.findBy("token_id", token.getId());
+            List<CommonPair> pair = commonPairService.findBy("tokenId", token.getId());
             Integer tokenInfo = pair.size() == 2 ? 3 : pair.size() == 0 ? 0 : pair.get(0).getTokenId().equals(BigInteger.ONE) ? 1 : 2;
             vo.setPairInfo(tokenInfo);
             result.add(vo);
@@ -90,13 +90,13 @@ public class DCommonTokenController extends BaseController {
 
     @PostMapping("")
     public Result<Boolean> newToken(@RequestBody DTokenDTO dTokenDTO) {
-        CommonToken token = commonTokenService.findOneBy("token_name", dTokenDTO.getTokenName());
+        CommonToken token = commonTokenService.findOneBy("tokenName", dTokenDTO.getTokenName());
         Assert.isNull(token, "令牌已存在");
         token = new CommonToken();
         BeanUtils.copyProperties(dTokenDTO, token);
         token.setTokenType(null == dTokenDTO.getBlockType() ? "" : dTokenDTO.getBlockType());
         commonTokenService.save(token);
-        commonPairService.insertPair(dTokenDTO.getTokenId(), dTokenDTO.getTokenName());
+        commonPairService.insertPair(token.getId(), dTokenDTO.getTokenName());
         commonTokenService.updateAllCache();
         commonTokenService.updateCache(token.getId());
         return new Result<>(true);

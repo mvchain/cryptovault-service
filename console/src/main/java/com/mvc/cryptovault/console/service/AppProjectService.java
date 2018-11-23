@@ -10,17 +10,24 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Service
 public class AppProjectService extends AbstractService<AppProject> implements BaseService<AppProject> {
+
+    @Autowired
+    CommonPairService commonPairService;
     public void newProject(DProjectDTO dProjectDTO) {
+        BigInteger pairId  = commonPairService.findByTokenId(dProjectDTO.getBaseTokenId(), dProjectDTO.getTokenId());
         AppProject appProject = new AppProject();
         BeanUtils.copyProperties(dProjectDTO, appProject);
+        appProject.setPairId(pairId);
         save(appProject);
         String key = "AppProject".toUpperCase() + "_" + dProjectDTO.getId();
         redisTemplate.opsForValue().set(key, JSON.toJSONString(appProject), 24, TimeUnit.HOURS);

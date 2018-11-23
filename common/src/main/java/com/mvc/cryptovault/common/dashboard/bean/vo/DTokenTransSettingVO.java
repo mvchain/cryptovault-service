@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 /**
@@ -42,10 +43,10 @@ public class DTokenTransSettingVO implements Serializable {
     private Float sellMax;
 
     @ApiModelProperty("价格博定交易金额量")
-    private BigInteger priceBase;
+    private BigDecimal priceBase;
 
     @ApiModelProperty("下个基准价格")
-    private BigInteger nextPrice;
+    private BigDecimal nextPrice;
 
     @ApiModelProperty("波动下限")
     private Float waveMin;

@@ -10,9 +10,9 @@ import java.math.BigInteger;
 
 public interface BlockHeightMapper extends MyMapper<BlockHeight> {
 
-    @Update("update block_height set hold = #{hold} where token_id = #{tokenId}")
-    void updateHold(@Param("tokenId") BigInteger tokenId, @Param("tokenId") BigDecimal value);
+    @Update("update block_height set hold = #{value} where token_id = #{tokenId}")
+    void updateHold(@Param("tokenId") BigInteger tokenId, @Param("value") BigDecimal value);
 
-    @Update("update block_height set hold = #{hold} where token_id = #{tokenId}")
-    void updateFee(@Param("tokenId") BigInteger tokenId, @Param("tokenId") BigDecimal value);
+    @Update("update block_height set fee = #{value} where token_id = #{tokenId}")
+    void updateFee(@Param("tokenId") BigInteger tokenId, @Param("value") BigDecimal value);
 }

@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.common.bean;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -132,6 +133,11 @@ public class AppProject implements Serializable {
     @Column(name = "project_limit")
     private BigDecimal projectLimit;
 
+    /**
+     * 最小购买数量
+     */
+    @Column(name = "project_min")
+    private BigDecimal projectMin;
     /**
      * app_project
      */

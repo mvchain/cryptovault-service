@@ -79,7 +79,8 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         AppProject project = appProjectService.findById(projectId);
         ProjectBuyVO balance = appUserBalanceService.getBalance(userId, project);
         Assert.isTrue(balance.getBalance().compareTo(dto.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
-        Assert.isTrue(balance.getLimitValue().subtract(dto.getValue()).compareTo(BigDecimal.ZERO) > 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
+        Assert.isTrue(balance.getLimitValue().subtract(dto.getValue()).compareTo(BigDecimal.ZERO) >= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
+        Assert.isTrue(dto.getValue().subtract(balance.getProjectMin()).compareTo(BigDecimal.ZERO) >= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
         AppProjectUserTransaction appProjectUserTransaction = new AppProjectUserTransaction();
         appProjectUserTransaction.setCreatedAt(time);
@@ -201,8 +202,8 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
 
     public PageInfo<DProjectOrderVO> findOrders(PageDTO pageDTO, DProjectOrderDTO dto) {
         AppUser user = StringUtils.isBlank(dto.getCellphone()) ? null : appUserService.findOneBy("cellphone", dto.getCellphone());
-        AppProject project = StringUtils.isBlank(dto.getProjectName()) ? null : appProjectService.findOneBy("project_name", dto.getProjectName());
-        Boolean flag = null != dto.getCellphone() && null == user || null != dto.getProjectName() && null == project;
+        AppProject project = StringUtils.isBlank(dto.getProjectName()) ? null : appProjectService.findOneBy("projectName", dto.getProjectName());
+        Boolean flag = StringUtils.isNotBlank(dto.getCellphone())  && null == user || StringUtils.isNotBlank(dto.getProjectName()) && null == project;
         if (flag) {
             return new PageInfo<>();
         }

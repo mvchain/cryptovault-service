@@ -7,6 +7,7 @@ import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.dao.AdminUserPermissionMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -26,15 +27,17 @@ public class AdminUserPermissionService extends AbstractService<AdminUserPermiss
 
     public void updatePermission(BigInteger userId, List<PermissionDTO> permissionList) {
         delete(userId);
+        if(CollectionUtils.isEmpty(permissionList)){
+            return;
+        }
         List<AdminUserPermission> permissions = new ArrayList<>(permissionList.size());
         for (PermissionDTO dto : permissionList) {
             if (dto.getStatus() == 1) {
                 AdminUserPermission permission = new AdminUserPermission();
                 permission.setUserId(userId);
                 permission.setPermissionId(dto.getPermissionId());
-                permissions.add(permission);
+                save(permission);
             }
         }
-        save(permissions);
     }
 }

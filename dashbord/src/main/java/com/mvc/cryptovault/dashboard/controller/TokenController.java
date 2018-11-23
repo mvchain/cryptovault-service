@@ -54,7 +54,7 @@ public class TokenController extends BaseController {
 
     @ApiOperation("币种参数查询")
     @GetMapping("setting")
-    public Result<PageInfo<DTokenSettingVO>> getTokenSettings(@ModelAttribute @Valid PageDTO pageDTO, @RequestParam String tokenName) {
+    public Result<PageInfo<DTokenSettingVO>> getTokenSettings(@ModelAttribute @Valid PageDTO pageDTO, @RequestParam(required = false) String tokenName) {
         PageInfo<DTokenSettingVO> result = tokenService.getTokenSettings(tokenName, pageDTO);
         return new Result<>(result);
     }

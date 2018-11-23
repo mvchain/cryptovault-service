@@ -10,6 +10,7 @@ import com.mvc.cryptovault.common.bean.vo.TokenVO;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminPasswordDTO;
+import com.mvc.cryptovault.common.dashboard.bean.dto.DUserDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
 import com.mvc.cryptovault.common.util.BaseContextHandler;
@@ -51,14 +52,14 @@ public class AdminService extends BaseService {
         return result.getData();
     }
 
-    public TokenVO login(UserDTO userDTO) {
+    public TokenVO login(DUserDTO userDTO) {
         TokenVO vo = new TokenVO();
         Result<AdminUser> userResult = remoteService.getAdminByUsername(userDTO.getUsername());
         AdminUser user = userResult.getData();
         Assert.notNull(null != user, MessageConstants.getMsg("USER_NOT_EXIST"));
         Boolean passwordCheck = user.getPassword().equals(userDTO.getPassword());
         Assert.isTrue(passwordCheck, MessageConstants.getMsg("USER_PASS_WRONG"));
-        Assert.isTrue(user.getStatus() == 1, MessageConstants.getMsg("用户已冻结"));
+        Assert.isTrue(user.getStatus() == 1, "用户已冻结");
         String token = JwtHelper.createToken(userDTO.getUsername(), user.getId());
         String refreshToken = JwtHelper.createRefresh(userDTO.getUsername(), user.getId());
         //密码正确后清空错误次数

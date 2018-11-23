@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.common.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import javax.persistence.Column;
 import lombok.Data;
@@ -75,13 +76,13 @@ public class CommonTokenControl implements Serializable {
      * 价格波动基数
      */
     @Column(name = "price_base")
-    private BigInteger priceBase;
+    private BigDecimal priceBase;
 
     /**
      * 下个基准价格
      */
     @Column(name = "next_price")
-    private BigInteger nextPrice;
+    private BigDecimal nextPrice;
 
     /**
      * 涨跌波动最小百分比
@@ -242,38 +243,6 @@ public class CommonTokenControl implements Serializable {
      */
     public void setSellMax(Float sellMax) {
         this.sellMax = sellMax;
-    }
-
-    /**
-     * 价格波动基数
-     * @return price_base 价格波动基数
-     */
-    public BigInteger getPriceBase() {
-        return priceBase;
-    }
-
-    /**
-     * 价格波动基数
-     * @param priceBase 价格波动基数
-     */
-    public void setPriceBase(BigInteger priceBase) {
-        this.priceBase = priceBase;
-    }
-
-    /**
-     * 下个基准价格
-     * @return next_price 下个基准价格
-     */
-    public BigInteger getNextPrice() {
-        return nextPrice;
-    }
-
-    /**
-     * 下个基准价格
-     * @param nextPrice 下个基准价格
-     */
-    public void setNextPrice(BigInteger nextPrice) {
-        this.nextPrice = nextPrice;
     }
 
     /**

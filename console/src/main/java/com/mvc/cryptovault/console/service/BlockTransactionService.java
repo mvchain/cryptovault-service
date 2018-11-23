@@ -14,6 +14,7 @@ import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,8 +98,8 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
         BlockTransaction transaction = new BlockTransaction();
         transaction.setStatus(dBlockeTransactionDTO.getStatus());
-        transaction.setToAddress(dBlockeTransactionDTO.getToAddress());
-        transaction.setOrderNumber(dBlockeTransactionDTO.getOrderNumber());
+        transaction.setToAddress(StringUtils.isBlank(dBlockeTransactionDTO.getToAddress()) ? null : dBlockeTransactionDTO.getToAddress());
+        transaction.setOrderNumber(StringUtils.isBlank(dBlockeTransactionDTO.getOrderNumber()) ? null : dBlockeTransactionDTO.getOrderNumber());
         List<BlockTransaction> list = findByEntity(transaction);
         List<DBlockeTransactionVO> vos = new ArrayList<>(list.size());
         PageInfo result = new PageInfo(list);

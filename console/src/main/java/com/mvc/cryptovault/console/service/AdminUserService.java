@@ -17,7 +17,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 @Service
 public class AdminUserService extends AbstractService<AdminUser> implements BaseService<AdminUser> {
@@ -30,14 +29,13 @@ public class AdminUserService extends AbstractService<AdminUser> implements Base
     public AdminDetailVO getAdminDetail(BigInteger id) {
         AdminDetailVO result = new AdminDetailVO();
         AdminUser admin = findById(id);
-        BeanUtils.copyProperties(result, admin);
-        List<AdminUserPermission> permissions = adminUserPermissionService.findBy("user_id", id);
+        BeanUtils.copyProperties(admin, result);
+        List<AdminUserPermission> permissions = adminUserPermissionService.findBy("userId", id);
         List<AdminPermission> allPermission = adminPermissionService.findAll();
         List<PermissionDTO> permissionList = new ArrayList<>(allPermission.size());
-        Stream<AdminUserPermission> stream = permissions.stream();
         StringBuilder permissionStr = new StringBuilder();
         for (AdminPermission permission : allPermission) {
-            Boolean hasPermission = stream.anyMatch(obj -> obj.getPermissionId().equals(permission.getId()));
+            Boolean hasPermission = permissions.stream().anyMatch(obj -> obj.getPermissionId().equals(permission.getId()));
             permissionList.add(new PermissionDTO(permission.getId(), hasPermission ? 1 : 0));
             if (hasPermission) {
                 permissionStr.append(permission.getId() + ",");
@@ -71,6 +69,7 @@ public class AdminUserService extends AbstractService<AdminUser> implements Base
         adminUser.setNickname(adminDTO.getNickname());
         adminUser.setUsername(adminDTO.getUsername());
         adminUser.setStatus(adminDTO.getStatus());
+        adminUser.setId(adminDTO.getId());
         update(adminUser);
         String key = "AdminUser".toUpperCase() + "_" + adminUser.getId();
         redisTemplate.opsForValue().set(key, JSON.toJSONString(adminUser), 24, TimeUnit.HOURS);

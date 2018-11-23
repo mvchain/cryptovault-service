@@ -19,7 +19,6 @@ public class AdminUserPermission implements Serializable {
      * 用户id
      */
     @Id
-
     @Column(name = "user_id")
     private BigInteger userId;
 
