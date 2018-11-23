@@ -16,12 +16,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -69,12 +73,22 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
 
     @Bean
     public Docket createRestApi() {
+        //可以添加多个header或参数
+        ParameterBuilder aParameterBuilder = new ParameterBuilder();
+        aParameterBuilder
+                .parameterType("header")
+                .name("Authorization")
+                .description("token")
+                .modelRef(new ModelRef("string"))
+                .required(false).build();
+        List<Parameter> aParameters = new ArrayList<>();
+        aParameters.add(aParameterBuilder.build());
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.mvc.cryptovault.app"))
                 .paths(PathSelectors.any())
-                .build();
+                .build().globalOperationParameters(aParameters);
     }
 
     private ApiInfo apiInfo() {
