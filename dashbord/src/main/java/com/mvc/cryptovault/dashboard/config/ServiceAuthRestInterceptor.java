@@ -40,7 +40,7 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
     private void checkAnnotation(Claims claim, NotLogin loginAnn, String uri) throws LoginException {
         if (null == claim && null == loginAnn) {
             if (uri.indexOf("/refresh") > 0) {
-                throw new LoginException(MessageConstants.getMsg("TOKEN_WRONG"));
+                throw new LoginException(MessageConstants.getMsg("TOKEN_EXPIRE"));
             } else {
                 throw new TokenErrorException(MessageConstants.getMsg("TOKEN_EXPIRE"), MessageConstants.TOKEN_EXPIRE_CODE);
             }

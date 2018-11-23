@@ -39,7 +39,6 @@ public class UserController extends BaseController {
 
     @PostMapping("refresh")
     @ApiOperation("刷新令牌")
-    @NotLogin
     Result<String> refresh() {
         String result = userService.refresh();
         return new Result(result);

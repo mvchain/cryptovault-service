@@ -3,6 +3,7 @@ package com.mvc.cryptovault.common.bean.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 /**
  * request result object
@@ -19,8 +20,9 @@ public class Result<T> {
     private String message;
     private T data;
 
-    public Result(T data){
+    public Result(T data) {
         this.data = data;
+        this.code = HttpStatus.OK.value();
     }
 
 }

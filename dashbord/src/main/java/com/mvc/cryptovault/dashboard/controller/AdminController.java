@@ -78,7 +78,6 @@ public class AdminController extends BaseController {
 
     @PostMapping("refresh")
     @ApiOperation("刷新令牌")
-    @NotLogin
     Result<String> refresh() {
         String newToken = adminService.refresh();
         return new Result<>(newToken);
