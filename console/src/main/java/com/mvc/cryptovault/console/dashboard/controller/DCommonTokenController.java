@@ -81,6 +81,7 @@ public class DCommonTokenController extends BaseController {
             DTokenVO vo = new DTokenVO();
             vo.setTokenId(token.getId());
             List<CommonPair> pair = commonPairService.findBy("tokenId", token.getId());
+            BeanUtils.copyProperties(token, vo);
             Integer tokenInfo = pair.size() == 2 ? 3 : pair.size() == 0 ? 0 : pair.get(0).getTokenId().equals(BigInteger.ONE) ? 1 : 2;
             vo.setPairInfo(tokenInfo);
             result.add(vo);
@@ -116,6 +117,8 @@ public class DCommonTokenController extends BaseController {
     @PutMapping("setting")
     public Result<Boolean> tokenSetting(@RequestBody DTokenSettingVO dto) {
         commonTokenService.tokenSetting(dto);
+        commonTokenService.updateAllCache();
+        commonTokenService.updateCache(dto.getId());
         return new Result<>(true);
     }
 
@@ -131,7 +134,7 @@ public class DCommonTokenController extends BaseController {
         return new Result<>(result);
     }
 
-    @PutMapping("trans/{id}")
+    @GetMapping("trans/{id}")
     public Result<DTokenTransSettingVO> getTransSetting(@PathVariable("id") BigInteger id) {
         DTokenTransSettingVO result = commonTokenService.getTransSetting(id);
         return new Result<>(result);

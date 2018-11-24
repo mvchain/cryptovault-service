@@ -70,7 +70,7 @@ public interface ConsoleRemoteService {
     @GetMapping("dashboard/commonToken/setting/{id}")
     Result<DTokenSettingVO> getTokenSetting(@PathVariable("id") BigInteger id);
 
-    @PutMapping("dashboard/commonToken/trans/{id}")
+    @GetMapping("dashboard/commonToken/trans/{id}")
     Result<DTokenTransSettingVO> getTransSetting(@PathVariable("id") BigInteger id);
 
     @PutMapping("dashboard/commonToken/trans")

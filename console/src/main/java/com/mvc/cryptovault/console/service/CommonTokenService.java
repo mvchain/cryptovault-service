@@ -29,7 +29,6 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class CommonTokenService extends AbstractService<CommonToken> implements BaseService<CommonToken> {
@@ -139,6 +138,10 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
     public DTokenTransSettingVO getTransSetting(BigInteger id) {
         DTokenTransSettingVO result = new DTokenTransSettingVO();
         CommonTokenControl token = commonTokenControlService.findById(id);
+        if(null == token){
+            result.setTokenId(id);
+            return  result;
+        }
         BeanUtils.copyProperties(token, result);
         return result;
     }
@@ -168,10 +171,18 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
     }
 
     public void setTransSetting(DTokenTransSettingVO dto) {
-        CommonTokenControl token = new CommonTokenControl();
-        BeanUtils.copyProperties(dto, token);
-        commonTokenControlService.update(token);
-        commonTokenControlService.updateCache(token.getTokenId());
+        CommonTokenControl tokenControl = commonTokenControlService.findById(dto.getTokenId());
+        CommonToken token = findById(dto.getTokenId());
+        if(null == tokenControl && null != token){
+            tokenControl = new CommonTokenControl();
+            BeanUtils.copyProperties(dto, tokenControl);
+            commonTokenControlService.save(tokenControl);
+        } else{
+            tokenControl = new CommonTokenControl();
+            BeanUtils.copyProperties(dto, tokenControl);
+            commonTokenControlService.update(tokenControl);
+        }
+        commonTokenControlService.updateCache(tokenControl.getTokenId());
         commonTokenControlService.updateAllCache();
     }
 
