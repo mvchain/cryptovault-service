@@ -14,7 +14,6 @@ import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -88,25 +87,30 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         if (dBlockStatusDTO.getIds().endsWith(",")) {
             dBlockStatusDTO.setIds(dBlockStatusDTO.getIds().substring(0, dBlockStatusDTO.getIds().length() - 1));
         }
-        ConditionUtil.andCondition(criteria, String.format("id in (%s)"), dBlockStatusDTO.getIds());
+        ConditionUtil.andCondition(criteria, String.format("id in (%s)", dBlockStatusDTO.getIds()));
         BlockTransaction transaction = new BlockTransaction();
-        transaction.setStatus(dBlockStatusDTO.getStatus());
+        Integer transactionStatus = dBlockStatusDTO.getStatus() == 1 ? 2 : 3;
+        transaction.setTransactionStatus(transactionStatus);
         mapper.updateByConditionSelective(transaction, condition);
     }
 
     public PageInfo<DBlockeTransactionVO> getTransactions(PageDTO pageDTO, DBlockeTransactionDTO dBlockeTransactionDTO) {
-        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize());
-        BlockTransaction transaction = new BlockTransaction();
-        transaction.setStatus(dBlockeTransactionDTO.getStatus());
-        transaction.setToAddress(StringUtils.isBlank(dBlockeTransactionDTO.getToAddress()) ? null : dBlockeTransactionDTO.getToAddress());
-        transaction.setOrderNumber(StringUtils.isBlank(dBlockeTransactionDTO.getOrderNumber()) ? null : dBlockeTransactionDTO.getOrderNumber());
-        List<BlockTransaction> list = findByEntity(transaction);
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), pageDTO.getOrderBy());
+        Condition condition = new Condition(BlockTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "transaction_status = ", dBlockeTransactionDTO.getTransactionStatus());
+        ConditionUtil.andCondition(criteria, "to_address = ", dBlockeTransactionDTO.getToAddress());
+        ConditionUtil.andCondition(criteria, "order_number = ", dBlockeTransactionDTO.getOrderNumber());
+        ConditionUtil.andCondition(criteria, "opr_type = ", dBlockeTransactionDTO.getOprType());
+        ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
+        ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
+        List<BlockTransaction> list = findByCondition(condition);
         List<DBlockeTransactionVO> vos = new ArrayList<>(list.size());
         PageInfo result = new PageInfo(list);
         for (BlockTransaction blockTransaction : list) {
             DBlockeTransactionVO vo = new DBlockeTransactionVO();
             BeanUtils.copyProperties(blockTransaction, vo);
-            vo.setTokenName(tokenService.findById(vo.getId()).getTokenName());
+            vo.setTokenName(tokenService.findById(vo.getTokenId()).getTokenName());
             vo.setCellphone(appUserService.findById(blockTransaction.getUserId()).getCellphone());
             vos.add(vo);
         }

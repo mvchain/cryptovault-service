@@ -19,6 +19,8 @@ public class DBlockeTransactionDTO extends PageDTO implements Serializable {
     private String orderNumber;
     @ApiModelProperty("目标地址")
     private String toAddress;
-    @ApiModelProperty("0打包中 1确认中 2确认完毕 9失败")
-    private Integer status;
+    @ApiModelProperty("1. 待审核2. 待签名（审核通过后3. 拒绝4. 正在提币（导入签名文件后5. 提币成功（交易确认成功后6. 失败")
+    private Integer transactionStatus;
+    @ApiModelProperty("操作类型 1充值 2提现")
+    private Integer oprType;
 }
