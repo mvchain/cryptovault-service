@@ -17,7 +17,7 @@ import java.util.List;
 public interface ConsoleRemoteService {
 
     @GetMapping("dashboard/adminUser")
-    Result<PageInfo<AdminVO>> getAdmins(@RequestBody PageDTO dto);
+    Result<PageInfo<AdminVO>> getAdmins(@RequestParam("userId") BigInteger userId,@RequestBody PageDTO dto);
 
     @GetMapping("dashboard/adminUser/{id}")
     Result<AdminDetailVO> getAdminDetail(@PathVariable("id") BigInteger id);
@@ -35,7 +35,7 @@ public interface ConsoleRemoteService {
     Result<Boolean> newAdmin(@RequestBody AdminDTO adminDTO);
 
     @PutMapping("dashboard/adminUser")
-    Result<Boolean> updateAdmin(@RequestBody AdminDTO adminDTO);
+    Result<Boolean> updateAdmin(@RequestParam("userId") BigInteger userId, @RequestBody AdminDTO adminDTO);
 
     @GetMapping("dashboard/adminUser/balance")
     Result<BigDecimal> getBalance(@RequestParam(value = "tokenId", required = false) BigInteger tokenId);

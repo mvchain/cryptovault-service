@@ -27,7 +27,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("用户列表查询")
     @GetMapping
-    public Result<PageInfo<DUSerVO>> findUser(@ModelAttribute @Valid PageDTO pageDTO, @RequestParam String cellphone) {
+    public Result<PageInfo<DUSerVO>> findUser(@ModelAttribute @Valid PageDTO pageDTO, @RequestParam(required = false) String cellphone) {
         PageInfo<DUSerVO> result = userService.findUser(pageDTO, cellphone);
         return new Result<>(result);
     }

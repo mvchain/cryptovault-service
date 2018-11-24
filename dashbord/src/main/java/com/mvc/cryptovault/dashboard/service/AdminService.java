@@ -2,9 +2,7 @@ package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AdminUser;
-import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
-import com.mvc.cryptovault.common.bean.dto.UserDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TokenVO;
 import com.mvc.cryptovault.common.constant.RedisConstant;
@@ -33,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 public class AdminService extends BaseService {
 
     public PageInfo<AdminVO> getAdmins(PageDTO dto) {
-        Result<PageInfo<AdminVO>> result = remoteService.getAdmins(dto);
+        Result<PageInfo<AdminVO>> result = remoteService.getAdmins(getUserId(), dto);
         return result.getData();
     }
 
@@ -95,7 +93,7 @@ public class AdminService extends BaseService {
     }
 
     public Boolean updateAdmin(AdminDTO adminDTO) {
-        Result<Boolean> result = remoteService.updateAdmin(adminDTO);
+        Result<Boolean> result = remoteService.updateAdmin(getUserId(), adminDTO);
         return result.getData();
     }
 }

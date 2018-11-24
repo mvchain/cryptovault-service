@@ -21,6 +21,7 @@
         <module>order</module>
         <module>console</module>
         <module>eureka</module>
+        <module>test</module>
     </modules>
 
     <parent>

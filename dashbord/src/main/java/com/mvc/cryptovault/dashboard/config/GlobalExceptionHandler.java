@@ -47,4 +47,5 @@ public class GlobalExceptionHandler {
     public Result methodArgumentNotValidExceptionException(MethodArgumentNotValidException e) {
         return new Result(HttpStatus.BAD_REQUEST.value(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), null);
     }
+
 }

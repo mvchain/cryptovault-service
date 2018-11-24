@@ -12,6 +12,7 @@ import com.mvc.cryptovault.console.common.BaseService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class AdminUserService extends AbstractService<AdminUser> implements Base
     }
 
     public void newAdmin(AdminDTO adminDTO) {
+        Assert.isNull(findOneBy("username", adminDTO.getUsername()), "用户名已存在");
         Long time = System.currentTimeMillis();
         AdminUser adminUser = new AdminUser();
         adminUser.setCreatedAt(time);
@@ -57,12 +59,14 @@ public class AdminUserService extends AbstractService<AdminUser> implements Base
         adminUser.setAdminType(1);
         adminUser.setStatus(adminDTO.getStatus());
         save(adminUser);
-        String key = "AdminUser".toUpperCase() + "_" + adminUser.getId();
-        redisTemplate.opsForValue().set(key, JSON.toJSONString(adminUser), 24, TimeUnit.HOURS);
+        updateAllCache();
+        updateCache(adminUser.getId());
         adminUserPermissionService.updatePermission(adminUser.getId(), adminDTO.getPermissionList());
     }
 
     public void updateAdmin(AdminDTO adminDTO) {
+        AdminUser user = findOneBy("username", adminDTO.getUsername());
+        Assert.isTrue(null == user || user.getId().equals(adminDTO.getId()), "用户名已存在");
         Long time = System.currentTimeMillis();
         AdminUser adminUser = new AdminUser();
         adminUser.setUpdatedAt(time);

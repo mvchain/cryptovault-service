@@ -30,5 +30,7 @@ public class AdminDetailVO implements Serializable {
     @ApiModelProperty("启用开关")
     private Integer status;
 
+    @ApiModelProperty("管理员类型 0主管理员 1子管理员")
+    private Integer adminType;
 }
 

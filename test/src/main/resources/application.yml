@@ -1,0 +1,52 @@
+spring:
+  redis:
+    database: 1
+    host: 192.168.15.31
+    timeout: 1000ms
+    jedis:
+      pool:
+        max-idle: 8
+        max-active: 8
+        min-idle: 0
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+  thymeleaf:
+    cache: false
+  mvc:
+    async:
+      request-timeout: 10ms
+  application:
+    name: TEST
+logging:
+  level:
+    org: info
+    io.swagger.models.parameters.AbstractSerializableParameter: error
+
+server:
+  port: 10082
+  tomcat:
+    max-threads: 5000
+    min-spare-threads: 1000
+    max-connections: 5000
+  connection-timeout: 1000ms
+
+cors.allowedOrigin: '*'
+
+service:
+  name: test
+  expire: 6048000
+  refresh: 604800000
+  base64Secret: LDk4ZjZ1iY2Q0NjIxZDM6M2hZGU0ZTgzMjYyN2I0ZjY=
+
+hystrix.command.default.execution:
+  isolation.thread.timeoutInMilliseconds: 500
+  timeout.enabled: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8762/eureka/
+#swaggermock.switchOn: true
+#swaggermock.retry: 5000

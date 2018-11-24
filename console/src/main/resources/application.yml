@@ -57,5 +57,5 @@ eureka:
       defaultZone: http://localhost:8762/eureka/
 
 jpush:
-  secret: 25aa2d0fa6c0e771673d63e8
-  app_key: 66c12addf2b6efe3338d2177
+  secret: ceb608151cb036203ed18404
+  app_key: 794af16f097626541a649ef1
