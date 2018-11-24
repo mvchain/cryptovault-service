@@ -80,6 +80,12 @@ public class BlockTransaction implements Serializable {
     private Integer status;
 
     /**
+     * 交易状态
+     */
+    @Column(name = "transaction_status")
+    private Integer transactionStatus;
+
+    /**
      * 错误原因
      */
     @Column(name = "error_msg")

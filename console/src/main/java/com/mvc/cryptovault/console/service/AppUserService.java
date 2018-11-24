@@ -31,7 +31,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
     AppMessageService appMessageService;
 
     public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone) {
-        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum(), pageDTO.getOrderBy());
+        PageHelper.startPage(pageDTO.getPageNum(),pageDTO.getPageSize()  , "id desc");
         Condition condition = new Condition(AppUser.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "cellphone = ", cellphone);
@@ -53,7 +53,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
     }
 
     public PageInfo<DUserLogVO> getUserLog(BigInteger id, PageDTO pageDTO) {
-        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum(), pageDTO.getOrderBy());
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), pageDTO.getOrderBy());
         Condition condition = new Condition(AppMessage.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "user_id = ", id);
