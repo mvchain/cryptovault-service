@@ -25,6 +25,9 @@ public class DAppProjectUserTransactionController extends BaseController {
         AppProjectUserTransaction appProjectUserTransaction = appProjectUserTransactionService.findById(id);
         Assert.isTrue(appProjectUserTransaction.getResult() == 0, "无法取消");
         appProjectUserTransaction.setResult(4);
+        appProjectUserTransactionService.update(appProjectUserTransaction);
+        appProjectUserTransactionService.updateAllCache();
+        appProjectUserTransactionService.updateCache(id);
         return new Result<>(true);
     }
 

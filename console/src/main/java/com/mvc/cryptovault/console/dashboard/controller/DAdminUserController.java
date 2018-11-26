@@ -9,6 +9,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.AdminPasswordDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.util.PageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -37,23 +38,8 @@ public class DAdminUserController extends BaseController {
             return new Result<>(new PageInfo<>(Arrays.asList(vo)));
         }
         List<AdminUser> list = adminUserService.findAll();
-        Integer start = 0;
         Integer total = list.size();
-        Integer end = list.size();
-        if (null != dto.getPageSize() && null != dto.getPageNum()) {
-            if (dto.getPageNum() < 1) {
-                dto.setPageNum(1);
-            }
-            start = (dto.getPageNum() - 1) * dto.getPageSize();
-            end = start + dto.getPageSize();
-            if (start > list.size()) {
-                start = list.size();
-            }
-            if (end > list.size()) {
-                end = list.size();
-            }
-        }
-        list = list.subList(start, end);
+        list = PageUtil.subList(list, dto);
         List<AdminVO> vos = new ArrayList<>(list.size());
         list.forEach(obj -> {
             AdminVO vo = new AdminVO();

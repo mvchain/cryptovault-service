@@ -207,12 +207,14 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         if (flag) {
             return new PageInfo<>();
         }
-        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum());
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), dto.getOrderBy());
         Condition condition = new Condition(AppProjectUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "user_id = ", null == user ? null : user.getId());
         ConditionUtil.andCondition(criteria, "project_id = ", null == project ? null : project.getId());
-        ConditionUtil.andCondition(criteria, "status = ", dto.getStatus());
+        ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
+        ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
+        ConditionUtil.andCondition(criteria, "result = ", dto.getStatus());
         List<AppProjectUserTransaction> list = findByCondition(condition);
         List<DProjectOrderVO> vos = new ArrayList<>(list.size());
         for (AppProjectUserTransaction transaction : list) {

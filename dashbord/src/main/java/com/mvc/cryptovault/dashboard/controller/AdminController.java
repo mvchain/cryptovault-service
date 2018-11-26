@@ -11,13 +11,17 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DUserDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
+import com.mvc.cryptovault.dashboard.service.OssService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.util.Map;
 
 /**
  * @author qiyichen
@@ -28,6 +32,8 @@ import java.math.BigInteger;
 @RequestMapping("admin")
 public class AdminController extends BaseController {
 
+    @Autowired
+    private OssService ossService;
     @ApiOperation("获取所有管理员")
     @GetMapping()
     public Result<PageInfo<AdminVO>> getAdmins(@ModelAttribute @Valid PageDTO dto) {
@@ -88,6 +94,12 @@ public class AdminController extends BaseController {
     public Result<String> getExportSign() {
         String sign = adminService.getSign();
         return new Result<>(sign);
+    }
+
+    @ApiOperation("获取oss签名")
+    @GetMapping("signature")
+    Result<Map> doGetSignature(@RequestParam String dir) throws UnsupportedEncodingException {
+        return new Result<>(ossService.doGetSignature(dir));
     }
 
 }

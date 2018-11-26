@@ -138,9 +138,9 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
     public DTokenTransSettingVO getTransSetting(BigInteger id) {
         DTokenTransSettingVO result = new DTokenTransSettingVO();
         CommonTokenControl token = commonTokenControlService.findById(id);
-        if(null == token){
+        if (null == token) {
             result.setTokenId(id);
-            return  result;
+            return result;
         }
         BeanUtils.copyProperties(token, result);
         return result;
@@ -173,13 +173,27 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
     public void setTransSetting(DTokenTransSettingVO dto) {
         CommonTokenControl tokenControl = commonTokenControlService.findById(dto.getTokenId());
         CommonToken token = findById(dto.getTokenId());
-        if(null == tokenControl && null != token){
+        //开启过一次以后开盘价格不能变化
+        if (null == tokenControl && null != token) {
             tokenControl = new CommonTokenControl();
             BeanUtils.copyProperties(dto, tokenControl);
+            if (tokenControl.getTransactionStatus() == 1) {
+                tokenControl.setStartStatus(1);
+            } else {
+                tokenControl.setStartStatus(0);
+            }
             commonTokenControlService.save(tokenControl);
-        } else{
+        } else {
+            Integer startStatus = tokenControl.getStartStatus();
             tokenControl = new CommonTokenControl();
             BeanUtils.copyProperties(dto, tokenControl);
+            tokenControl.setStartStatus(startStatus);
+            if (startStatus == 1) {
+                tokenControl.setStartPrice(null);
+            }
+            if (startStatus == 0 && tokenControl.getTransactionStatus() == 1) {
+                tokenControl.setStartStatus(1);
+            }
             commonTokenControlService.update(tokenControl);
         }
         commonTokenControlService.updateCache(tokenControl.getTokenId());

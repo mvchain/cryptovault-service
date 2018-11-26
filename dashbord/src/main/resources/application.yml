@@ -44,6 +44,13 @@ hystrix.command.default.execution:
   isolation.thread.timeoutInMilliseconds: 500
   timeout.enabled: true
 
+oss:
+  endpoint: oss-cn-hongkong.aliyuncs.com
+  accessKeyId: LTAIWG3fwPIlG6Qh
+  accessKeySecret: xec5BFxZYTtSIJG0pzhBtlwqMVsynr
+  bucketName: buytoken
+  protocol: http
+
 eureka:
   client:
     service-url:

@@ -134,8 +134,12 @@ public abstract class AbstractService<T> implements BaseService<T> {
      * @return
      */
     @Override
-    public List<T> findAll() {
-        PageHelper.startPage(0, 9999);
+    public List<T> findAll(String... orderBy) {
+        if (null != orderBy) {
+            PageHelper.startPage(0, 9999, orderBy[0]);
+        } else {
+            PageHelper.startPage(0, 9999);
+        }
         String key = modelClass.getSimpleName().toUpperCase();
         List<T> list = null;
         list = (List<T>) hTreeMap.get(key);
@@ -147,15 +151,20 @@ public abstract class AbstractService<T> implements BaseService<T> {
     }
 
     @Override
-    public void updateAllCache(){
+    public void updateAllCache(String... orderBy) {
+        if (null != orderBy && orderBy.length > 0) {
+            PageHelper.startPage(0, 9999, orderBy[0]);
+        } else {
+            PageHelper.startPage(0, 9999);
+        }
         String key = modelClass.getSimpleName().toUpperCase();
         PageHelper.startPage(0, 9999);
-        List<T>  list = mapper.selectAll();
+        List<T> list = mapper.selectAll();
         hTreeMap.put(key, list);
     }
 
     @Override
-    public void updateCache(Object pvKey){
+    public void updateCache(Object pvKey) {
         String key = modelClass.getSimpleName().toUpperCase() + "_" + pvKey;
         T obj = mapper.selectByPrimaryKey(pvKey);
         if (null == obj) {

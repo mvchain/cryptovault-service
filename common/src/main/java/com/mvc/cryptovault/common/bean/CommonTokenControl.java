@@ -1,14 +1,13 @@
 package com.mvc.cryptovault.common.bean;
 
+import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import javax.persistence.Column;
-import lombok.Data;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import lombok.Data;
-import lombok.Generated;
 
 /**
  * common_token_control
@@ -96,6 +95,13 @@ public class CommonTokenControl implements Serializable {
     @Column(name = "wave_max")
     private Float waveMax;
 
+
+    private BigDecimal startPrice;
+
+    private Integer startStatus;
+
+    private Integer transactionStatus;
+
     /**
      * common_token_control
      */
@@ -103,6 +109,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 令牌id
+     *
      * @return token_id 令牌id
      */
     public BigInteger getTokenId() {
@@ -111,6 +118,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 令牌id
+     *
      * @param tokenId 令牌id
      */
     public void setTokenId(BigInteger tokenId) {
@@ -119,6 +127,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 最小涨停百分比
+     *
      * @return increase_min 最小涨停百分比
      */
     public Float getIncreaseMin() {
@@ -127,6 +136,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 最小涨停百分比
+     *
      * @param increaseMin 最小涨停百分比
      */
     public void setIncreaseMin(Float increaseMin) {
@@ -135,6 +145,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 最大涨停百分比
+     *
      * @return increase_max 最大涨停百分比
      */
     public Float getIncreaseMax() {
@@ -143,6 +154,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 最大涨停百分比
+     *
      * @param increaseMax 最大涨停百分比
      */
     public void setIncreaseMax(Float increaseMax) {
@@ -151,6 +163,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 最小跌停百分比
+     *
      * @return decrease_min 最小跌停百分比
      */
     public Float getDecreaseMin() {
@@ -159,6 +172,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 最小跌停百分比
+     *
      * @param decreaseMin 最小跌停百分比
      */
     public void setDecreaseMin(Float decreaseMin) {
@@ -167,6 +181,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 最大跌停百分比
+     *
      * @return decrease_max 最大跌停百分比
      */
     public Float getDecreaseMax() {
@@ -175,6 +190,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 最大跌停百分比
+     *
      * @param decreaseMax 最大跌停百分比
      */
     public void setDecreaseMax(Float decreaseMax) {
@@ -183,6 +199,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 购买定价下限
+     *
      * @return buy_min 购买定价下限
      */
     public Float getBuyMin() {
@@ -191,6 +208,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 购买定价下限
+     *
      * @param buyMin 购买定价下限
      */
     public void setBuyMin(Float buyMin) {
@@ -199,6 +217,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 购买定价上限
+     *
      * @return buy_max 购买定价上限
      */
     public Float getBuyMax() {
@@ -207,6 +226,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 购买定价上限
+     *
      * @param buyMax 购买定价上限
      */
     public void setBuyMax(Float buyMax) {
@@ -215,6 +235,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 出售定价下限
+     *
      * @return sell_min 出售定价下限
      */
     public Float getSellMin() {
@@ -223,6 +244,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 出售定价下限
+     *
      * @param sellMin 出售定价下限
      */
     public void setSellMin(Float sellMin) {
@@ -231,6 +253,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 出售定价上限
+     *
      * @return sell_max 出售定价上限
      */
     public Float getSellMax() {
@@ -239,6 +262,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 出售定价上限
+     *
      * @param sellMax 出售定价上限
      */
     public void setSellMax(Float sellMax) {
@@ -247,6 +271,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 涨跌波动最小百分比
+     *
      * @return wave_min 涨跌波动最小百分比
      */
     public Float getWaveMin() {
@@ -255,6 +280,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 涨跌波动最小百分比
+     *
      * @param waveMin 涨跌波动最小百分比
      */
     public void setWaveMin(Float waveMin) {
@@ -263,6 +289,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 涨跌波动最大百分比
+     *
      * @return wave_max 涨跌波动最大百分比
      */
     public Float getWaveMax() {
@@ -271,6 +298,7 @@ public class CommonTokenControl implements Serializable {
 
     /**
      * 涨跌波动最大百分比
+     *
      * @param waveMax 涨跌波动最大百分比
      */
     public void setWaveMax(Float waveMax) {

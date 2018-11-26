@@ -9,6 +9,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
+import com.mvc.cryptovault.console.util.PageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +36,10 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
     }
 
     public PageInfo<DProjectVO> projects(PageDTO pageDTO) {
-        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum());
-        List<AppProject> list = findAll();
+        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum(), "id desc");
+        List<AppProject> list = findAll("id desc");
+        Integer total = list.size();
+        list = PageUtil.subList(list, pageDTO);
         PageInfo result = new PageInfo(list);
         List<DProjectVO> vos = new ArrayList<>(list.size());
         for (AppProject appProject : list) {
@@ -44,6 +47,7 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
             BeanUtils.copyProperties(appProject, vo);
             vos.add(vo);
         }
+        result.setTotal(total);
         result.setList(vos);
         return result;
     }

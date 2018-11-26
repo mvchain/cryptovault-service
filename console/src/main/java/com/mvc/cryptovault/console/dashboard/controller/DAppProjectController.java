@@ -33,7 +33,8 @@ public class DAppProjectController extends BaseController {
         //只有未展示的项目才可以删除
         Assert.isTrue(null != appProject && appProject.getVisiable() == 0, "项目已展示,无法删除");
         appProjectService.deleteById(id);
-        appProjectService.updateAllCache();
+        appProjectService.updateAllCache("id desc");
+        appProjectService.updateCache(id);
         return new Result<>(true);
     }
 
@@ -45,14 +46,15 @@ public class DAppProjectController extends BaseController {
         appProject = appProjectService.findById(dProjectDTO.getId());
         String key = "AppProject".toUpperCase() + "_" + dProjectDTO.getId();
         redisTemplate.opsForValue().set(key, JSON.toJSONString(appProject), 24, TimeUnit.HOURS);
-        appProjectService.updateAllCache();
+        appProjectService.updateAllCache("id desc");
+        appProjectService.updateCache(dProjectDTO.getId());
         return new Result<>(true);
     }
 
     @PostMapping("")
     public Result<Boolean> newProject(@RequestBody DProjectDTO dProjectDTO) {
         appProjectService.newProject(dProjectDTO);
-        appProjectService.updateAllCache();
+        appProjectService.updateAllCache("id desc");
         return new Result<>(true);
     }
 

@@ -24,6 +24,9 @@ public class DProjectDetailVO implements Serializable {
     @ApiModelProperty("基础货币id")
     private BigInteger baseTokenId;
 
+    @ApiModelProperty("货币id")
+    private BigInteger tokenId;
+
     @ApiModelProperty("基础货币名称")
     private String baseTokenName;
 
@@ -54,4 +57,6 @@ public class DProjectDetailVO implements Serializable {
     @ApiModelProperty("最小购买数量")
     private BigDecimal projectMin;
 
+    @ApiModelProperty("发布时间")
+    private Long publishAt;
 }

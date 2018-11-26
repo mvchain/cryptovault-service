@@ -60,4 +60,7 @@ public class DProjectDTO implements Serializable {
     @ApiModelProperty("最小购买数量")
     private BigDecimal projectMin;
 
+    @ApiModelProperty("发布时间")
+    private Long publishAt;
+
 }

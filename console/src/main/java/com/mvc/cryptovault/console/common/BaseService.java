@@ -107,12 +107,12 @@ public interface BaseService<T> {
      *
      * @return
      */
-    List<T> findAll();
+    List<T> findAll(String... orderBy);
 
     /**
      * 更新缓存
      */
-    void updateAllCache();
+    void updateAllCache(String... orderBy);
 
     /**
      * 更新指定缓存

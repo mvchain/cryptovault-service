@@ -47,4 +47,14 @@ public class DTokenSettingVO implements Serializable {
 
     @ApiModelProperty("令牌名称")
     private String tokenName;
+
+    @ApiModelProperty("开盘价格")
+    private BigDecimal startPrice;
+
+    @ApiModelProperty("开始过状态")
+    private Integer startStatus;
+
+    @ApiModelProperty("交易状态")
+    private Integer transactionStatus;
+
 }

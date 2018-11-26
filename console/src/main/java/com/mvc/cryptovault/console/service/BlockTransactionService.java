@@ -100,6 +100,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "transaction_status = ", dBlockeTransactionDTO.getTransactionStatus());
         ConditionUtil.andCondition(criteria, "to_address = ", dBlockeTransactionDTO.getToAddress());
+        ConditionUtil.andCondition(criteria, "to_address = ", dBlockeTransactionDTO.getFromAddress());
         ConditionUtil.andCondition(criteria, "order_number = ", dBlockeTransactionDTO.getOrderNumber());
         ConditionUtil.andCondition(criteria, "opr_type = ", dBlockeTransactionDTO.getOprType());
         ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
