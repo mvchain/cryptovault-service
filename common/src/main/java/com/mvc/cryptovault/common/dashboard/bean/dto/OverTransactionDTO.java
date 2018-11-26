@@ -28,7 +28,7 @@ public class OverTransactionDTO extends PageDTO implements Serializable {
     @ApiModelProperty("手机号")
     private String cellphone;
 
-    @ApiModelProperty("父订单号")
+    @ApiModelProperty("父订id")
     private String parentOrderNumber;
 
 }

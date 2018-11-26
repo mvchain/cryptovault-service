@@ -91,6 +91,12 @@ public class AppUserTransaction implements Serializable {
     private Integer transactionType;
 
     /**
+     * 是否为挂单方id
+     */
+    @Column(name = "self_order")
+    private Integer selfOrder;
+
+    /**
      * 订单状态 0未完成 1全部完成 4取消
      */
     @Column(name = "status")

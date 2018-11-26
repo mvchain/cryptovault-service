@@ -33,6 +33,7 @@ public class DAppUserTransactionController extends BaseController {
         AppUserTransaction userTransaction = appUserTransactionService.findById(id);
         Assert.isTrue(userTransaction.getStatus() == 0, "无法取消");
         userTransaction.setStatus(4);
+        appUserTransactionService.update(userTransaction);
         appUserTransactionService.updateAllCache();
         appUserTransactionService.updateCache(id);
         return new Result<>(true);

@@ -28,7 +28,7 @@ public class OverTransactionVO implements Serializable {
     private String parentOrderNumber;
 
     @ApiModelProperty("交易对")
-    private BigInteger pairName;
+    private String pairName;
 
     @ApiModelProperty("交易类型 1购买 2出售")
     private Integer transactionType;
@@ -45,4 +45,9 @@ public class OverTransactionVO implements Serializable {
     @ApiModelProperty("基础交易币种名称(币种单位)")
     private String baseTokenName;
 
+    @ApiModelProperty("id")
+    private BigInteger id;
+
+    @ApiModelProperty("父订单id")
+    private BigInteger parentId;
 }

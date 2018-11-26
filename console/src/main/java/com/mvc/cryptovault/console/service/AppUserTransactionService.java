@@ -141,6 +141,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             transaction.setParentId(BigInteger.ZERO);
             transaction.setSuccessValue(BigDecimal.ZERO);
             transaction.setTargetUserId(BigInteger.ZERO);
+            transaction.setSelfOrder(1);
             save(transaction);
         } else {
             Long targetId = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
@@ -159,6 +160,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             transaction.setParentId(targetTransaction.getId());
             transaction.setSuccessValue(dto.getValue());
             transaction.setTargetUserId(targetTransaction.getUserId());
+            transaction.setSelfOrder(1);
             save(transaction);
             //生成目标用户交易记录
             var targetSubTransaction = new AppUserTransaction();
@@ -169,6 +171,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             targetSubTransaction.setParentId(targetTransaction.getId());
             targetSubTransaction.setOrderNumber("P" + String.format("%09d", targetId));
             targetSubTransaction.setTransactionType(dto.getTransactionType().equals(1) ? 2 : 1);
+            targetSubTransaction.setSelfOrder(0);
             save(targetSubTransaction);
             //成交后根据买卖分类更新对应余额
             if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
@@ -232,11 +235,14 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         Condition condition = new Condition(AppUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "pair_id = ", dTransactionDTO.getPairId());
+        ConditionUtil.andCondition(criteria, "parent_id = ", BigInteger.ZERO);
         ConditionUtil.andCondition(criteria, "status = ", dTransactionDTO.getStatus());
         ConditionUtil.andCondition(criteria, "transaction_type = ", dTransactionDTO.getTransactionType());
+        ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
+        ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
         ConditionUtil.andCondition(criteria, "order_number = ", dTransactionDTO.getOrderNumber());
         ConditionUtil.andCondition(criteria, "user_id = ", null == appUser ? null : appUser.getId());
-        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum(), pageDTO.getOrderBy());
+        PageHelper.startPage( pageDTO.getPageNum(),pageDTO.getPageSize(), pageDTO.getOrderBy());
         List<AppUserTransaction> list = findByCondition(condition);
         List<DTransactionVO> vos = new ArrayList<>(list.size());
         PageInfo result = new PageInfo(list);
@@ -257,7 +263,13 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     public PageInfo<OverTransactionVO> overList(PageDTO pageDTO, OverTransactionDTO overTransactionDTO) {
         AppUser appUser = StringUtils.isBlank(overTransactionDTO.getCellphone()) ? null : appUserService.findOneBy("cellphone", overTransactionDTO.getCellphone());
-        AppUserTransaction transaction = findOneBy("orderNumber", overTransactionDTO.getParentOrderNumber());
+        AppUserTransaction transaction = null;
+        if(StringUtils.isNotBlank(overTransactionDTO.getParentOrderNumber()) ){
+            AppUserTransaction trans = new AppUserTransaction();
+            trans.setOrderNumber(overTransactionDTO.getParentOrderNumber());
+            trans.setParentId(BigInteger.ZERO);
+            transaction = findOneByEntity(trans);
+        }
         Boolean flag = StringUtils.isNotBlank(overTransactionDTO.getCellphone()) && null == appUser || StringUtils.isNotBlank(overTransactionDTO.getParentOrderNumber()) && null == transaction;
         if (flag) {
             return new PageInfo<>();
@@ -267,6 +279,9 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         ConditionUtil.andCondition(criteria, "pair_id = ", overTransactionDTO.getPairId());
         ConditionUtil.andCondition(criteria, "order_number = ", overTransactionDTO.getOrderNumber());
         ConditionUtil.andCondition(criteria, "transaction_type = ", overTransactionDTO.getTransactionType());
+        ConditionUtil.andCondition(criteria, "self_order = ", 1);
+        ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
+        ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
         ConditionUtil.andCondition(criteria, "user_id = ", null == appUser ? null : appUser.getId());
         if (null == transaction) {
             ConditionUtil.andCondition(criteria, "parent_id != ", BigInteger.ZERO);
@@ -274,7 +289,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             ConditionUtil.andCondition(criteria, "parent_id = ", transaction.getId());
         }
         ConditionUtil.andCondition(criteria, "status = ", 1);
-        PageHelper.startPage(pageDTO.getPageSize(), pageDTO.getPageNum(), pageDTO.getOrderBy());
+        PageHelper.startPage(pageDTO.getPageNum(),pageDTO.getPageSize(), pageDTO.getOrderBy());
         List<AppUserTransaction> list = findByCondition(condition);
         List<OverTransactionVO> vos = new ArrayList<>(list.size());
         PageInfo result = new PageInfo(list);
@@ -286,8 +301,9 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             AppUserTransaction parent = findById(trans.getPairId());
             vo.setCellphone(appUser.getCellphone());
             vo.setParentOrderNumber(parent.getOrderNumber());
+            vo.setPairName(pair.getPairName());
             vo.setBaseTokenName(pair.getBaseTokenName());
-            vo.setParentOrderNumber(pair.getPairName());
+            vo.setParentOrderNumber(parent.getOrderNumber());
             vos.add(vo);
         }
         result.setList(vos);

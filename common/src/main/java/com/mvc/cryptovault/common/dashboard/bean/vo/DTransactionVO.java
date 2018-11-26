@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * @author qiyichen
@@ -46,5 +47,8 @@ public class DTransactionVO implements Serializable {
 
     @ApiModelProperty("手机号")
     private String cellphone;
+
+    @ApiModelProperty
+    private BigInteger id;
 
 }
