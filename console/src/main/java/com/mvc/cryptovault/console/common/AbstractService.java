@@ -135,7 +135,7 @@ public abstract class AbstractService<T> implements BaseService<T> {
      */
     @Override
     public List<T> findAll(String... orderBy) {
-        if (null != orderBy) {
+        if (null != orderBy && orderBy.length > 0) {
             PageHelper.startPage(0, 9999, orderBy[0]);
         } else {
             PageHelper.startPage(0, 9999);
