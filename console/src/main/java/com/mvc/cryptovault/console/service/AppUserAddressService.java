@@ -7,6 +7,7 @@ import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.dao.AppUserAddressMapper;
 import com.mvc.cryptovault.console.dao.CommonAddressMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,7 +43,7 @@ public class AppUserAddressService extends AbstractService<AppUserAddress> imple
         AppUserAddress appUserAddress = new AppUserAddress();
         String address = "";
         //基础货币没有地址(余额类型)
-        if (!token.getId().equals(BigInteger.valueOf(2))) {
+        if (StringUtils.isNotBlank(token.getTokenType())) {
             CommonAddress commonAddress = commonAddressMapper.findUnUsed(token.getTokenType());
             commonAddress.setUsed(1);
             commonAddress.setUserId(userId);

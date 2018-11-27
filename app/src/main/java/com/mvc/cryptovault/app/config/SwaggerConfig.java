@@ -81,6 +81,12 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .description("token")
                 .modelRef(new ModelRef("string"))
                 .required(false).build();
+        aParameterBuilder
+                .parameterType("header")
+                .name("Accept-Language")
+                .description("国际化设置,目前只支持zh-cn/en-US,如需扩展参考官方字段说明")
+                .modelRef(new ModelRef("string"))
+                .required(false).build();
         List<Parameter> aParameters = new ArrayList<>();
         aParameters.add(aParameterBuilder.build());
         return new Docket(DocumentationType.SWAGGER_2)
@@ -98,6 +104,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .version("1.0")
                 .build();
     }
+
     @Bean
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver slr = new AcceptHeaderLocaleResolver();

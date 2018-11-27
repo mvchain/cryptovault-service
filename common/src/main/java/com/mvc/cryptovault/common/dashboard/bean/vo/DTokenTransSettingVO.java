@@ -54,4 +54,12 @@ public class DTokenTransSettingVO implements Serializable {
     @ApiModelProperty("波动上限")
     private Float waveMax;
 
+    @ApiModelProperty("开盘价格")
+    private BigDecimal startPrice;
+
+    @ApiModelProperty("开始过状态")
+    private Integer startStatus;
+
+    @ApiModelProperty("交易状态")
+    private Integer transactionStatus;
 }

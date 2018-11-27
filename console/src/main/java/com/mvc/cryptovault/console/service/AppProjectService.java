@@ -29,6 +29,7 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
         AppProject appProject = new AppProject();
         BeanUtils.copyProperties(dProjectDTO, appProject);
         appProject.setPairId(pairId);
+        appProject.setStatus(0);
         save(appProject);
         String key = "AppProject".toUpperCase() + "_" + dProjectDTO.getId();
         redisTemplate.opsForValue().set(key, JSON.toJSONString(appProject), 24, TimeUnit.HOURS);

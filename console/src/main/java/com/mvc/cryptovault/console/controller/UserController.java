@@ -1,7 +1,7 @@
 package com.mvc.cryptovault.console.controller;
 
-import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.AppUser;
+import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
-import static com.mvc.cryptovault.common.constant.RedisConstant.*;
+import static com.mvc.cryptovault.common.constant.RedisConstant.APP_USER_USERNAME;
+
 /**
  * @author qiyichen
  * @create 2018/11/12 14:35
@@ -40,7 +41,7 @@ public class UserController extends BaseController {
     }
 
     @GetMapping("{id}")
-    public Result<AppUser> getUserById(@PathVariable BigInteger id){
+    public Result<AppUser> getUserById(@PathVariable BigInteger id) {
         return new Result(appUserService.findById(id));
     }
 

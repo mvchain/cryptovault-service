@@ -111,8 +111,12 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     //TODO 步骤较多,异步化
     public void buy(BigInteger userId, TransactionBuyDTO dto) {
+        dto.setId(BigInteger.ZERO.equals(dto.getId())?null:dto.getId());
         CommonPair pair = commonPairService.findById(dto.getPairId());
         CommonTokenPrice tokenPrice = commonTokenPriceService.findById(pair.getTokenId());
+        CommonTokenControl token = commonTokenControlService.findById(pair.getTokenId());
+        //校验开关是否开启
+        Assert.isTrue(null!= token && token.getTransactionStatus() == 1,  MessageConstants.getMsg("TRANS_STATUS_CLOSE"));
         //校验余额是否足够
         checkBalance(userId, dto, pair);
         //校验浮动范围是否正确
@@ -196,9 +200,9 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
         Float floatValue = dto.getPrice().subtract(tokenPrice.getTokenPrice()).divide(dto.getValue()).floatValue();
         if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
-            Assert.isTrue(tokenControl.getBuyMin() <= floatValue && tokenControl.getBuyMax() >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
+            Assert.isTrue(tokenControl.getBuyMin()/100 <= floatValue && tokenControl.getBuyMax()/100 >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
         } else {
-            Assert.isTrue(tokenControl.getSellMin() <= floatValue && tokenControl.getSellMax() >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
+            Assert.isTrue(tokenControl.getSellMin()/100 <= floatValue && tokenControl.getSellMax()/100 >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
         }
     }
 

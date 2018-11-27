@@ -28,6 +28,12 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
         Long[] x = new Long[list.size()];
         BigDecimal[] y = new BigDecimal[list.size()];
         for (int i = 0; i < list.size(); i++) {
+            if("".equals(list.get(i))){
+                KLineVO vo = new KLineVO();
+                vo.setTimeX(new Long[]{});
+                vo.setValueY(new BigDecimal[]{});
+                return vo;
+            }
             AppKline kline = JSON.parseObject(list.get(i), AppKline.class);
             x[i] = kline.getKlineTime();
             y[i] = kline.getPrice();
@@ -42,11 +48,15 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
         String key = "AppKline".toUpperCase() + "_" + pairId;
         Long start = System.currentTimeMillis() - 1000 * 60 * 60 * 24 * 7;
         Long step = 1000 * 60 * 60L;
+        redisTemplate.delete(key);
         for (Long i = start; i < System.currentTimeMillis(); i = i + step) {
             AppKline appKline = appKlineMapper.findByTime(pairId, i);
             if (null != appKline) {
                 redisTemplate.boundListOps(key).rightPush(JSON.toJSONString(appKline));
             }
+        }
+        if(redisTemplate.boundListOps(key).size()==0){
+            redisTemplate.boundListOps(key).rightPush("");
         }
         return redisTemplate.boundListOps(key).range(0, 999);
     }

@@ -1,14 +1,13 @@
 package com.mvc.cryptovault.common.bean;
 
+import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import javax.persistence.Column;
-import lombok.Data;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import lombok.Data;
-import lombok.Generated;
 
 /**
  * common_token_price
@@ -42,6 +41,7 @@ public class CommonTokenPrice implements Serializable {
 
     /**
      * 令牌id
+     *
      * @return token_id 令牌id
      */
     public BigInteger getTokenId() {
@@ -50,6 +50,7 @@ public class CommonTokenPrice implements Serializable {
 
     /**
      * 令牌id
+     *
      * @param tokenId 令牌id
      */
     public void setTokenId(BigInteger tokenId) {
@@ -58,6 +59,7 @@ public class CommonTokenPrice implements Serializable {
 
     /**
      * 令牌价格（对usdt）
+     *
      * @return token_price 令牌价格（对usdt）
      */
     public BigDecimal getTokenPrice() {
@@ -66,6 +68,7 @@ public class CommonTokenPrice implements Serializable {
 
     /**
      * 令牌价格（对usdt）
+     *
      * @param tokenPrice 令牌价格（对usdt）
      */
     public void setTokenPrice(BigDecimal tokenPrice) {

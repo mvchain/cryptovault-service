@@ -95,6 +95,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         appProjectUserTransaction.setProjectOrderNumber("P" + String.format("%09d", id));
         //花费金额=购买数量*货币比值
         BigDecimal balanceCost = dto.getValue().multiply(BigDecimal.valueOf(project.getRatio()));
+        appProjectUserTransaction.setPayed(balanceCost);
         appUserBalanceService.updateBalance(userId, project.getBaseTokenId(), BigDecimal.ZERO.subtract(balanceCost));
         appProjectUserTransactionMapper.insert(appProjectUserTransaction);
         //TODO 异步发送推送,修改余额,生成统一订单,添加到getReservation缓存列表

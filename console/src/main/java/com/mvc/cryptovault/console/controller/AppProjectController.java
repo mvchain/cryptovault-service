@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author qiyichen
@@ -22,20 +21,20 @@ import java.util.stream.Stream;
 public class AppProjectController extends BaseController {
 
     @GetMapping()
-    Result<PageInfo<AppProject>> getProject(@RequestParam Integer projectType, @RequestParam BigInteger id, @RequestParam Integer type, @RequestParam Integer pageSize) {
+    Result<PageInfo<AppProject>> getProject(@RequestParam Integer projectType, @RequestParam(required = false) BigInteger id, @RequestParam Integer type, @RequestParam Integer pageSize) {
         final BigInteger projectId = id == null ? BigInteger.ZERO : id;
         PageHelper.orderBy("id desc");
         List<AppProject> list = appProjectService.findAll();
-        Stream<AppProject> stream = list.stream();
+        list = list.stream().filter(obj -> obj.getVisiable() == 1).collect(Collectors.toList());
         if (null != type && type.equals(BusinessConstant.SEARCH_DIRECTION_UP)) {
-            stream = stream.filter(obj -> obj.getId().compareTo(projectId) > 0);
+            list = list.stream().filter(obj -> obj.getId().compareTo(projectId) > 0).collect(Collectors.toList());
         } else if (null != type && type.equals(BusinessConstant.SEARCH_DIRECTION_DOWN)) {
-            stream = stream.filter(obj -> obj.getId().compareTo(projectId) < 0);
+            list = list.stream().filter(obj -> obj.getId().compareTo(projectId) < 0).collect(Collectors.toList());
         }
         if (null != projectType) {
-            stream = stream.filter(obj -> obj.getStatus().equals(projectType));
+            list = list.stream().filter(obj -> obj.getStatus().equals(projectType)).collect(Collectors.toList());
         }
-        list = stream.limit(pageSize).collect(Collectors.toList());
+        list = list.stream().limit(pageSize).collect(Collectors.toList());
         return new Result<>(new PageInfo<>(list));
     }
 

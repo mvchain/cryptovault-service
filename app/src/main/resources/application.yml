@@ -40,8 +40,11 @@ service:
   refresh: 604800000
   base64Secret: MDk4ZjZ1iY2Q0NjIxZDM6M2hZGU0ZTgzMjYyN2I0ZjY=
 
+feign.hystrix.enabled: true
+
 hystrix.command.default.execution:
-  isolation.thread.timeoutInMilliseconds: 500
+  isolation:
+    thread.timeoutInMilliseconds: 500
   timeout.enabled: true
 
 eureka:

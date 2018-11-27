@@ -38,7 +38,7 @@ public class TokenController extends BaseController {
         return new Result<>(tokenService.getTokens(timestamp));
     }
 
-    @ApiOperation("获取币种比值,用于计算资产总值.以USDT为基础货币.建议缓存")
+    @ApiOperation("获取币种比值,用于计算资产总值.以CNY为基础货币.建议缓存")
     @GetMapping("base")
     @SwaggerMock("${token.base}")
     public Result<List<TokenRatioVO>> getBase() {

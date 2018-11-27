@@ -14,7 +14,7 @@ import java.math.BigInteger;
 @ApiModel("获取交易订单")
 public class OrderDTO  {
 
-    @ApiModelProperty("交易对信息，如USDT/VRT")
+    @ApiModelProperty("交易对id")
     private BigInteger pairId;
     @ApiModelProperty("交易类型 1购买 2出售")
     private Integer transactionType;

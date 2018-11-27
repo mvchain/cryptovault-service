@@ -37,7 +37,7 @@ public class AssetController extends BaseController {
         return new Result<>(assetService.getAsset(getUserId()));
     }
 
-    @ApiOperation("获取资产总值,观察列表中不存在但是余额存在的也会被统计.统一以USDT为单位返回,客户端根据币种自行转换.建议缓存")
+    @ApiOperation("获取资产总值,观察列表中不存在但是余额存在的也会被统计.统一以CNY为单位返回,客户端根据币种自行转换.建议缓存")
     @GetMapping("balance")
     @SwaggerMock("${asset.balance}")
     public @ResponseBody

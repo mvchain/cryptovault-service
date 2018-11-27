@@ -35,6 +35,7 @@ public class LocaleConfig extends WebMvcConfigurationSupport {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
+        registry.addInterceptor(new ServiceAuthRestInterceptor());
     }
 
     @Override
