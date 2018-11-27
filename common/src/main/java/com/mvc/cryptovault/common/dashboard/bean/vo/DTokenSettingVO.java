@@ -48,4 +48,7 @@ public class DTokenSettingVO implements Serializable {
     @ApiModelProperty("令牌名称")
     private String tokenName;
 
+    @ApiModelProperty("是否内部虚拟币种")
+    private Integer inner;
+
 }

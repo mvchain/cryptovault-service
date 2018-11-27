@@ -86,7 +86,7 @@ public class DCommonTokenController extends BaseController {
                 pair = pair.stream().filter(obj->obj.getStatus() == 1).collect(Collectors.toList());
             }
             BeanUtils.copyProperties(token, vo);
-            Integer tokenInfo = pair.size() == 2 ? 3 : pair.size() == 0 ? 0 : pair.get(0).getTokenId().equals(BigInteger.ONE) ? 1 : 2;
+            Integer tokenInfo = pair.size() == 2 ? 3 : pair.size() == 0 ? 0 : pair.get(0).getBaseTokenId().equals(BigInteger.ONE) ? 1 : 2;
             vo.setPairInfo(tokenInfo);
             result.add(vo);
         }

@@ -62,13 +62,13 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             vo.setPair(obj.getPairName());
             vo.setTokenImage(token.getTokenImage());
             vo.setTokenName(token.getTokenName());
-            vo.setRatio(null == price?BigDecimal.ZERO:price.getTokenPrice());
+            vo.setRatio(null == price ? BigDecimal.ZERO : price.getTokenPrice());
             vo.setTokenId(token.getId());
             vo.setPairId(obj.getId());
             if (null == lastValue) {
                 vo.setIncrease(vo.getRatio().floatValue());
             } else {
-                Float increase = lastValue.divide(null == price?BigDecimal.ZERO:price.getTokenPrice()).setScale(2, RoundingMode.HALF_DOWN).floatValue();
+                Float increase = lastValue.divide(null == price ? BigDecimal.ZERO : price.getTokenPrice()).setScale(2, RoundingMode.HALF_DOWN).floatValue();
                 vo.setIncrease(increase);
             }
             result.add(vo);
@@ -104,10 +104,10 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         CommonPair pair = commonPairService.findById(pairId);
         CommonTokenPrice price = commonTokenPriceService.findById(pair.getTokenId());
         CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
-        tokenControl = tokenControl ==null?new CommonTokenControl():tokenControl;
+        tokenControl = tokenControl == null ? new CommonTokenControl() : tokenControl;
         vo.setBalance(appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId()));
         vo.setTokenBalance(appUserBalanceService.getBalanceByTokenId(userId, pair.getTokenId()));
-        vo.setPrice(null == price? BigDecimal.ZERO:price.getTokenPrice());
+        vo.setPrice(null == price ? BigDecimal.ZERO : price.getTokenPrice());
         if (null != id && !BigInteger.ZERO.equals(id)) {
             AppUserTransaction trans = appUserTransactionService.findById(id);
             vo.setValue(trans.getValue().subtract(trans.getSuccessValue()));
@@ -133,6 +133,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         Long balance = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE) && obj.getStatus() == 1).count();
         result.setVrt(vrt.intValue());
         result.setBalance(balance.intValue());
+        result.setInner(StringUtils.isBlank(token.getTokenContractAddress()) && (null == token.getTokenDecimal() || 0 == token.getTokenDecimal()) ? 1 : 0);
         return result;
     }
 
