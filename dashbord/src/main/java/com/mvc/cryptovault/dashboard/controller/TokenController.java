@@ -38,6 +38,13 @@ public class TokenController extends BaseController {
         return new Result<>(result);
     }
 
+    @ApiOperation("查询币种")
+    @GetMapping("{id}")
+    public Result<DTokenDTO> getToken(@PathVariable BigInteger id) {
+        DTokenDTO result = tokenService.getToken(id);
+        return new Result<>(result);
+    }
+
     @ApiOperation("修改币种")
     @PutMapping("{id}")
     public Result<Boolean> updateToken(@RequestBody @Valid DTokenDTO dTokenDTO) {

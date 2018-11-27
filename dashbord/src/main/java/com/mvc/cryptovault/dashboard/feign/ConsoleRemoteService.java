@@ -61,6 +61,9 @@ public interface ConsoleRemoteService {
     @PutMapping("dashboard/commonToken")
     Result<Boolean> updateToken(@RequestBody DTokenDTO dTokenDTO);
 
+    @GetMapping("dashboard/commonToken/{id}")
+    Result<DTokenDTO> getToken(@PathVariable("id") BigInteger id);
+
     @PutMapping("dashboard/commonToken/setting")
     Result<Boolean> tokenSetting(@RequestBody DTokenSettingVO dto);
 
@@ -126,5 +129,4 @@ public interface ConsoleRemoteService {
 
     @GetMapping("dashboard/appProject")
     Result<PageInfo<DProjectVO>> projects(@RequestBody PageDTO pageDTO);
-
 }

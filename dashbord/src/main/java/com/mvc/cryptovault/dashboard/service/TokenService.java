@@ -11,6 +11,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.OverTransactionVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -66,6 +67,11 @@ public class TokenService extends BaseService {
 
     public PageInfo<OverTransactionVO> overList(OverTransactionDTO overTransactionDTO) {
         Result<PageInfo<OverTransactionVO>> result = remoteService.overList(overTransactionDTO);
+        return result.getData();
+    }
+
+    public DTokenDTO getToken(BigInteger id) {
+        Result<DTokenDTO> result = remoteService.getToken(id);
         return result.getData();
     }
 }

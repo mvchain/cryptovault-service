@@ -103,11 +103,21 @@ public class DCommonTokenController extends BaseController {
         return new Result<>(true);
     }
 
+    @GetMapping("{id}")
+    public Result<DTokenDTO> getToken(@PathVariable BigInteger id) {
+        CommonToken token = commonTokenService.findById(id);
+        DTokenDTO vo = new DTokenDTO();
+        BeanUtils.copyProperties(token, vo);
+        vo.setTokenId(token.getId());
+        return new Result<>(vo);
+    }
+
     @PutMapping("")
     public Result<Boolean> updateToken(@RequestBody DTokenDTO dTokenDTO) {
         CommonToken token = new CommonToken();
         BeanUtils.copyProperties(dTokenDTO, token);
         token.setTokenType(null == dTokenDTO.getBlockType() ? "" : dTokenDTO.getBlockType());
+        token.setId(dTokenDTO.getTokenId());
         commonTokenService.update(token);
         commonTokenService.updateAllCache();
         commonTokenService.updateCache(token.getId());
