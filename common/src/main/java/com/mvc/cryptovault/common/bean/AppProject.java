@@ -74,7 +74,7 @@ public class AppProject implements Serializable {
     @Column(name = "created_at")
     private BigInteger createdAt;
     /**
-     * 项目状态0即将开始 1进行中 2已结束 9取消
+     * 项目状态0即将开始 1进行中 2已结束 3发币中 9取消
      */
     @Column(name = "status")
     private Integer status;

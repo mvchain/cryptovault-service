@@ -37,8 +37,10 @@ public class DProjectOrderVO implements Serializable {
     private String baseTokenName;
     @ApiModelProperty("基础货币id")
     private BigInteger baseTokenId;
-    @ApiModelProperty("订单状态 0未完成 1全部完成 4取消")
+    @ApiModelProperty("订单状态 0等待 1成功 4取消 9失败")
     private Integer status;
+    @ApiModelProperty("项目状态 0即将开始 1进行中 2已结束 3发币中 9取消")
+    private Integer projectStatus;
     @ApiModelProperty("id")
     private BigInteger id;
 

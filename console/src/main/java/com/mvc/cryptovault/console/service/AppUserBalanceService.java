@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.service;
 
 import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.AppUserBalance;
+import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.CommonTokenPrice;
 import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
 import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
@@ -95,9 +96,10 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             TokenBalanceVO vo = new TokenBalanceVO();
             vo.setTokenId(NumberUtils.parseNumber(String.valueOf(entry.getKey()), BigInteger.class));
             vo.setValue(NumberUtils.parseNumber(String.valueOf(entry.getValue()), BigDecimal.class));
+            CommonToken token = commonTokenService.findById(vo.getTokenId());
             CommonTokenPrice tokenPrice = commonTokenPriceService.findById(vo.getTokenId());
-            vo.setRatio(tokenPrice.getTokenPrice());
-            vo.setTokenName(tokenPrice.getTokenName());
+            vo.setRatio(null == tokenPrice?BigDecimal.ZERO: tokenPrice.getTokenPrice());
+            vo.setTokenName(token.getTokenName());
             result.add(vo);
         }
         Collections.sort(result, comparator);

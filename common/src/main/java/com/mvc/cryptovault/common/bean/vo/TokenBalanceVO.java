@@ -21,7 +21,7 @@ public class TokenBalanceVO {
     private BigDecimal value;
     @ApiModelProperty("令牌名称")
     private String tokenName;
-    @ApiModelProperty( "当前比率，单位为USDT，计算资产时需要使用")
+    @ApiModelProperty( "当前比率，单位为CNY，计算资产时需要使用")
     private BigDecimal ratio;
 
 }
