@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class DProjectOrderDTO extends PageDTO implements Serializable {
 
     private static final long serialVersionUID = 2112236548179184L;
-    @ApiModelProperty("订单状态 0未完成 1全部完成 4取消")
+    @ApiModelProperty("订单状态 0等待 1成功 4取消 9失败")
     private Integer status;
 
     @ApiModelProperty("手机号")
