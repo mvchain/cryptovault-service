@@ -21,6 +21,7 @@ import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author qiyichen
@@ -81,6 +82,9 @@ public class DCommonTokenController extends BaseController {
             DTokenVO vo = new DTokenVO();
             vo.setTokenId(token.getId());
             List<CommonPair> pair = commonPairService.findBy("tokenId", token.getId());
+            if(null != pair){
+                pair = pair.stream().filter(obj->obj.getStatus() == 1).collect(Collectors.toList());
+            }
             BeanUtils.copyProperties(token, vo);
             Integer tokenInfo = pair.size() == 2 ? 3 : pair.size() == 0 ? 0 : pair.get(0).getTokenId().equals(BigInteger.ONE) ? 1 : 2;
             vo.setPairInfo(tokenInfo);

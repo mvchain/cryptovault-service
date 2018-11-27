@@ -129,8 +129,8 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         CommonToken token = findById(id);
         BeanUtils.copyProperties(token, result);
         List<CommonPair> list = commonPairService.findBy("tokenId", id);
-        Long vrt = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT)).count();
-        Long balance = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE)).count();
+        Long vrt = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT) && obj.getStatus() == 1).count();
+        Long balance = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE) && obj.getStatus() == 1).count();
         result.setVrt(vrt.intValue());
         result.setBalance(balance.intValue());
         return result;
@@ -160,8 +160,8 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             DTokenSettingVO vo = new DTokenSettingVO();
             BeanUtils.copyProperties(commonToken, vo);
             List<CommonPair> data = commonPairService.findBy("tokenId", commonToken.getId());
-            Long vrt = data.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT)).count();
-            Long balance = data.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE)).count();
+            Long vrt = data.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT) && obj.getStatus() == 1).count();
+            Long balance = data.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE) && obj.getStatus() == 1).count();
             vo.setVrt(vrt.intValue());
             vo.setBalance(balance.intValue());
             vos.add(vo);
