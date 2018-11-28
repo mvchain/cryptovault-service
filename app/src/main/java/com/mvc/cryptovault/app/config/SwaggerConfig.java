@@ -75,13 +75,14 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     public Docket createRestApi() {
         //可以添加多个header或参数
         ParameterBuilder aParameterBuilder = new ParameterBuilder();
+        ParameterBuilder aParameterBuilder2 = new ParameterBuilder();
         aParameterBuilder
                 .parameterType("header")
                 .name("Authorization")
                 .description("token")
                 .modelRef(new ModelRef("string"))
                 .required(false).build();
-        aParameterBuilder
+        aParameterBuilder2
                 .parameterType("header")
                 .name("Accept-Language")
                 .description("国际化设置,目前只支持zh-cn/en-US,如需扩展参考官方字段说明")
@@ -89,6 +90,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .required(false).build();
         List<Parameter> aParameters = new ArrayList<>();
         aParameters.add(aParameterBuilder.build());
+        aParameters.add(aParameterBuilder2.build());
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
