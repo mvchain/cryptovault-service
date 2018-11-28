@@ -27,11 +27,14 @@ public class DAppProjectController extends BaseController {
     @DeleteMapping("{id}")
     public Result<Boolean> deleteProject(@PathVariable("id") BigInteger id) {
         var appProject = appProjectService.findById(id);
-        if(null == appProject){
+        if (null == appProject) {
             return new Result<>(true);
         }
         //只有未展示的项目才可以删除
         Assert.isTrue(null != appProject && appProject.getVisiable() == 0, "项目已展示,无法删除");
+        //有订单的项目不能删
+        Boolean result = appProjectUserTransactionService.existTrans(id);
+        Assert.isTrue(!result, "已有交易无法删除");
         appProjectService.deleteById(id);
         appProjectService.updateAllCache("id desc");
         appProjectService.updateCache(id);

@@ -33,7 +33,7 @@ public class DAppProjectUserTransactionController extends BaseController {
 
     @GetMapping("")
     public Result<PageInfo<DProjectOrderVO>> findOrders(@ModelAttribute PageDTO pageDTO, @ModelAttribute DProjectOrderDTO dto) {
-        PageInfo<DProjectOrderVO> result = appProjectUserTransactionService.findOrders(pageDTO, dto);
+        PageInfo<DProjectOrderVO> result = appProjectUserTransactionService.findOrders(dto);
         return new Result<>(result);
     }
 

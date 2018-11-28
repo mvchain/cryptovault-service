@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
-import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.ProjectBuyDTO;
 import com.mvc.cryptovault.common.bean.dto.ReservationDTO;
 import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
@@ -201,20 +200,20 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         }
     }
 
-    public PageInfo<DProjectOrderVO> findOrders(PageDTO pageDTO, DProjectOrderDTO dto) {
+    public PageInfo<DProjectOrderVO> findOrders(DProjectOrderDTO dto) {
         AppUser user = StringUtils.isBlank(dto.getCellphone()) ? null : appUserService.findOneBy("cellphone", dto.getCellphone());
         AppProject project = StringUtils.isBlank(dto.getProjectName()) ? null : appProjectService.findOneBy("projectName", dto.getProjectName());
-        Boolean flag = StringUtils.isNotBlank(dto.getCellphone())  && null == user || StringUtils.isNotBlank(dto.getProjectName()) && null == project;
+        Boolean flag = StringUtils.isNotBlank(dto.getCellphone()) && null == user || StringUtils.isNotBlank(dto.getProjectName()) && null == project;
         if (flag) {
             return new PageInfo<>();
         }
-        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), dto.getOrderBy());
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize(), dto.getOrderBy());
         Condition condition = new Condition(AppProjectUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "user_id = ", null == user ? null : user.getId());
         ConditionUtil.andCondition(criteria, "project_id = ", null == project ? null : project.getId());
-        ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
-        ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
+        ConditionUtil.andCondition(criteria, "created_at >= ", dto.getCreatedStartAt());
+        ConditionUtil.andCondition(criteria, "created_at <= ", dto.getCreatedStopAt());
         ConditionUtil.andCondition(criteria, "result = ", dto.getStatus());
         List<AppProjectUserTransaction> list = findByCondition(condition);
         List<DProjectOrderVO> vos = new ArrayList<>(list.size());
@@ -237,5 +236,13 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         PageInfo result = new PageInfo(list);
         result.setList(vos);
         return result;
+    }
+
+    public Boolean existTrans(BigInteger id) {
+        AppProjectUserTransaction userTransaction = appProjectUserTransactionMapper.existTrans(id);
+        if (null != userTransaction) {
+            return true;
+        }
+        return false;
     }
 }

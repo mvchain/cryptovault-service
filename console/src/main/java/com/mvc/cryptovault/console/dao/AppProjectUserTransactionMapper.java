@@ -11,4 +11,7 @@ import java.math.BigInteger;
 public interface AppProjectUserTransactionMapper extends MyMapper<AppProjectUserTransaction> {
     @Select("select ifnull(sum(value),0) from app_project_user_transaction where user_id = #{userId} and project_id = #{projectId} and result in(0,1)")
     BigDecimal sum(@Param("userId") BigInteger userId, @Param("projectId")BigInteger id);
+
+    @Select("select * from app_project_user_transaction where project_id = #{id} limit 1")
+    AppProjectUserTransaction existTrans(@Param("id") BigInteger id);
 }
