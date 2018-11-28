@@ -31,8 +31,8 @@ public class CommonPairService extends AbstractService<CommonPair> implements Ba
         update(partBalance);
         update(pairVrt);
         updateAllCache();
-        updateCache(partBalance.getTokenId());
-        updateCache(pairVrt.getTokenId());
+        updateCache(partBalance.getId());
+        updateCache(pairVrt.getId());
     }
 
     public void insertPair(BigInteger tokenId, String tokenName) {

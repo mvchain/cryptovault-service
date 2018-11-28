@@ -2,6 +2,8 @@ package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.vo.DPairVO;
+import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTokenDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.OverTransactionDTO;
@@ -11,7 +13,6 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.OverTransactionVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -72,6 +73,11 @@ public class TokenService extends BaseService {
 
     public DTokenDTO getToken(BigInteger id) {
         Result<DTokenDTO> result = remoteService.getToken(id);
+        return result.getData();
+    }
+
+    public List<DPairVO> getPair() {
+        Result<List<DPairVO>> result = remoteService.getPair();
         return result.getData();
     }
 }

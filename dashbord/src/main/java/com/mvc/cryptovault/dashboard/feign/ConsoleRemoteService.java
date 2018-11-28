@@ -3,6 +3,9 @@ package com.mvc.cryptovault.dashboard.feign;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AdminUser;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.dto.PairDTO;
+import com.mvc.cryptovault.common.bean.vo.DPairVO;
+import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.*;
 import com.mvc.cryptovault.common.dashboard.bean.vo.*;
@@ -129,4 +132,7 @@ public interface ConsoleRemoteService {
 
     @GetMapping("dashboard/appProject")
     Result<PageInfo<DProjectVO>> projects(@RequestBody PageDTO pageDTO);
+
+    @GetMapping("dashboard/commonPair")
+    Result<List<DPairVO>> getPair();
 }

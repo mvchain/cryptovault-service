@@ -2,6 +2,8 @@ package com.mvc.cryptovault.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.vo.DPairVO;
+import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTokenDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenSettingVO;
@@ -84,6 +86,13 @@ public class TokenController extends BaseController {
     @PutMapping("transaction")
     public Result<Boolean> setTransSetting(@RequestBody @Valid DTokenTransSettingVO dto) {
         Boolean result = tokenService.setTransSetting(dto);
+        return new Result<>(result);
+    }
+
+    @ApiOperation("交易对查询")
+    @GetMapping("pair")
+    public Result<List<DPairVO>> getPair() {
+        List<DPairVO> result = tokenService.getPair();
         return new Result<>(result);
     }
 
