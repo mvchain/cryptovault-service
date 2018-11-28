@@ -72,6 +72,18 @@ public class AppProjectUserTransaction implements Serializable {
     private BigDecimal payed;
 
     /**
+     * 参与数量
+     */
+    @Column(name = "success_value")
+    private BigDecimal successValue;
+
+    /**
+     * 参与金额
+     */
+    @Column(name = "success_payed")
+    private BigDecimal successPayed;
+
+    /**
      * 排序位置
      */
     @Column(name = "`index`")

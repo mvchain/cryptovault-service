@@ -3,6 +3,7 @@ package com.mvc.cryptovault.common.dashboard.bean.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -43,6 +44,10 @@ public class DProjectOrderVO implements Serializable {
     private Integer projectStatus;
     @ApiModelProperty("id")
     private BigInteger id;
+    @ApiModelProperty("购买成功数量")
+    private BigDecimal successValue;
+    @ApiModelProperty("实际支付金额")
+    private BigDecimal successPayed;
 
 
 }
