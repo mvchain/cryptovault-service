@@ -31,6 +31,14 @@ public interface BusinessConstant {
      */
     BigInteger BASE_TOKEN_ID_BALANCE = BigInteger.valueOf(2);
     /**
+     * ETH
+     */
+    BigInteger BASE_TOKEN_ID_ETH = BigInteger.valueOf(3);
+    /**
+     * USDT
+     */
+    BigInteger BASE_TOKEN_ID_USDT = BigInteger.valueOf(4);
+    /**
      * 购买
      */
     Integer TRANSACTION_TYPE_BUY = 1;

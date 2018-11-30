@@ -62,6 +62,12 @@ public class BlockTransaction implements Serializable {
     private BigInteger tokenId;
 
     /**
+     * 令牌id
+     */
+    @Column(name = "token_type")
+    private String tokenType;
+
+    /**
      * 操作类型 1充值 2提现
      */
     @Column(name = "opr_type")
@@ -80,7 +86,7 @@ public class BlockTransaction implements Serializable {
     private Integer status;
 
     /**
-     * 交易状态
+     * 交易状态1. 待审核2. 待签名（审核通过后3. 拒绝4. 正在提币（导入签名文件后5. 提币成功（交易确认成功后6. 失败")
      */
     @Column(name = "transaction_status")
     private Integer transactionStatus;
@@ -216,7 +222,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 操作类型 1充值 2提现
-     * @param oprType 操作类型 1充值 2提现
+     * @param oprType 操作类型 1充值 2提现 9钱包
      */
     public void setOprType(Integer oprType) {
         this.oprType = oprType;

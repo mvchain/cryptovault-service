@@ -41,4 +41,9 @@ public class UserService extends BaseService {
         Result<PageInfo<DUserLogVO>> result = remoteService.getUserLog(pageDTO, id);
         return result.getData();
     }
+
+    public Boolean updateStatus(BigInteger id, Integer status) {
+        remoteService.updateUserStatus(id, status);
+        return true;
+    }
 }

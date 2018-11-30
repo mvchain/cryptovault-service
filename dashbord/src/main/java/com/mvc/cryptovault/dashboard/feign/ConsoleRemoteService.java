@@ -2,10 +2,10 @@ package com.mvc.cryptovault.dashboard.feign;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AdminUser;
+import com.mvc.cryptovault.common.bean.CommonAddress;
+import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
-import com.mvc.cryptovault.common.bean.dto.PairDTO;
 import com.mvc.cryptovault.common.bean.vo.DPairVO;
-import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.*;
 import com.mvc.cryptovault.common.dashboard.bean.vo.*;
@@ -20,7 +20,7 @@ import java.util.List;
 public interface ConsoleRemoteService {
 
     @GetMapping("dashboard/adminUser")
-    Result<PageInfo<AdminVO>> getAdmins(@RequestParam("userId") BigInteger userId,@RequestBody PageDTO dto);
+    Result<PageInfo<AdminVO>> getAdmins(@RequestParam("userId") BigInteger userId, @RequestBody PageDTO dto);
 
     @GetMapping("dashboard/adminUser/{id}")
     Result<AdminDetailVO> getAdminDetail(@PathVariable("id") BigInteger id);
@@ -109,6 +109,9 @@ public interface ConsoleRemoteService {
     @DeleteMapping("dashboard/appUserTransaction/{id}")
     Result<Boolean> cancel(@PathVariable("id") BigInteger id);
 
+    @GetMapping("dashboard/appUserTransaction/collect")
+    Result<List<ExportOrders>> exportCollect();
+
     @GetMapping("dashboard/appUserTransaction/over")
     Result<PageInfo<OverTransactionVO>> overList(@RequestBody OverTransactionDTO overTransactionDTO);
 
@@ -116,7 +119,7 @@ public interface ConsoleRemoteService {
     Result<Boolean> cancelProject(@PathVariable("id") BigInteger id);
 
     @GetMapping("dashboard/appProjectUserTransaction")
-    Result<PageInfo<DProjectOrderVO>> findOrders( @RequestBody DProjectOrderDTO dto);
+    Result<PageInfo<DProjectOrderVO>> findOrders(@RequestBody DProjectOrderDTO dto);
 
     @DeleteMapping("dashboard/appProject/{id}")
     Result<Boolean> deleteProject(@PathVariable("id") BigInteger id);
@@ -135,4 +138,10 @@ public interface ConsoleRemoteService {
 
     @GetMapping("dashboard/commonPair")
     Result<List<DPairVO>> getPair();
+
+    @PostMapping("dashboard/commonAddress")
+    Result<Boolean> importAddress(@RequestBody List<CommonAddress> list);
+
+    @PutMapping("dashboard/appUser/{id}/status")
+    Result<Boolean> updateUserStatus(@PathVariable("id") BigInteger id, @RequestParam("status") Integer status);
 }

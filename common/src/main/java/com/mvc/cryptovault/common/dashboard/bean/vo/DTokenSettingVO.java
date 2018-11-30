@@ -51,4 +51,10 @@ public class DTokenSettingVO implements Serializable {
     @ApiModelProperty("是否内部虚拟币种")
     private Integer inner;
 
+    @ApiModelProperty("区块链实际手续费")
+    private Float transaferFee;
+
+    @ApiModelProperty("保留金额")
+    private Float hold;
+
 }

@@ -208,4 +208,5 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         update(token);
         commonPairService.updatePair(dto.getId(), dto.getVrt(), dto.getBalance());
     }
+
 }

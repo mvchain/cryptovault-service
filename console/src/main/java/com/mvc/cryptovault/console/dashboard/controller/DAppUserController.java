@@ -11,6 +11,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DUserBalanceVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
 import com.mvc.cryptovault.console.common.BaseController;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -57,6 +58,18 @@ public class DAppUserController extends BaseController {
     public Result<PageInfo<DUserLogVO>> getUserLog(@PathVariable("id") BigInteger id, @ModelAttribute @Valid PageDTO pageDTO) {
         PageInfo<DUserLogVO> result = appUserService.getUserLog(id, pageDTO);
         return new Result<>(result);
+    }
+
+    @PutMapping("{id}/status")
+    public Result<Boolean> updateStatus(@PathVariable BigInteger id, @RequestParam Integer status) {
+        Assert.isTrue(status == 1 || status == 0, "状态错误");
+        AppUser appUser = new AppUser();
+        appUser.setId(id);
+        appUser.setUpdatedAt(System.currentTimeMillis());
+        appUser.setStatus(status);
+        appUserService.update(appUser);
+        appUserService.updateCache(id);
+        return new Result<>(true);
     }
 
 }

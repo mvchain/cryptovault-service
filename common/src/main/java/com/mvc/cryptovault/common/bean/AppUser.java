@@ -68,6 +68,13 @@ public class AppUser implements Serializable {
     private Long updatedAt;
 
     /**
+     * 账号状态
+     */
+    @Column(name = "status")
+    private Integer status;
+
+
+    /**
      * app_user
      */
     private static final long serialVersionUID = 1L;

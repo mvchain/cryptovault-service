@@ -1,7 +1,7 @@
 package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
-import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
@@ -10,6 +10,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DHoldVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.CommunicationException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -21,7 +22,6 @@ import java.util.List;
 @Service
 @Transactional(rollbackFor = RuntimeException.class)
 public class BlockService extends BaseService {
-
 
     public List<DHoldVO> getHold() {
 
@@ -62,5 +62,10 @@ public class BlockService extends BaseService {
     public Boolean updateStatus(DBlockStatusDTO dBlockStatusDTO) {
         Result<Boolean> result = remoteService.updateStatus(dBlockStatusDTO);
         return result.getData();
+    }
+
+    public Boolean importAddress(List<CommonAddress> list) {
+        remoteService.importAddress(list);
+        return true;
     }
 }

@@ -21,12 +21,12 @@ public class CommonAddress implements Serializable {
     private static final long serialVersionUID = -7228504157787988027L;
 
     @Id
-
     private BigInteger id;
-    private Integer tokenType;
+    private String tokenType;
     private String address;
     private Integer used;
     private BigDecimal balance;
     private BigInteger userId;
-
+    private String addressType;
+    private Integer approve;
 }

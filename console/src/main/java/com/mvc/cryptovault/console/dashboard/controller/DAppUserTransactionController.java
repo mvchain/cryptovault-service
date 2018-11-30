@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppUserTransaction;
+import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTransactionDTO;
@@ -13,6 +14,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author qiyichen
@@ -42,6 +44,12 @@ public class DAppUserTransactionController extends BaseController {
     @GetMapping("over")
     public Result<PageInfo<OverTransactionVO>> overList(@ModelAttribute PageDTO pageDTO, @ModelAttribute OverTransactionDTO overTransactionDTO) {
         PageInfo<OverTransactionVO> result = appUserTransactionService.overList(pageDTO, overTransactionDTO);
+        return new Result<>(result);
+    }
+
+    @GetMapping("collect")
+    public Result<List<ExportOrders>> exportCollect() {
+        List<ExportOrders> result = commonAddressService.exportCollect();
         return new Result<>(result);
     }
 

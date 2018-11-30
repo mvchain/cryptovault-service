@@ -26,6 +26,12 @@ public class CommonPairService extends AbstractService<CommonPair> implements Ba
         CommonPair pairVrt = findOneByEntity(pair);
         pair.setBaseTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
         CommonPair partBalance = findOneByEntity(pair);
+        if(null == partBalance){
+            CommonToken token = commonTokenService.findById(tokenId);
+            insertPair(token.getId(), token.getTokenName());
+            partBalance = findOneByEntity(pair);
+            pairVrt = findOneByEntity(pair);
+        }
         partBalance.setStatus(balance);
         pairVrt.setStatus(vrt);
         update(partBalance);

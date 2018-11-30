@@ -1,11 +1,14 @@
 package com.mvc.cryptovault.console.dashboard.controller;
 
+import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.InvalidAlgorithmParameterException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.util.List;
 
 /**
  * @author qiyichen
@@ -17,8 +20,14 @@ public class DCommonAddressController extends BaseController {
 
     @GetMapping("count")
     public Result<Integer> accountCount(@RequestParam(value = "tokenType", required = false) String tokenType) {
-        //TODO 区块链相关后续处理
-        return new Result<>(100);
+        Integer count = blockHeightService.accountCount(tokenType);
+        return new Result<>(count);
+    }
+
+    @PostMapping("")
+    public Result<Boolean> importAddress(@RequestBody List<CommonAddress> list) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
+        blockHeightService.importAddress(list);
+        return new Result<>();
     }
 
 }

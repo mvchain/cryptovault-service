@@ -1,7 +1,7 @@
 package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
-import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author qiyichen
@@ -28,4 +29,10 @@ public class TransactionService extends BaseService {
         Result<Boolean> result = remoteService.cancel(id);
         return result.getData();
     }
+
+    public List<ExportOrders> exportCollect() {
+        Result<List<ExportOrders>> result = remoteService.exportCollect();
+        return result.getData();
+    }
+
 }

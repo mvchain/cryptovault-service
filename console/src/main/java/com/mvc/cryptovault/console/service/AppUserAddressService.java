@@ -47,6 +47,8 @@ public class AppUserAddressService extends AbstractService<AppUserAddress> imple
             CommonAddress commonAddress = commonAddressMapper.findUnUsed(token.getTokenType());
             commonAddress.setUsed(1);
             commonAddress.setUserId(userId);
+            commonAddress.setAddressType(token.getTokenType());
+            commonAddress.setApprove(0);
             commonAddressMapper.updateByPrimaryKeySelective(commonAddress);
             address = commonAddress.getAddress();
         }

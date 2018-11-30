@@ -42,6 +42,9 @@ public class BaseController {
     AppUserAddressService appUserAddressService;
     @Autowired
     protected
+    CommonAddressService commonAddressService;
+    @Autowired
+    protected
     AppUserBalanceService appUserBalanceService;
     @Autowired
     protected

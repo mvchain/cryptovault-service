@@ -59,4 +59,10 @@ public class UserController extends BaseController {
         return;
     }
 
+    @ApiOperation("修改用户状态0禁用 1启用")
+    @PutMapping("{id}/status")
+    public Result<Boolean> updateStatus(@PathVariable BigInteger id, @RequestParam Integer status){
+        userService.updateStatus(id, status);
+        return new Result<>(true);
+    }
 }

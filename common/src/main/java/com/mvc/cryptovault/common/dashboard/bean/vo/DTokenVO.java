@@ -33,8 +33,10 @@ public class DTokenVO implements Serializable {
     private BigDecimal withdrawDay;
     @ApiModelProperty("交易对信息(0无 1vrt 2余额 3所有)")
     private Integer pairInfo;
-    @ApiModelProperty("手续费")
-    private Float fee;
     @ApiModelProperty("动态手续费")
+    private Float fee;
+    @ApiModelProperty("区块链实际手续费")
     private Float transaferFee;
+    @ApiModelProperty("保留金额")
+    private Float hold;
 }

@@ -44,7 +44,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         BigDecimal userBuyTotal = appProjectUserTransactionService.getUserBuyTotal(userId, appProject.getId());
         BigDecimal limit = appProject.getProjectLimit().subtract(userBuyTotal);
         vo.setLimitValue(limit);
-        vo.setProjectMin(null == appProject.getProjectMin()?BigDecimal.ZERO:appProject.getProjectMin());
+        vo.setProjectMin(null == appProject.getProjectMin() ? BigDecimal.ZERO : appProject.getProjectMin());
         return vo;
     }
 
@@ -57,10 +57,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             }
         }
         BigDecimal result = null;
-        AppUserBalance appUserBalance = new AppUserBalance();
-        appUserBalance.setTokenId(tokenId);
-        appUserBalance.setUserId(userId);
-        AppUserBalance userBalance = appUserBalanceMapper.selectOne(appUserBalance);
+        AppUserBalance userBalance = getAppUserBalance(userId, tokenId);
         if (null == userBalance) {
             result = BigDecimal.ZERO;
         } else {
@@ -71,13 +68,25 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
     }
 
     public void updateBalance(BigInteger userId, BigInteger baseTokenId, BigDecimal value) {
+        AppUserBalance userBalance = getAppUserBalance(userId, baseTokenId);
+        if (null == userBalance) {
+            userBalance = new AppUserBalance();
+            userBalance.setBalance(BigDecimal.ZERO);
+            userBalance.setTokenId(baseTokenId);
+            userBalance.setUserId(userId);
+            save(userBalance);
+        }
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
         appUserBalanceMapper.updateBalance(userId, baseTokenId, value);
+        userBalance = getAppUserBalance(userId, baseTokenId);
+        redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), String.valueOf(userBalance.getBalance()));
+    }
+
+    private AppUserBalance getAppUserBalance(BigInteger userId, BigInteger baseTokenId) {
         AppUserBalance appUserBalance = new AppUserBalance();
         appUserBalance.setTokenId(baseTokenId);
         appUserBalance.setUserId(userId);
-        AppUserBalance userBalance = appUserBalanceMapper.selectOne(appUserBalance);
-        redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), String.valueOf(userBalance.getBalance()));
+        return appUserBalanceMapper.selectOne(appUserBalance);
     }
 
     public List<TokenBalanceVO> getAsset(BigInteger userId) {
@@ -98,7 +107,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             vo.setValue(NumberUtils.parseNumber(String.valueOf(entry.getValue()), BigDecimal.class));
             CommonToken token = commonTokenService.findById(vo.getTokenId());
             CommonTokenPrice tokenPrice = commonTokenPriceService.findById(vo.getTokenId());
-            vo.setRatio(null == tokenPrice?BigDecimal.ZERO: tokenPrice.getTokenPrice());
+            vo.setRatio(null == tokenPrice ? BigDecimal.ZERO : tokenPrice.getTokenPrice());
             vo.setTokenName(token.getTokenName());
             result.add(vo);
         }

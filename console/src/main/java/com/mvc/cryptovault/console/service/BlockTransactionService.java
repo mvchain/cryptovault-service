@@ -14,9 +14,11 @@ import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.console.dao.BlockTransactionMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(rollbackFor = RuntimeException.class)
 public class BlockTransactionService extends AbstractService<BlockTransaction> implements BaseService<BlockTransaction> {
 
     @Autowired
@@ -38,6 +41,8 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     CommonTokenService tokenService;
     @Autowired
     AppUserService appUserService;
+    @Autowired
+    BlockTransactionMapper blockTransactionMapper;
 
     public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
@@ -50,6 +55,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         transaction.setUserId(userId);
         transaction.setTokenId(transactionDTO.getTokenId());
         transaction.setStatus(0);
+        transaction.setTokenType(transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) ? "USDT" : "ETH");
         transaction.setToAddress(transactionDTO.getAddress());
         transaction.setOrderNumber("P" + String.format("%09d", id));
         save(transaction);
@@ -117,5 +123,18 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         }
         result.setList(vos);
         return result;
+    }
+
+    /**
+     * 更新成功记录
+     *
+     * @param obj
+     */
+    public void updateSuccess(BlockTransaction obj) {
+        int num = blockTransactionMapper.updateSuccess(obj, System.currentTimeMillis());
+        if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && obj.getOprType() == 1) {
+            //只有在更新成功的情况下修改余额,更新冲突时忽略,提现在申请时就已经扣款,因此只有充值需要更新余额
+            appUserBalanceService.updateBalance(obj.getUserId(), obj.getTokenId(), obj.getValue());
+        }
     }
 }

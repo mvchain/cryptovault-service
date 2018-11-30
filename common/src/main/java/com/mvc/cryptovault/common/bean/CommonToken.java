@@ -137,6 +137,11 @@ public class CommonToken implements Serializable {
 
     @Column(name = "updated_at")
     private Long updatedAt;
+
+    /**
+     * 保留金额
+     */
+    private Float hold;
     /**
      * common_token
      */
