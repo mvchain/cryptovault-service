@@ -28,7 +28,9 @@ public interface ConsoleRemoteService {
             @RequestParam("transactionType") Integer transactionType,
             @RequestParam("id") BigInteger id,
             @RequestParam("type") Integer type,
-            @RequestParam("pageSize") Integer pageSize);
+            @RequestParam("pageSize") Integer pageSize,
+            @RequestParam("tokenId") BigInteger tokenId
+    );
 
     @GetMapping("appOrder/{id}")
     Result<TransactionDetailVO> getTransaction(@RequestParam("userId") BigInteger userId, @PathVariable("id") BigInteger id);
