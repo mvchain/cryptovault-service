@@ -12,8 +12,12 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenTransSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.BlockHeightService;
+import com.mvc.cryptovault.console.service.CommonPairService;
+import com.mvc.cryptovault.console.service.CommonTokenService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,44 +34,12 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("dashboard/commonToken")
 public class DCommonTokenController extends BaseController {
-
-    @GetMapping("hold")
-    public Result<List<DHoldVO>> getHold() {
-        List<BlockHeight> list = blockHeightService.findAll();
-        List<DHoldVO> result = new ArrayList<>(list.size());
-        for (BlockHeight height : list) {
-            DHoldVO vo = new DHoldVO();
-            BeanUtils.copyProperties(height, vo);
-            vo.setValue(height.getHold());
-            result.add(vo);
-        }
-        return new Result<>(result);
-    }
-
-    @PutMapping("hold")
-    public Result<Boolean> setHold(@RequestBody List<DHoldVO> list) {
-        blockHeightService.setHold(list);
-        return new Result<>(true);
-    }
-
-    @GetMapping("fee")
-    public Result<List<DHoldVO>> getFee() {
-        List<BlockHeight> list = blockHeightService.findAll();
-        List<DHoldVO> result = new ArrayList<>(list.size());
-        for (BlockHeight height : list) {
-            DHoldVO vo = new DHoldVO();
-            BeanUtils.copyProperties(height, vo);
-            vo.setValue(height.getFee());
-            result.add(vo);
-        }
-        return new Result<>(result);
-    }
-
-    @PutMapping("fee")
-    public Result<Boolean> setFee(@RequestBody List<DHoldVO> list) {
-        blockHeightService.setFee(list);
-        return new Result<>(true);
-    }
+    @Autowired
+    BlockHeightService blockHeightService;
+    @Autowired
+    CommonPairService commonPairService;
+    @Autowired
+    CommonTokenService commonTokenService;
 
     @GetMapping("")
     public Result<List<DTokenVO>> findTokens(@RequestParam(value = "tokenName", required = false) String tokenName) {

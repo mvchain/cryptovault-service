@@ -9,7 +9,10 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppProjectService;
+import com.mvc.cryptovault.console.service.AppProjectUserTransactionService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +26,10 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("dashboard/appProject")
 public class DAppProjectController extends BaseController {
+    @Autowired
+    AppProjectService appProjectService;
+    @Autowired
+    AppProjectUserTransactionService appProjectUserTransactionService;
 
     @DeleteMapping("{id}")
     public Result<Boolean> deleteProject(@PathVariable("id") BigInteger id) {

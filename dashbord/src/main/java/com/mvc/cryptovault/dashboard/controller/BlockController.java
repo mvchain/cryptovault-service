@@ -12,7 +12,6 @@ import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
-import com.mvc.cryptovault.common.dashboard.bean.vo.DHoldVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.util.BaseContextHandler;
 import com.mvc.cryptovault.dashboard.util.EncryptionUtil;
@@ -43,35 +42,6 @@ import java.util.List;
 @RequestMapping("block")
 @Api(tags = "区块链相关操作")
 public class BlockController extends BaseController {
-
-
-    @ApiOperation("保留金额获取,不分页")
-    @GetMapping("hold")
-    public Result<List<DHoldVO>> getHold() {
-        List<DHoldVO> result = blockService.getHold();
-        return new Result<>(result);
-    }
-
-    @ApiOperation("保留金额设置（仅对eth）")
-    @PutMapping("hold")
-    public Result<Boolean> setHold(@RequestBody List<DHoldVO> list) {
-        Boolean result = blockService.setHold(list);
-        return new Result<>(result);
-    }
-
-    @ApiOperation("手续费列表获取")
-    @GetMapping("fee")
-    public Result<List<DHoldVO>> getFee() {
-        List<DHoldVO> result = blockService.getFee();
-        return new Result<>(result);
-    }
-
-    @ApiOperation("手续费设置")
-    @PutMapping("fee")
-    public Result<List<DHoldVO>> setFee(@RequestBody List<DHoldVO> list) {
-        Boolean result = blockService.setFee(list);
-        return new Result<>(list);
-    }
 
     @ApiOperation("区块链交易查询")
     @GetMapping("transactions")
@@ -105,7 +75,21 @@ public class BlockController extends BaseController {
     @ApiOperation("待签名数据导出")
     @GetMapping("transaction/export")
     @NotLogin
-    public void exportSign() throws IOException {
+    public void exportSign(HttpServletResponse response, @RequestParam String sign) throws Exception {
+        //        getUserIdBySign(sign);
+        List<ExportOrders> list = transactionService.exportSign();
+        response.setContentType("text/plain");
+        response.addHeader("Content-Disposition", "attachment; filename=" + String.format("withdraw_%s.json", System.currentTimeMillis()));
+        @Cleanup OutputStream os = response.getOutputStream();
+        @Cleanup BufferedOutputStream buff = new BufferedOutputStream(os);
+        String jsonStr = JSON.toJSONString(list);
+        String sig = EncryptionUtil.md5(("wallet-shell" + EncryptionUtil.md5(jsonStr)));
+        OrderEntity orderEntity = new OrderEntity();
+        orderEntity.setSign(sig);
+        orderEntity.setJsonStr(jsonStr);
+        JSONObject object = new JSONObject();
+        orderEntity.setExt(object);
+        buff.write(JSON.toJSONBytes(orderEntity));
     }
 
     @ApiOperation("导入签名数据")
@@ -117,8 +101,8 @@ public class BlockController extends BaseController {
     @ApiOperation("待汇总数据导出")
     @NotLogin
     @GetMapping("collect/export")
-    public void exportSign(HttpServletResponse response, @RequestParam String sign) throws Exception {
-        getUserIdBySign(sign);
+    public void exportCollect(HttpServletResponse response, @RequestParam String sign) throws Exception {
+//        getUserIdBySign(sign);
         List<ExportOrders> list = transactionService.exportCollect();
         response.setContentType("text/plain");
         response.addHeader("Content-Disposition", "attachment; filename=" + String.format("collect_%s.json", System.currentTimeMillis()));
@@ -132,7 +116,6 @@ public class BlockController extends BaseController {
         JSONObject object = new JSONObject();
         orderEntity.setExt(object);
         buff.write(JSON.toJSONBytes(orderEntity));
-
     }
 
     @ApiOperation("导入账户")

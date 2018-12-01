@@ -24,5 +24,9 @@ public class TransactionSearchDTO {
 
     @ApiModelProperty("0上拉 1下拉")
     private Integer type;
+
+    @ApiModelProperty("令牌id")
+    private BigInteger tokenId;
+
 }
 

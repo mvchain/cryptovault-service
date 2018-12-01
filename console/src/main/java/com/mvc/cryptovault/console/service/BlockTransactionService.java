@@ -137,4 +137,13 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
             appUserBalanceService.updateBalance(obj.getUserId(), obj.getTokenId(), obj.getValue());
         }
     }
+
+    public List<BlockTransaction> getSign() {
+        Condition condition = new Condition(BlockTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "transaction_status in (2, 6)");
+        ConditionUtil.andCondition(criteria, "opr_type = ", 2);
+        List<BlockTransaction> list = findByCondition(condition);
+        return list;
+    }
 }

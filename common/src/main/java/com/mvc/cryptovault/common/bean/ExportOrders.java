@@ -21,10 +21,16 @@ public class ExportOrders {
     private BigDecimal value;
     private String fromAddress;
     private String toAddress;
+    private String feeAddress;
     private Date createdAt;
     private Date updatedAt;
     private BigInteger missionId;
     private String signature;
     private BigInteger nonce;
+    //0.collect 1.withdraw 2.approve
+    private Integer oprType;
+    private BigDecimal gasLimit;
+    private BigDecimal gasPrice;
+    private String contractAddress;
 
 }

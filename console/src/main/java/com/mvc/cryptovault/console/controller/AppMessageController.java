@@ -6,6 +6,8 @@ import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TimeSearchDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppMessageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -18,6 +20,9 @@ import java.util.List;
 @RestController
 @RequestMapping("appMessage")
 public class AppMessageController extends BaseController {
+
+    @Autowired
+    AppMessageService appMessageService;
 
     /**
      * TODO 根据性能结果缓存或走搜索引擎

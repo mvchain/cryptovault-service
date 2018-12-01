@@ -6,7 +6,10 @@ import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TransactionTokenVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppUserBalanceService;
+import com.mvc.cryptovault.console.service.CommonTokenService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -21,6 +24,11 @@ import java.util.stream.Stream;
 @RestController
 @RequestMapping("commonToken")
 public class CommonTokenController extends BaseController {
+
+    @Autowired
+    CommonTokenService commonTokenService;
+    @Autowired
+    AppUserBalanceService appUserBalanceService;
 
     @GetMapping()
     public Result<PageInfo<CommonToken>> getTokenList(@ModelAttribute CommonToken commonToken, @ModelAttribute PageDTO pageDTO) {

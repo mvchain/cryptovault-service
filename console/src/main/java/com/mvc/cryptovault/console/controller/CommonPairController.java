@@ -5,6 +5,8 @@ import com.mvc.cryptovault.common.bean.vo.OrderInfoVO;
 import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.CommonTokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -17,6 +19,9 @@ import java.util.List;
 @RestController
 @RequestMapping("commonPair")
 public class CommonPairController extends BaseController {
+
+    @Autowired
+    CommonTokenService commonTokenService;
 
     @GetMapping("")
     public Result<List<PairVO>> getPair(PairDTO pairDTO) {

@@ -10,7 +10,10 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DUSerDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserBalanceVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppUserBalanceService;
+import com.mvc.cryptovault.console.service.AppUserService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,10 @@ import java.util.List;
 @RestController
 @RequestMapping("dashboard/appUser")
 public class DAppUserController extends BaseController {
+    @Autowired
+    AppUserService appUserService;
+    @Autowired
+    AppUserBalanceService appUserBalanceService;
 
     @GetMapping("")
     public Result<PageInfo<DUSerVO>> findUser(@ModelAttribute PageDTO pageDTO, @RequestParam(value = "cellphone", required = false) String cellphone) {

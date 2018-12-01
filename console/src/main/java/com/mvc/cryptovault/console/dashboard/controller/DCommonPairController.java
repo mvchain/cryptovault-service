@@ -4,6 +4,8 @@ import com.mvc.cryptovault.common.bean.CommonPair;
 import com.mvc.cryptovault.common.bean.vo.DPairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.CommonPairService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +20,8 @@ import java.util.List;
 @RestController
 @RequestMapping("dashboard/commonPair")
 public class DCommonPairController extends BaseController {
+    @Autowired
+    CommonPairService commonPairService;
 
     @GetMapping
     public Result<List<DPairVO>> getPair() {

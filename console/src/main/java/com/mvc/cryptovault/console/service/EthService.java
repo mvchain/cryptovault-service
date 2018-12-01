@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
+import com.mvc.cryptovault.common.bean.AdminWallet;
 import com.mvc.cryptovault.common.bean.BlockTransaction;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.CommonToken;
@@ -15,15 +16,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.TypeDecoder;
+import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.Bool;
+import org.web3j.abi.datatypes.Function;
 import org.web3j.abi.datatypes.generated.Uint256;
+import org.web3j.crypto.Credentials;
+import org.web3j.crypto.ECKeyPair;
+import org.web3j.crypto.RawTransaction;
+import org.web3j.crypto.TransactionEncoder;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthEstimateGas;
+import org.web3j.protocol.core.methods.response.EthSendTransaction;
 import org.web3j.protocol.core.methods.response.Transaction;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Convert;
+import org.web3j.utils.Numeric;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
@@ -32,10 +44,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -52,6 +61,8 @@ public class EthService extends BlockService {
     CommonTokenService commonTokenService;
     @Autowired
     ContractService contractService;
+    @Autowired
+    AdminWalletService adminWalletService;
     /**
      * input存在内容时, 只有转账方法需要记录,其他如创建合约之类的不需要记录
      * TODO 测试网和正是王方法id不同, transfer和transfer from 都需要记录
@@ -119,8 +130,8 @@ public class EthService extends BlockService {
                 saveOrUpdate(trans);
                 BigDecimal fromValue = getBalance(trans.getFromAddress(), trans.getTokenId());
                 BigDecimal toValue = getBalance(trans.getToAddress(), trans.getTokenId());
-                updateAddressBalance(trans.getFromAddress(), fromValue);
-                updateAddressBalance(trans.getToAddress(), toValue);
+                updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), fromValue);
+                updateAddressBalance(trans.getTokenId(), trans.getToAddress(), toValue);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -346,5 +357,117 @@ public class EthService extends BlockService {
             return address.getValue();
         }
         return null;
+    }
+
+    @Override
+    public BigInteger getNonce(Map<String, BigInteger> nonceMap, String address) throws IOException {
+        BigInteger nonce = nonceMap.get(address);
+        if (nonce == null) {
+            nonce = web3j.ethGetTransactionCount(address, DefaultBlockParameterName.LATEST).send().getTransactionCount();
+            nonceMap.put(address, nonce);
+        } else {
+            nonce = nonce.add(BigInteger.ONE);
+            nonceMap.put(address, nonce);
+        }
+        return nonce;
+    }
+
+    @Override
+    public BigInteger getEthEstimateApprove(String contractAddress, String from, String to) throws IOException {
+        Uint256 limit = new Uint256(BigInteger.TEN.pow(18).multiply(new BigInteger("100000000000")));
+        Function function = new Function(
+                "approve",
+                Arrays.asList(new Address(to), limit),
+                Collections.singletonList(new TypeReference<Bool>() {
+                }));
+        String encodedFunction = FunctionEncoder.encode(function);
+        EthEstimateGas result = web3j.ethEstimateGas(
+                org.web3j.protocol.core.methods.request.Transaction.createEthCallTransaction(from, contractAddress, encodedFunction)).send();
+        if (result.getError() == null) {
+            return result.getAmountUsed();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public BigInteger getEthEstimateTransferFrom(String contractAddress, String from, String to) throws IOException {
+        Uint256 limit = new Uint256(new BigInteger("100000000000").multiply(BigInteger.TEN.pow(18)));
+        Function function = new Function(
+                "transferFrom",
+                Arrays.asList(new Address(from), new Address(to), limit),
+                Collections.singletonList(new TypeReference<Bool>() {
+                }));
+        String encodedFunction = FunctionEncoder.encode(function);
+        EthEstimateGas result = web3j.ethEstimateGas(
+                org.web3j.protocol.core.methods.request.Transaction.createEthCallTransaction(from, contractAddress, encodedFunction)).send();
+        if (result.getError() == null) {
+            return result.getAmountUsed();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void send(AdminWallet hot, String address, BigDecimal fromWei) throws IOException {
+        BigInteger nonce = web3j.ethGetTransactionCount(hot.getAddress(), DefaultBlockParameterName.PENDING).send().getTransactionCount();
+        ECKeyPair ecKeyPair = ECKeyPair.create(new BigInteger(hot.getPvKey()));
+        Credentials ALICE = Credentials.create(ecKeyPair);
+        RawTransaction transaction = RawTransaction.createEtherTransaction(nonce, Convert.toWei("5", Convert.Unit.GWEI).toBigInteger(), BigInteger.valueOf(21000), address, Convert.toWei(fromWei, Convert.Unit.ETHER).toBigInteger());
+        byte[] signedMessage = TransactionEncoder.signMessage(transaction, ALICE);
+        String hexValue = Numeric.toHexString(signedMessage);
+        EthSendTransaction result = web3j.ethSendRawTransaction(hexValue).send();
+    }
+
+    @Override
+    public BigDecimal getBalance(String tokenName) {
+        AdminWallet cold = adminWalletService.getEthCold();
+        CommonToken token = commonTokenService.findOneBy("tokenName", tokenName);
+        if (null == token) {
+            return BigDecimal.ZERO;
+        }
+        return getBalance(cold.getAddress(), token.getTokenContractAddress());
+    }
+
+    @Override
+    public BigInteger getEthEstimateTransfer(String contractAddress, String toAddress, String from, BigDecimal value) throws IOException {
+        Uint256 limit = new Uint256(value.toBigInteger());
+        Function function = new Function(
+                "transfer",
+                Arrays.asList(new Address(toAddress), limit),
+                Collections.singletonList(new TypeReference<Bool>() {
+                }));
+        String encodedFunction = FunctionEncoder.encode(function);
+        EthEstimateGas result = web3j.ethEstimateGas(
+                org.web3j.protocol.core.methods.request.Transaction.createEthCallTransaction(from, contractAddress, encodedFunction)).send();
+        if (result.getError() == null) {
+            return result.getAmountUsed();
+        } else {
+            return null;
+        }
+    }
+
+    private BigDecimal getBalance(String address, String contractAddress) {
+        BigDecimal result = null;
+        BigInteger balance;
+        try {
+            if (StringUtils.isBlank(contractAddress)) {
+                balance = web3j.ethGetBalance(address, DefaultBlockParameterName.LATEST).send().getBalance();
+                result = Convert.fromWei(new BigDecimal(balance), Convert.Unit.ETHER);
+            } else {
+                balance = contractService.balanceOf(contractAddress, address);
+                CommonToken contract = getTokenContract(contractAddress);
+                if (null == contract) {
+                    return BigDecimal.ZERO;
+                }
+                result = new BigDecimal(balance).divide(BigDecimal.TEN.pow(contract.getTokenDecimal()));
+            }
+            return result;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return BigDecimal.ZERO;
+        }
+
+
     }
 }

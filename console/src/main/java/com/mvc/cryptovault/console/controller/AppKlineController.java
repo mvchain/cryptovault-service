@@ -3,6 +3,8 @@ package com.mvc.cryptovault.console.controller;
 import com.mvc.cryptovault.common.bean.vo.KLineVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppKlineService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +19,9 @@ import java.math.BigInteger;
 @RestController
 @RequestMapping("appKline")
 public class AppKlineController extends BaseController {
+
+    @Autowired
+    AppKlineService appKlineService;
 
     @GetMapping()
     public Result<KLineVO> getTransactions(@RequestParam("pairId") BigInteger pairId) {

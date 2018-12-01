@@ -35,4 +35,8 @@ public class TransactionService extends BaseService {
         return result.getData();
     }
 
+    public List<ExportOrders> exportSign() {
+        Result<List<ExportOrders>> result = remoteService.exportSign();
+        return result.getData();
+    }
 }

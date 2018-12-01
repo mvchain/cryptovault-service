@@ -112,6 +112,9 @@ public interface ConsoleRemoteService {
     @GetMapping("dashboard/appUserTransaction/collect")
     Result<List<ExportOrders>> exportCollect();
 
+    @GetMapping("dashboard/appUserTransaction/sign")
+    Result<List<ExportOrders>> exportSign();
+
     @GetMapping("dashboard/appUserTransaction/over")
     Result<PageInfo<OverTransactionVO>> overList(@RequestBody OverTransactionDTO overTransactionDTO);
 
@@ -144,4 +147,6 @@ public interface ConsoleRemoteService {
 
     @PutMapping("dashboard/appUser/{id}/status")
     Result<Boolean> updateUserStatus(@PathVariable("id") BigInteger id, @RequestParam("status") Integer status);
+
+
 }

@@ -7,6 +7,8 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.BlockTransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("dashboard/blockTransaction")
 public class DBlockTransactionController extends BaseController {
+    @Autowired
+    BlockTransactionService blockTransactionService;
 
     @PutMapping("status")
     public Result<Boolean> updateStatus(@RequestBody DBlockStatusDTO dBlockStatusDTO) {

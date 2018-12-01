@@ -1,16 +1,20 @@
 package com.mvc.cryptovault.console.service;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.mvc.cryptovault.common.bean.AdminWallet;
 import com.mvc.cryptovault.common.bean.BlockTransaction;
 import com.mvc.cryptovault.common.bean.CommonAddress;
+import com.mvc.cryptovault.common.bean.CommonToken;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Map;
 import java.util.concurrent.*;
 
 @Component
@@ -21,12 +25,15 @@ public abstract class BlockService implements CommandLineRunner {
     @Autowired
     private CommonAddressService commonAddressService;
     @Autowired
+    private CommonTokenService commonTokenService;
+    @Autowired
     protected StringRedisTemplate redisTemplate;
+
     protected static volatile ExecutorService executorService;
 
     static {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("address-pool-%d").build();
-        executorService = new ThreadPoolExecutor(8, 8, 10L, TimeUnit.MILLISECONDS,
+        executorService = new ThreadPoolExecutor(4, 4, 5L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.DiscardPolicy());
     }
 
@@ -53,6 +60,7 @@ public abstract class BlockService implements CommandLineRunner {
             trans.setHeight(blockTransaction.getHeight());
             trans.setFee(blockTransaction.getFee());
             trans.setErrorData(blockTransaction.getErrorData());
+            trans.setFromAddress(blockTransaction.getFromAddress());
             trans.setErrorMsg(blockTransaction.getErrorMsg());
             blockTransactionService.update(trans);
             return false;
@@ -83,11 +91,23 @@ public abstract class BlockService implements CommandLineRunner {
         }
     }
 
-    protected void updateAddressBalance(String address, BigDecimal value) {
+    protected void updateAddressBalance(BigInteger tokenId, String address, BigDecimal value) {
         CommonAddress addr = commonAddressService.findOneBy("address", address);
-        if (null != addr) {
+        CommonToken token = commonTokenService.findById(tokenId);
+        if (null != addr && addr.getAddressType().equalsIgnoreCase(token.getTokenName())) {
             addr.setBalance(value);
             commonAddressService.update(addr);
         }
     }
+
+    public abstract BigInteger getNonce(Map<String, BigInteger> nonceMap, String address) throws IOException;
+
+    public abstract BigInteger getEthEstimateTransferFrom(String contractAddress, String from, String to) throws IOException;
+    public abstract BigInteger getEthEstimateApprove(String contractAddress, String from, String to) throws IOException;
+
+    public abstract void send(AdminWallet hot, String address, BigDecimal fromWei) throws IOException;
+
+    public abstract BigDecimal getBalance(String tokenName);
+
+    public abstract BigInteger getEthEstimateTransfer(String tokenContractAddress, String toAddress, String address, BigDecimal value) throws IOException;
 }

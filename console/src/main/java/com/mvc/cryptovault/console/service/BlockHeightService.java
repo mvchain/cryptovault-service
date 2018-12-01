@@ -36,20 +36,6 @@ public class BlockHeightService extends AbstractService<BlockHeight> implements 
     @Autowired
     Web3j web3j;
 
-    public void setHold(List<DHoldVO> list) {
-        for (DHoldVO vo : list) {
-            blockHeightMapper.updateHold(vo.getTokenId(), vo.getValue());
-        }
-        updateAllCache();
-    }
-
-    public void setFee(List<DHoldVO> list) {
-        for (DHoldVO vo : list) {
-            blockHeightMapper.updateFee(vo.getTokenId(), vo.getValue());
-        }
-        updateAllCache();
-    }
-
     public void importAddress(List<CommonAddress> list) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
         List<AdminWallet> wallets = adminWalletService.findAll();
         list.stream().forEach(obj -> {
@@ -85,6 +71,7 @@ public class BlockHeightService extends AbstractService<BlockHeight> implements 
                 adminWalletService.save(wallet);
                 address.setUsed(1);
                 address.setUserId(BigInteger.ZERO);
+                address.setAddressType("ETH");
                 commonAddressMapper.updateByPrimaryKeySelective(address);
             }
         }

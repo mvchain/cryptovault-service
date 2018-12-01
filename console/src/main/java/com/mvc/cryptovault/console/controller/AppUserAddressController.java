@@ -2,6 +2,9 @@ package com.mvc.cryptovault.console.controller;
 
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppUserAddressService;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -13,6 +16,9 @@ import java.math.BigInteger;
 @RestController
 @RequestMapping("appUserAddress")
 public class AppUserAddressController extends BaseController {
+
+    @Autowired
+    AppUserAddressService appUserAddressService;
 
     @GetMapping("{userId}")
     public Result<String> getAddress(@PathVariable("userId") BigInteger userId, @RequestParam("tokenId") BigInteger tokenId) {

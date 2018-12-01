@@ -6,6 +6,8 @@ import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.console.service.AppProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("appProject")
 public class AppProjectController extends BaseController {
+
+    @Autowired
+    AppProjectService appProjectService;
 
     @GetMapping()
     Result<PageInfo<AppProject>> getProject(@RequestParam Integer projectType, @RequestParam(required = false) BigInteger id, @RequestParam Integer type, @RequestParam Integer pageSize) {

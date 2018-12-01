@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AdminUser;
+import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminDTO;
@@ -9,8 +10,13 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.AdminPasswordDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AdminUserService;
+import com.mvc.cryptovault.console.service.BlockService;
+import com.mvc.cryptovault.console.service.CommonAddressService;
+import com.mvc.cryptovault.console.service.CommonTokenService;
 import com.mvc.cryptovault.console.util.PageUtil;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +33,13 @@ import java.util.List;
 @RestController
 @RequestMapping("dashboard/adminUser")
 public class DAdminUserController extends BaseController {
+
+    @Autowired
+    AdminUserService adminUserService;
+    @Autowired
+    CommonTokenService commonTokenService;
+    @Autowired
+    CommonAddressService commonAddressService;
 
     @GetMapping()
     public Result<PageInfo<AdminVO>> getAdmins(@RequestParam BigInteger userId, @ModelAttribute PageDTO dto) {
@@ -107,8 +120,12 @@ public class DAdminUserController extends BaseController {
 
     @GetMapping("balance")
     public Result<BigDecimal> getBalance(@RequestParam(value = "tokenId", required = false) BigInteger tokenId) {
-        //TODO 区块链相关最后处理
-        return new Result<>(new BigDecimal(6.6));
+        CommonToken token = commonTokenService.findById(tokenId);
+        if(null == token){
+            return new Result<>(BigDecimal.ZERO);
+        }
+        BigDecimal result = commonAddressService.getBalance(token.getTokenName());
+        return new Result<>(result);
     }
 
 }

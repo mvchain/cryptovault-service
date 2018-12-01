@@ -9,6 +9,9 @@ import com.mvc.cryptovault.common.bean.vo.OrderVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppUserService;
+import com.mvc.cryptovault.console.service.AppUserTransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +27,11 @@ import java.util.List;
 @RestController
 @RequestMapping("appUserTransaction")
 public class AppUserTransactionController extends BaseController {
+
+    @Autowired
+    AppUserTransactionService appUserTransactionService;
+    @Autowired
+    AppUserService appUserService;
 
     @GetMapping()
     public Result<List<OrderVO>> getTransactions(@ModelAttribute OrderDTO dto) {

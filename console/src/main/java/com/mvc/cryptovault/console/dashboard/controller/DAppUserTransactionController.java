@@ -10,9 +10,13 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.OverTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.OverTransactionVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppUserTransactionService;
+import com.mvc.cryptovault.console.service.CommonAddressService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.List;
 
@@ -23,6 +27,10 @@ import java.util.List;
 @RestController
 @RequestMapping("dashboard/appUserTransaction")
 public class DAppUserTransactionController extends BaseController {
+    @Autowired
+    AppUserTransactionService appUserTransactionService;
+    @Autowired
+    CommonAddressService commonAddressService;
 
     @GetMapping("")
     public Result<PageInfo<DTransactionVO>> findTransaction(@ModelAttribute PageDTO pageDTO, @ModelAttribute DTransactionDTO dTransactionDTO) {
@@ -48,8 +56,13 @@ public class DAppUserTransactionController extends BaseController {
     }
 
     @GetMapping("collect")
-    public Result<List<ExportOrders>> exportCollect() {
+    public Result<List<ExportOrders>> exportCollect() throws IOException {
         List<ExportOrders> result = commonAddressService.exportCollect();
+        return new Result<>(result);
+    }
+    @GetMapping("sign")
+    public Result<List<ExportOrders>> exportSign() throws IOException {
+        List<ExportOrders> result = commonAddressService.exportSign();
         return new Result<>(result);
     }
 

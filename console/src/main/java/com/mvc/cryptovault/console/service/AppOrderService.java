@@ -60,6 +60,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "user_id = ", userId);
         ConditionUtil.andCondition(criteria, "order_type = ", transactionSearchDTO.getTransactionType());
+        ConditionUtil.andCondition(criteria, "token_id = ", transactionSearchDTO.getTokenId());
         PageHelper.startPage(1, transactionSearchDTO.getPageSize());
         PageHelper.orderBy("id desc");
         if (BusinessConstant.SEARCH_DIRECTION_UP.equals(transactionSearchDTO.getType()) && (null != transactionSearchDTO.getId()) && !transactionSearchDTO.getId().equals(BigInteger.ZERO)) {

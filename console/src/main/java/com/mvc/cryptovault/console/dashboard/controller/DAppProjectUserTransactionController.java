@@ -7,6 +7,8 @@ import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectOrderDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectOrderVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppProjectUserTransactionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,8 @@ import java.math.BigInteger;
 @RestController
 @RequestMapping("dashboard/appProjectUserTransaction")
 public class DAppProjectUserTransactionController extends BaseController {
+    @Autowired
+    AppProjectUserTransactionService appProjectUserTransactionService;
 
     @PutMapping("{id}")
     public Result<Boolean> cancelProject(@PathVariable("id") BigInteger id) {

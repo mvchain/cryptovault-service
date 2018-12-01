@@ -25,4 +25,7 @@ public class TokenDetailVO {
     private BigInteger tokenId;
     @ApiModelProperty
     private Long timestamp;
+    @ApiModelProperty("币种类型0余额 1虚拟货币 2区块链货币")
+    private Integer tokenType;
+
 }

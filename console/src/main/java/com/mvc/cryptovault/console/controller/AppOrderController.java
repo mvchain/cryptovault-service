@@ -5,6 +5,8 @@ import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TransactionDetailVO;
 import com.mvc.cryptovault.common.bean.vo.TransactionSimpleVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppOrderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
@@ -17,6 +19,9 @@ import java.util.List;
 @RestController
 @RequestMapping("appOrder")
 public class AppOrderController extends BaseController {
+
+    @Autowired
+    AppOrderService appOrderService;
 
     /**
      * TODO 数据量量庞大,需要修改为缓存部分数据+搜索引擎（根据测试结果）
