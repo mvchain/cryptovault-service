@@ -66,7 +66,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             vo.setRatio(null == price ? BigDecimal.ZERO : price.getTokenPrice());
             vo.setTokenId(token.getId());
             vo.setPairId(obj.getId());
-            vo.setTransactionStatus(commonTokenControl.getTransactionStatus());
+            vo.setTransactionStatus(null == commonTokenControl ? 0 : commonTokenControl.getTransactionStatus());
             if (null == lastValue) {
                 vo.setIncrease(vo.getRatio().floatValue() * 100);
             } else {
