@@ -57,6 +57,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         list.forEach(obj -> {
             CommonToken token = findById(obj.getTokenId());
             CommonTokenPrice price = commonTokenPriceService.findById(obj.getTokenId());
+            CommonTokenControl commonTokenControl = commonTokenControlService.findById(obj.getTokenId());
             BigDecimal lastValue = get24HBefore(obj.getTokenId());
             PairVO vo = new PairVO();
             vo.setPair(obj.getPairName());
@@ -65,11 +66,12 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             vo.setRatio(null == price ? BigDecimal.ZERO : price.getTokenPrice());
             vo.setTokenId(token.getId());
             vo.setPairId(obj.getId());
+            vo.setTransactionStatus(commonTokenControl.getTransactionStatus());
             if (null == lastValue) {
-                vo.setIncrease(vo.getRatio().floatValue());
+                vo.setIncrease(vo.getRatio().floatValue() * 100);
             } else {
                 Float increase = lastValue.divide(null == price ? BigDecimal.ZERO : price.getTokenPrice()).setScale(2, RoundingMode.HALF_DOWN).floatValue();
-                vo.setIncrease(increase);
+                vo.setIncrease(increase * 100);
             }
             result.add(vo);
         });

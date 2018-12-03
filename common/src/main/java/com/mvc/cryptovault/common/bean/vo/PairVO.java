@@ -21,7 +21,7 @@ public class PairVO {
     @ApiModelProperty("交易对信息")
     private String pair;
 
-    @ApiModelProperty("对usdt价格")
+    @ApiModelProperty("对CNY价格")
     private BigDecimal ratio;
 
     @ApiModelProperty("令牌名称")
@@ -35,4 +35,7 @@ public class PairVO {
 
     @ApiModelProperty("交易对ID")
     private BigInteger pairId;
+
+    @ApiModelProperty("交易对开关,1开启0关闭")
+    private Integer transactionStatus;
 }
