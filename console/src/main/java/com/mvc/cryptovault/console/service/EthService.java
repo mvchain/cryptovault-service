@@ -192,9 +192,6 @@ public class EthService extends BlockService {
 
     private void replayTransactionsObservable(Transaction tx) {
         try {
-            if(tx.getHash().equalsIgnoreCase("0xd9a7b545817eff0218a877f53fda65a0e0a393035d73d90df0e8bd274fc6cb00")){
-                System.out.println(111);
-            }
             BlockTransaction trans = blockTransaction(tx);
             if (null != trans) {
                 saveOrUpdate(trans);
@@ -246,7 +243,6 @@ public class EthService extends BlockService {
                 if (lastNumber.equals(String.valueOf(height))) {
                     continue;
                 }
-                lastNumber = "3446838";
                 //0x8e3c345eb9de5aa4fba102d7ab71b4a2ed7445e90fc392555c0de1f32b10df8e
                 //单个区块监听,避免消耗过大
                 DefaultBlockParameter start = DefaultBlockParameter.valueOf(NumberUtils.createBigInteger(lastNumber));
@@ -395,7 +391,7 @@ public class EthService extends BlockService {
                 commonToken = commonTokenService.findOneBy("tokenContractAddress", tx.getTo());
                 return BigDecimal.ZERO;
             }
-            String value = transferArr.contains(tx.getInput().substring(0, 10))? tx.getInput().substring(74):tx.getInput().substring(138);
+            String value = transferArr.contains(tx.getInput().substring(0, 10)) ? tx.getInput().substring(74) : tx.getInput().substring(138);
             Method refMethod = null;
             Uint256 amount = null;
             try {
