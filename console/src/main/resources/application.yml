@@ -8,7 +8,7 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
   redis:
-    database: 1
+    database: 2
     host: 192.168.15.31
     timeout: 1000ms
     jedis:

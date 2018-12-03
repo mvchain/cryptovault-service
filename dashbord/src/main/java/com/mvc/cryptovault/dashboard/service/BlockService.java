@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.BlockSign;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
@@ -10,7 +11,6 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DHoldVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.CommunicationException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
@@ -66,6 +66,11 @@ public class BlockService extends BaseService {
 
     public Boolean importAddress(List<CommonAddress> list) {
         remoteService.importAddress(list);
+        return true;
+    }
+
+    public Boolean importSign(List<BlockSign> list, String fileName) {
+        remoteService.importSign(list, fileName);
         return true;
     }
 }

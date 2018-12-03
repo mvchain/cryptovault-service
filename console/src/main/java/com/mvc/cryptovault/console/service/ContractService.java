@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.web3j.abi.datatypes.*;
 import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.abi.datatypes.generated.Uint8;
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.admin.Admin;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.quorum.Quorum;
@@ -196,16 +194,15 @@ public class ContractService {
         return null;
     }
 
-    public long allowance(String contractAddress, String ownerAddress, String spenderAddress) {
+    public BigInteger allowance(String contractAddress, String ownerAddress, String spenderAddress) {
         HumanStandardToken humanStandardToken = load(contractAddress);
         try {
-            return extractLongValue((Uint) humanStandardToken.allowance(
-                    new Address(ownerAddress), new Address(spenderAddress))
-            );
-        } catch (IOException e) {
+            Uint256 value = humanStandardToken.allowance(new Address(ownerAddress), new Address(spenderAddress));
+            return value.getValue();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return 0;
+        return BigInteger.ZERO;
     }
 
     private HumanStandardToken load(String contractAddress, List<String> privateFor) {

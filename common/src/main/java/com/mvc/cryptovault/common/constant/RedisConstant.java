@@ -11,4 +11,5 @@ public interface RedisConstant {
     String EXPORT = "EXPORT";
     String ETH_LAST_HEIGHT = "ETH_LAST_HEIGHT";
     String EXCHANGE_RATE = "EXCHANGE_RATE";
+    String TRANS_IMPORT = "TRANS_IMPORT_";
 }

@@ -1,10 +1,8 @@
 package com.mvc.cryptovault.console.service;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
-import com.mvc.cryptovault.common.bean.AdminWallet;
-import com.mvc.cryptovault.common.bean.BlockTransaction;
-import com.mvc.cryptovault.common.bean.CommonAddress;
-import com.mvc.cryptovault.common.bean.CommonToken;
+import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.util.BaseContextHandler;
 import com.mvc.cryptovault.common.util.ConditionUtil;
@@ -63,11 +61,24 @@ public class EthService extends BlockService {
     ContractService contractService;
     @Autowired
     AdminWalletService adminWalletService;
+    @Autowired
+    BlockSignService blockSignService;
+
+    /**
+     * 执行transferFrom方法时发现没有approve时的等待时间
+     */
+    private Long APPROVE_WAIT = 1000 * 60L;
+    /**
+     * 最大允许汇总量,每汇总一次会减少,需要设置大一些
+     */
+    private BigInteger MAX_APPROVE = new BigInteger("10000000000000");
     /**
      * input存在内容时, 只有转账方法需要记录,其他如创建合约之类的不需要记录
      * TODO 测试网和正是王方法id不同, transfer和transfer from 都需要记录
      */
     private List<String> transferArr = Arrays.asList(new String[]{"0xa9059cbb"});
+    private List<String> transferFromArr = Arrays.asList(new String[]{"0x23b872dd"});
+    private List<String> approveArr = Arrays.asList(new String[]{"0x095ea7b3"});
     private Map<String, CommonToken> tokenMap = new ConcurrentHashMap<>();
 
     @Override
@@ -90,6 +101,62 @@ public class EthService extends BlockService {
                 oldListener();
             }
         });
+        executorService.execute(() -> {
+            BaseContextHandler.set("thread-key", "ethSignJob");
+            try {
+                signJob();
+            } catch (Exception e) {
+                signJob();
+            }
+        });
+    }
+
+    private void signJob() {
+        while (true) {
+            try {
+                BlockSign sign = blockSignService.findOneByToken("ETH");
+                if (null != sign) {
+                    if (sign.getOprType() == 0) {
+                        //汇总时先判断是否approve
+                        AdminWallet cold = adminWalletService.getEthCold();
+                        if (cold == null) {
+                            sign.setStartedAt(System.currentTimeMillis() + APPROVE_WAIT);
+                        } else {
+                            BigInteger result = contractService.allowance(sign.getContractAddress(), sign.getToAddress(), cold.getAddress());
+                            if (result.equals(BigInteger.ZERO)) {
+                                sign.setStartedAt(System.currentTimeMillis() + APPROVE_WAIT);
+                            } else {
+                                sendRaw(sign);
+                            }
+                        }
+                    } else {
+                        sendRaw(sign);
+                    }
+                    blockSignService.update(sign);
+                }
+                Thread.sleep(5);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void sendRaw(BlockSign sign) throws IOException {
+        EthSendTransaction result = web3j.ethSendRawTransaction(sign.getSign()).send();
+        if (null == result || null != result.getError()) {
+            sign.setStatus(9);
+            sign.setResult(JSON.toJSONString(result.getError()));
+            if (StringUtils.isNotBlank(sign.getOrderId())) {
+                //更新区块交易表
+                String message = null == result.getError() ? "交易失败" : result.getError().getMessage();
+                String data = null == result.getError() ? "交易失败" : result.getError().getData();
+                updateError(sign.getOrderId(), message, data);
+            }
+        } else {
+            String hash = result.getTransactionHash();
+            sign.setHash(hash);
+            sign.setStatus(1);
+        }
     }
 
     private void updateStatus(String lastNumber) {
@@ -125,6 +192,9 @@ public class EthService extends BlockService {
 
     private void replayTransactionsObservable(Transaction tx) {
         try {
+            if(tx.getHash().equalsIgnoreCase("0xd9a7b545817eff0218a877f53fda65a0e0a393035d73d90df0e8bd274fc6cb00")){
+                System.out.println(111);
+            }
             BlockTransaction trans = blockTransaction(tx);
             if (null != trans) {
                 saveOrUpdate(trans);
@@ -176,6 +246,7 @@ public class EthService extends BlockService {
                 if (lastNumber.equals(String.valueOf(height))) {
                     continue;
                 }
+                lastNumber = "3446838";
                 //0x8e3c345eb9de5aa4fba102d7ab71b4a2ed7445e90fc392555c0de1f32b10df8e
                 //单个区块监听,避免消耗过大
                 DefaultBlockParameter start = DefaultBlockParameter.valueOf(NumberUtils.createBigInteger(lastNumber));
@@ -216,6 +287,11 @@ public class EthService extends BlockService {
         String from = tx.getFrom();
         String to = getAddressFromInput(tx);
         CommonAddress address = isOurAddress(from, to);
+        //approve方法则仅修改状态值
+        if (isApprove(tx)) {
+            updateApprove(from);
+            return null;
+        }
         //非内部地址忽略
         if (null == address) {
             return null;
@@ -281,7 +357,15 @@ public class EthService extends BlockService {
             return false;
         }
         String method = tx.getInput().substring(0, 10);
-        return transferArr.contains(method);
+        return transferArr.contains(method) || transferFromArr.contains(method);
+    }
+
+    private Boolean isApprove(Transaction tx) {
+        if (null == tx.getInput() || tx.getInput().equals("0x") || tx.getInput().length() <= 10) {
+            return false;
+        }
+        String method = tx.getInput().substring(0, 10);
+        return approveArr.contains(method);
     }
 
     private Boolean isEthTransfer(final Transaction tx) {
@@ -311,7 +395,7 @@ public class EthService extends BlockService {
                 commonToken = commonTokenService.findOneBy("tokenContractAddress", tx.getTo());
                 return BigDecimal.ZERO;
             }
-            String value = tx.getInput().substring(74);
+            String value = transferArr.contains(tx.getInput().substring(0, 10))? tx.getInput().substring(74):tx.getInput().substring(138);
             Method refMethod = null;
             Uint256 amount = null;
             try {
@@ -374,7 +458,7 @@ public class EthService extends BlockService {
 
     @Override
     public BigInteger getEthEstimateApprove(String contractAddress, String from, String to) throws IOException {
-        Uint256 limit = new Uint256(BigInteger.TEN.pow(18).multiply(new BigInteger("100000000000")));
+        Uint256 limit = new Uint256(BigInteger.TEN.pow(18).multiply(MAX_APPROVE));
         Function function = new Function(
                 "approve",
                 Arrays.asList(new Address(to), limit),
@@ -392,7 +476,7 @@ public class EthService extends BlockService {
 
     @Override
     public BigInteger getEthEstimateTransferFrom(String contractAddress, String from, String to) throws IOException {
-        Uint256 limit = new Uint256(new BigInteger("100000000000").multiply(BigInteger.TEN.pow(18)));
+        Uint256 limit = new Uint256(MAX_APPROVE.multiply(BigInteger.TEN.pow(18)));
         Function function = new Function(
                 "transferFrom",
                 Arrays.asList(new Address(from), new Address(to), limit),

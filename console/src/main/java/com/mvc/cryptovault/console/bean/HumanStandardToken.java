@@ -191,7 +191,7 @@ public final class HumanStandardToken extends Contract {
         return executeTransaction(function);
     }
 
-    public Future<Uint256> allowance(Address owner, Address spender) throws IOException {
+    public Uint256 allowance(Address owner, Address spender) throws IOException {
         Function function = new Function("allowance",
                 Arrays.<Type>asList(owner, spender),
                 Arrays.<TypeReference<?>>asList(new TypeReference<Uint256>() {

@@ -28,12 +28,14 @@ public abstract class BlockService implements CommandLineRunner {
     private CommonTokenService commonTokenService;
     @Autowired
     protected StringRedisTemplate redisTemplate;
+    @Autowired
+    AdminWalletService adminWalletService;
 
     protected static volatile ExecutorService executorService;
 
     static {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("address-pool-%d").build();
-        executorService = new ThreadPoolExecutor(4, 4, 5L, TimeUnit.MILLISECONDS,
+        executorService = new ThreadPoolExecutor(6, 6, 1, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.DiscardPolicy());
     }
 
@@ -53,7 +55,7 @@ public abstract class BlockService implements CommandLineRunner {
         } else {
             trans.setTransactionStatus(blockTransaction.getTransactionStatus());
             //已经成功的记录不修改,防止余额重复累加
-            if(trans.getStatus() != 2){
+            if (trans.getStatus() != 2) {
                 trans.setStatus(blockTransaction.getStatus());
             }
             trans.setUpdatedAt(System.currentTimeMillis());
@@ -71,6 +73,11 @@ public abstract class BlockService implements CommandLineRunner {
     protected CommonAddress isOurAddress(String from, String to) {
         if (StringUtils.isAnyBlank(from, to)) {
             return null;
+        }
+        CommonAddress cold = adminWalletService.isCold(from, to);
+        if (null != cold) {
+            //热钱包操作
+            return cold;
         }
         //返回地址信息。充值和提现时返回用户地址，汇总和钱包操作则返回非用户地址（userId为0）
         CommonAddress fromAddress = commonAddressService.findOneBy("address", from);
@@ -100,9 +107,30 @@ public abstract class BlockService implements CommandLineRunner {
         }
     }
 
+    protected void updateApprove(String address) {
+        CommonAddress commonAddress = commonAddressService.findOneBy("address", address);
+        if (null != commonAddress) {
+            commonAddress.setApprove(1);
+            commonAddressService.update(commonAddress);
+        }
+    }
+
+    protected void updateError(String orderId, String message, String data) {
+        BlockTransaction transaction = blockTransactionService.findOneBy("order_number", orderId);
+        if (null != transaction) {
+            transaction.setStatus(9);
+            transaction.setTransactionStatus(6);
+            transaction.setUpdatedAt(System.currentTimeMillis());
+            transaction.setErrorData(data);
+            transaction.setErrorMsg(message);
+            blockTransactionService.update(transaction);
+        }
+    }
+
     public abstract BigInteger getNonce(Map<String, BigInteger> nonceMap, String address) throws IOException;
 
     public abstract BigInteger getEthEstimateTransferFrom(String contractAddress, String from, String to) throws IOException;
+
     public abstract BigInteger getEthEstimateApprove(String contractAddress, String from, String to) throws IOException;
 
     public abstract void send(AdminWallet hot, String address, BigDecimal fromWei) throws IOException;

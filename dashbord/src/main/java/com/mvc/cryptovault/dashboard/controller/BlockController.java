@@ -3,6 +3,7 @@ package com.mvc.cryptovault.dashboard.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.BlockSign;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.OrderEntity;
@@ -95,7 +96,18 @@ public class BlockController extends BaseController {
     @ApiOperation("导入签名数据")
     @PostMapping("sign/import")
     public Result<Boolean> importSign(@RequestBody MultipartFile file) throws IOException {
-        return null;
+        String fileName = file.getOriginalFilename();
+        @Cleanup InputStream in = file.getInputStream();
+        String jsonStr = IOUtils.toString(in);
+        List<BlockSign> list = null;
+        try {
+            list = JSON.parseArray(jsonStr, BlockSign.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("文件格式错误");
+        }
+        Assert.isTrue(null != list && list.size() > 0 && list.get(0).getOprType() != null, "文件格式错误");
+        Boolean result = blockService.importSign(list, fileName);
+        return new Result<>(true);
     }
 
     @ApiOperation("待汇总数据导出")

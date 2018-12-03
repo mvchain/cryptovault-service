@@ -2,6 +2,7 @@ package com.mvc.cryptovault.dashboard.feign;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AdminUser;
+import com.mvc.cryptovault.common.bean.BlockSign;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
@@ -144,6 +145,9 @@ public interface ConsoleRemoteService {
 
     @PostMapping("dashboard/commonAddress")
     Result<Boolean> importAddress(@RequestBody List<CommonAddress> list);
+
+    @PostMapping("dashboard/blockSign")
+    Result<Boolean> importSign(@RequestBody List<BlockSign> list, @RequestParam("fileName") String fileName);
 
     @PutMapping("dashboard/appUser/{id}/status")
     Result<Boolean> updateUserStatus(@PathVariable("id") BigInteger id, @RequestParam("status") Integer status);
