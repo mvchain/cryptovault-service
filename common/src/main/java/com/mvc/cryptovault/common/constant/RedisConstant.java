@@ -10,4 +10,5 @@ public interface RedisConstant {
     String COMMON_TOKEN = "COMMON_TOKEN";
     String EXPORT = "EXPORT";
     String ETH_LAST_HEIGHT = "ETH_LAST_HEIGHT";
+    String EXCHANGE_RATE = "EXCHANGE_RATE";
 }

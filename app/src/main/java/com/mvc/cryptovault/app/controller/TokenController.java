@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.app.controller;
 
+import com.mvc.cryptovault.common.bean.vo.ExchangeRateVO;
 import com.mvc.cryptovault.common.bean.vo.TokenDetailVO;
 import com.mvc.cryptovault.common.bean.vo.TokenRatioVO;
 import com.mvc.cryptovault.app.service.TokenService;
@@ -43,6 +44,12 @@ public class TokenController extends BaseController {
     @SwaggerMock("${token.base}")
     public Result<List<TokenRatioVO>> getBase() {
         return new Result<>(tokenService.getBase());
+    }
+
+    @ApiOperation("获取汇率，每12小时刷新.客户端控制调用频率")
+    @GetMapping("exchange/rate")
+    public Result<List<ExchangeRateVO>> getExchangeRate() {
+        return new Result<>(tokenService.getExchangeRate());
     }
 
 }
