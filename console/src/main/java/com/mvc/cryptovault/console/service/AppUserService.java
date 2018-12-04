@@ -42,7 +42,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         for (AppUser appUser : list) {
             DUSerVO vo = new DUSerVO();
             BeanUtils.copyProperties(appUser, vo);
-            List<TokenBalanceVO> data = appUserBalanceService.getAsset(appUser.getId());
+            List<TokenBalanceVO> data = appUserBalanceService.getAsset(appUser.getId(), true);
             BigDecimal sum = data.stream().map(obj -> obj.getRatio().multiply(obj.getValue())).reduce(BigDecimal.ZERO, BigDecimal::add);
             vo.setBalance(sum);
             vos.add(vo);

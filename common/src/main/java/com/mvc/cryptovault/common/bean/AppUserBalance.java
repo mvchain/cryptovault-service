@@ -37,6 +37,11 @@ public class AppUserBalance implements Serializable {
     private BigDecimal balance;
 
     /**
+     * 是否在资产列表中展示
+     */
+    private Integer visible;
+
+    /**
      * app_user_balance
      */
     private static final long serialVersionUID = 1L;

@@ -20,7 +20,6 @@ public class AppKline implements Serializable {
      * 
      */
     @Id
-
     @Column(name = "id")
     private BigInteger id;
 

@@ -21,7 +21,6 @@ public class AppOrder implements Serializable {
      */
     @Id
     @Column(name = "id")
-
     private BigInteger id;
 
     /**

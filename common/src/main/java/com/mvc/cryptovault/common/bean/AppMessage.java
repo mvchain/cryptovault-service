@@ -20,7 +20,6 @@ public class AppMessage implements Serializable {
      * 消息id
      */
     @Id
-
     @Column(name = "id")
     private BigInteger id;
 
@@ -52,7 +51,7 @@ public class AppMessage implements Serializable {
      * 消息类型0普通消息 1推送消息
      */
     @Column(name = "message_type")
-    private BigInteger messageType;
+    private Integer messageType;
 
     /**
      * 已读状态标记
@@ -165,24 +164,6 @@ public class AppMessage implements Serializable {
      */
     public void setContentType(String contentType) {
         this.contentType = contentType;
-    }
-
-    /**
-     * 消息类型0普通消息 1推送消息
-     *
-     * @return message_type 消息类型0普通消息 1推送消息
-     */
-    public BigInteger getMessageType() {
-        return messageType;
-    }
-
-    /**
-     * 消息类型0普通消息 1推送消息
-     *
-     * @param messageType 消息类型0普通消息 1推送消息
-     */
-    public void setMessageType(BigInteger messageType) {
-        this.messageType = messageType;
     }
 
     /**

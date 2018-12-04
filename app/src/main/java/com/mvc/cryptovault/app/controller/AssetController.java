@@ -1,13 +1,10 @@
 package com.mvc.cryptovault.app.controller;
 
+import com.mvc.cryptovault.common.bean.dto.AssertVisibleDTO;
 import com.mvc.cryptovault.common.bean.dto.DebitDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionSearchDTO;
-import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
-import com.mvc.cryptovault.common.bean.vo.TransactionDetailVO;
-import com.mvc.cryptovault.common.bean.vo.TransactionSimpleVO;
-import com.mvc.cryptovault.common.bean.vo.TransactionTokenVO;
-import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.*;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +32,13 @@ public class AssetController extends BaseController {
     public @ResponseBody
     Result<List<TokenBalanceVO>> getAsset() {
         return new Result<>(assetService.getAsset(getUserId()));
+    }
+
+    @ApiOperation("设置币种展示开关,更新优先队列较低")
+    @PutMapping
+    public @ResponseBody
+    Result<Boolean> updateVisible(@RequestBody @Valid AssertVisibleDTO assertVisibleDTO) {
+        return new Result<>(assetService.updateVisible(getUserId(), assertVisibleDTO));
     }
 
     @ApiOperation("获取资产总值,观察列表中不存在但是余额存在的也会被统计.统一以CNY为单位返回,客户端根据币种自行转换.建议缓存")

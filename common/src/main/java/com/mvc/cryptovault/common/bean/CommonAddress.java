@@ -2,9 +2,6 @@ package com.mvc.cryptovault.common.bean;
 
 import lombok.Data;
 
-import lombok.Data;
-import lombok.Generated;
-
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -29,4 +26,5 @@ public class CommonAddress implements Serializable {
     private BigInteger userId;
     private String addressType;
     private Integer approve;
+
 }

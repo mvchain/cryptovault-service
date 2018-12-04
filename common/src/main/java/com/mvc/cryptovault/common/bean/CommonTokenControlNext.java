@@ -20,7 +20,6 @@ public class CommonTokenControlNext implements Serializable {
      * 
      */
     @Id
-
     @Column(name = "token_id")
     private BigInteger tokenId;
 

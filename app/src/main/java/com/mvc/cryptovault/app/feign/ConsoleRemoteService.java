@@ -4,9 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.*;
 import com.mvc.cryptovault.common.bean.vo.*;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.context.annotation.Primary;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -18,6 +16,9 @@ public interface ConsoleRemoteService {
 
     @GetMapping("appUserBalance/{userId}")
     Result<List<TokenBalanceVO>> getAsset(@PathVariable("userId") BigInteger userId);
+
+    @PutMapping("appUserBalance/{userId}")
+    Result<Boolean> updateVisible(@PathVariable("userId") BigInteger userId, @RequestBody AssertVisibleDTO assertVisibleDTO);
 
     @GetMapping("appUserBalance/sum/{userId}")
     Result<BigDecimal> getBalance(@PathVariable("userId") BigInteger userId);
@@ -57,7 +58,7 @@ public interface ConsoleRemoteService {
     Result<Boolean> read(@RequestParam("userId") BigInteger userId, @PathVariable("id") BigInteger id);
 
     @GetMapping("appProject")
-    Result<PageInfo<AppProject>> getProject(@RequestParam("projectType") Integer projectType,@RequestParam("id") BigInteger projectId,@RequestParam("type")Integer type, @RequestParam("pageSize")Integer pageSize );
+    Result<PageInfo<AppProject>> getProject(@RequestParam("projectType") Integer projectType, @RequestParam("id") BigInteger projectId, @RequestParam("type") Integer type, @RequestParam("pageSize") Integer pageSize);
 
     @GetMapping("appProject/{id}")
     Result<AppProject> getProjectById(@PathVariable("id") BigInteger id);
@@ -103,4 +104,5 @@ public interface ConsoleRemoteService {
 
     @GetMapping("user/username")
     Result<AppUser> getUserByUsername(@RequestParam("username") String username);
+
 }

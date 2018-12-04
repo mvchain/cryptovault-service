@@ -23,7 +23,6 @@ public class AppProject implements Serializable {
      * 项目id
      */
     @Id
-
     @Column(name = "id")
     private BigInteger id;
 

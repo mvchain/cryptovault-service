@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.app.service;
 
 import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
+import com.mvc.cryptovault.common.bean.dto.AssertVisibleDTO;
 import com.mvc.cryptovault.common.bean.dto.DebitDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionSearchDTO;
@@ -60,6 +61,11 @@ public class AssetService {
 
     public Boolean sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Result<Boolean> result = consoleRemoteService.sendTransaction(userId, transactionDTO);
+        return result.getData();
+    }
+
+    public Boolean updateVisible(BigInteger userId, AssertVisibleDTO assertVisibleDTO) {
+        Result<Boolean> result = consoleRemoteService.updateVisible(userId, assertVisibleDTO);
         return result.getData();
     }
 }

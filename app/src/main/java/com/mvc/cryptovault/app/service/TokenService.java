@@ -76,7 +76,7 @@ public class TokenService {
         List<ExchangeRateVO> rate = new ArrayList<>(3);
         String key = RedisConstant.EXCHANGE_RATE;
         var result = redisTemplate.opsForValue().get(key);
-        if (null != result) {
+        if (null == result) {
             String url = "http://web.juhe.cn:8080/finance/exchange/rmbquot?key=eca6dd52126d970462ed32a77f72a636&type=1";
             String responseStr = restTemplate.getForObject(url, String.class);
             ExchangeResponse response = JSON.parseObject(responseStr, new TypeReference<ExchangeResponse>() {

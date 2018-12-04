@@ -4,6 +4,7 @@ import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.AppUserBalance;
 import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.CommonTokenPrice;
+import com.mvc.cryptovault.common.bean.dto.AssertVisibleDTO;
 import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
 import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
 import com.mvc.cryptovault.console.common.AbstractService;
@@ -74,6 +75,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             userBalance.setBalance(BigDecimal.ZERO);
             userBalance.setTokenId(baseTokenId);
             userBalance.setUserId(userId);
+            userBalance.setVisible(1);
             save(userBalance);
         }
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
@@ -89,27 +91,34 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         return appUserBalanceMapper.selectOne(appUserBalance);
     }
 
-    public List<TokenBalanceVO> getAsset(BigInteger userId) {
+
+    public List<TokenBalanceVO> getAsset(BigInteger userId, Boolean ignoreHide) {
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
         if (!redisTemplate.hasKey(key)) {
             List<AppUserBalance> list = findBy("userId", userId);
             if (null == list) {
                 redisTemplate.boundHashOps(key).put("1", "0");
             } else {
-                list.forEach(obj -> redisTemplate.boundHashOps(key).put(String.valueOf(obj.getTokenId()), String.valueOf(obj.getBalance())));
+                //存储内容为展示状态+余额
+                list.stream().forEach(obj -> redisTemplate.boundHashOps(key).put(String.valueOf(obj.getTokenId()), obj.getVisible() + "#" + String.valueOf(obj.getBalance())));
             }
         }
         Map<Object, Object> map = redisTemplate.boundHashOps(key).entries();
         List<TokenBalanceVO> result = new ArrayList<>(map.size());
         for (Map.Entry<Object, Object> entry : map.entrySet()) {
             TokenBalanceVO vo = new TokenBalanceVO();
+            String value = String.valueOf(entry.getValue());
+            Integer visible = NumberUtils.parseNumber(value.split("#")[0], Integer.class);
+            BigDecimal balance = NumberUtils.parseNumber(value.split("#")[1], BigDecimal.class);
             vo.setTokenId(NumberUtils.parseNumber(String.valueOf(entry.getKey()), BigInteger.class));
-            vo.setValue(NumberUtils.parseNumber(String.valueOf(entry.getValue()), BigDecimal.class));
+            vo.setValue(balance);
             CommonToken token = commonTokenService.findById(vo.getTokenId());
             CommonTokenPrice tokenPrice = commonTokenPriceService.findById(vo.getTokenId());
             vo.setRatio(null == tokenPrice ? BigDecimal.ZERO : tokenPrice.getTokenPrice());
             vo.setTokenName(token.getTokenName());
-            result.add(vo);
+            if (visible == 1 || ignoreHide) {
+                result.add(vo);
+            }
         }
         Collections.sort(result, comparator);
         return result;
@@ -124,4 +133,35 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         balance = findOneByEntity(balance);
         redisTemplate.boundHashOps(key).put(String.valueOf(balance.getTokenId()), String.valueOf(balance.getBalance()));
     }
+
+    public void setAssetVisible(AssertVisibleDTO visibleDTO, BigInteger userId) {
+        String regx = "^([0-9]{0,10},)*[0-9]{0,10}$";
+        String addStr = visibleDTO.getAddTokenIdArr();
+        String removeStr = visibleDTO.getRemoveTokenIdArr();
+        if (StringUtils.isNotBlank(addStr)) {
+            addStr = addStr.replaceAll(" ", "");
+            if (addStr.matches(regx)) {
+                appUserBalanceMapper.updateVisiable(userId, addStr, 1);
+            }
+        }
+        if (StringUtils.isNotBlank(removeStr)) {
+            removeStr = removeStr.replaceAll(" ", "");
+            if (removeStr.matches(regx)) {
+                appUserBalanceMapper.updateVisiable(userId, removeStr, 0);
+            }
+        }
+        addUserBalance(userId);
+
+    }
+
+    private void addUserBalance(BigInteger userId) {
+        String key = "AppUserBalance".toUpperCase() + "_" + userId;
+        List<AppUserBalance> list = findBy("userId", userId);
+        if (null == list) {
+            redisTemplate.boundHashOps(key).put("1", "0");
+        } else {
+            list.stream().forEach(obj -> redisTemplate.boundHashOps(key).put(String.valueOf(obj.getTokenId()), obj.getVisible() + "#" + String.valueOf(obj.getBalance())));
+        }
+    }
+
 }

@@ -19,7 +19,6 @@ public class AppUserAddress implements Serializable {
      * 
      */
     @Id
-
     @Column(name = "user_id")
     private BigInteger userId;
 
