@@ -54,7 +54,8 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         if (redisTemplate.hasKey(key)) {
             String balance = (String) redisTemplate.boundHashOps(key).get(String.valueOf(tokenId));
             if (StringUtils.isNotBlank(balance)) {
-                return NumberUtils.parseNumber(balance, BigDecimal.class);
+                BigDecimal value = NumberUtils.parseNumber(balance.split("#")[1], BigDecimal.class);
+                return value;
             }
         }
         BigDecimal result = null;
@@ -64,7 +65,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         } else {
             result = userBalance.getBalance();
         }
-        redisTemplate.boundHashOps(key).put(String.valueOf(tokenId), String.valueOf(result));
+        redisTemplate.boundHashOps(key).put(String.valueOf(tokenId), userBalance.getVisible() + "#" + String.valueOf(result));
         return result;
     }
 
@@ -81,7 +82,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
         appUserBalanceMapper.updateBalance(userId, baseTokenId, value);
         userBalance = getAppUserBalance(userId, baseTokenId);
-        redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), String.valueOf(userBalance.getBalance()));
+        redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), userBalance.getVisible() + "#" + String.valueOf(userBalance.getBalance()));
     }
 
     private AppUserBalance getAppUserBalance(BigInteger userId, BigInteger baseTokenId) {
@@ -131,7 +132,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         balance.setUserId(userId);
         balance.setTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
         balance = findOneByEntity(balance);
-        redisTemplate.boundHashOps(key).put(String.valueOf(balance.getTokenId()), String.valueOf(balance.getBalance()));
+        redisTemplate.boundHashOps(key).put(String.valueOf(balance.getTokenId()), balance.getVisible() + "#" + String.valueOf(balance.getBalance()));
     }
 
     public void setAssetVisible(AssertVisibleDTO visibleDTO, BigInteger userId) {
