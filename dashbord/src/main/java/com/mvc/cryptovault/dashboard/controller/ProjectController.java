@@ -9,12 +9,19 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectOrderVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
+import com.mvc.cryptovault.dashboard.util.ExcelException;
+import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Cleanup;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 
 /**
  * @author qiyichen
@@ -24,6 +31,8 @@ import java.math.BigInteger;
 @RequestMapping("project")
 @Api(tags = "众筹项目相关")
 public class ProjectController extends BaseController {
+
+    private static LinkedHashMap<String, String> projectTransactionMap = new LinkedHashMap<>();
 
     @ApiOperation("项目列表查询")
     @GetMapping
@@ -78,8 +87,29 @@ public class ProjectController extends BaseController {
     @ApiOperation("预约订单导出")
     @NotLogin
     @GetMapping("order/excel")
-    public void overTransactionExport(@RequestParam String sign, @ModelAttribute @Valid PageDTO pageDTO, @ModelAttribute @Valid DProjectOrderDTO dto) {
-        return;
+    public void overTransactionExport(HttpServletResponse response, @RequestParam String sign, @ModelAttribute @Valid DProjectOrderDTO dto) throws IOException, ExcelException {
+        getUserIdBySign(sign);
+        PageInfo<DProjectOrderVO> result = projectService.findOrders(dto);
+        response.setContentType("application/octet-stream;charset=ISO8859-1");
+        response.addHeader("Content-Disposition", "attachment; filename=" + String.format("project_transaction_%s.xls", System.currentTimeMillis()));
+        @Cleanup OutputStream os = response.getOutputStream();
+        ExcelUtil.listToExcel(result.getList(), getProjectTransactionMap(), "ProjectTransactionTable", os);
+    }
+
+    private LinkedHashMap<String, String> getProjectTransactionMap() {
+        if (projectTransactionMap.isEmpty()) {
+            projectTransactionMap.put("createdAt", "预约时间");
+            projectTransactionMap.put("orderNumber", "订单号");
+            projectTransactionMap.put("projectName", "项目名称");
+            projectTransactionMap.put("cellphone", "用户手机号");
+            projectTransactionMap.put("successValue", "成功数量");
+            projectTransactionMap.put("value", "预约数量");
+            projectTransactionMap.put("successPayed", "最终支付金额");
+            projectTransactionMap.put("payed", "预约金额");
+            projectTransactionMap.put("statusStr", "订单状态");
+            projectTransactionMap.put("projectStatusStr", "项目状态");
+        }
+        return projectTransactionMap;
     }
 
 }

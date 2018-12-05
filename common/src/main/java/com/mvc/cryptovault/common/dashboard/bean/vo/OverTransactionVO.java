@@ -50,4 +50,8 @@ public class OverTransactionVO implements Serializable {
 
     @ApiModelProperty("父订单id")
     private BigInteger parentId;
+
+    public String getTransactionTypeStr() {
+        return transactionType == 1 ? "购买" : "出售";
+    }
 }

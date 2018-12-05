@@ -50,4 +50,23 @@ public class DBlockeTransactionVO implements Serializable {
     @ApiModelProperty("修改订单状态(1. 待审核2. 待签名（审核通过后3. 拒绝4. 正在提币（导入签名文件后5. 提币成功（交易确认成功后6. 失败（交易确认失败后）)")
     private Integer transactionStatus;
 
+    public String getTransactionStatusStr() {
+        switch (transactionStatus) {
+            case 1:
+                return "待审核";
+            case 2:
+                return "待签名";
+            case 3:
+                return "拒绝";
+            case 4:
+                return "正在提币";
+            case 5:
+                return "提币成功";
+            case 6:
+                return "失败";
+            default:
+                return "失败";
+        }
+    }
+
 }

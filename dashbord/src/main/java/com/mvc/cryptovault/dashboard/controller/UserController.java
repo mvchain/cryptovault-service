@@ -7,13 +7,19 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUSerDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserBalanceVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
+import com.mvc.cryptovault.dashboard.util.ExcelException;
+import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Cleanup;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.math.BigDecimal;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -24,6 +30,8 @@ import java.util.List;
 @RequestMapping("user")
 @Api(tags = "用户相关")
 public class UserController extends BaseController {
+
+    private static LinkedHashMap<String, String> userLogMap = new LinkedHashMap<>();
 
     @ApiOperation("用户列表查询")
     @GetMapping
@@ -55,13 +63,26 @@ public class UserController extends BaseController {
 
     @ApiOperation("用户操作记录导出")
     @GetMapping("{id}/log/excel")
-    public void userLogExport(@RequestParam String sign, @PathVariable BigInteger id) {
-        return;
+    public void userLogExport(HttpServletResponse response, @RequestParam String sign, @ModelAttribute @Valid PageDTO pageDTO, @PathVariable BigInteger id) throws IOException, ExcelException {
+        getUserIdBySign(sign);
+        PageInfo<DUserLogVO> result = userService.getUserLog(id, pageDTO);
+        response.setContentType("application/octet-stream;charset=ISO8859-1");
+        response.addHeader("Content-Disposition", "attachment; filename=" + String.format("userlog_%s.xls", System.currentTimeMillis()));
+        @Cleanup OutputStream os = response.getOutputStream();
+        ExcelUtil.listToExcel(result.getList(), getUserLogMap(), "UserLogTable", os);
+    }
+
+    private LinkedHashMap<String, String> getUserLogMap() {
+        if (userLogMap.isEmpty()) {
+            userLogMap.put("createdAt", "时间");
+            userLogMap.put("message", "操作描述");
+        }
+        return userLogMap;
     }
 
     @ApiOperation("修改用户状态0禁用 1启用")
     @PutMapping("{id}/status")
-    public Result<Boolean> updateStatus(@PathVariable BigInteger id, @RequestParam Integer status){
+    public Result<Boolean> updateStatus(@PathVariable BigInteger id, @RequestParam Integer status) {
         userService.updateStatus(id, status);
         return new Result<>(true);
     }

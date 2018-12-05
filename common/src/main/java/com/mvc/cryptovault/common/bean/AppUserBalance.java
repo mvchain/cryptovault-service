@@ -30,7 +30,7 @@ public class AppUserBalance implements Serializable {
     @Column(name = "token_id")
     private BigInteger tokenId;
 
-    /**
+    /** "1,2,3"
      * 余额
      */
     @Column(name = "balance")

@@ -302,7 +302,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             BeanUtils.copyProperties(trans, vo);
             appUser = appUserService.findById(trans.getUserId());
             CommonPair pair = commonPairService.findById(trans.getPairId());
-            AppUserTransaction parent = findById(trans.getPairId());
+            AppUserTransaction parent = findById(trans.getParentId());
             vo.setCellphone(appUser.getCellphone());
             vo.setParentOrderNumber(parent.getOrderNumber());
             vo.setPairName(pair.getPairName());

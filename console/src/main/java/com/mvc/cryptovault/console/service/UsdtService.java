@@ -112,7 +112,7 @@ public class UsdtService extends BlockService {
 
     private void sign(BlockSign sign) {
         try {
-            if(null == sign){
+            if (null == sign) {
                 return;
             }
             String result = btcdClient.sendRawTransaction(sign.getSign());
@@ -202,6 +202,8 @@ public class UsdtService extends BlockService {
                     updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), fromValue);
                     updateAddressBalance(trans.getTokenId(), trans.getToAddress(), toValue);
                 }
+                updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), getBalance(trans.getFromAddress(), trans.getTokenId()));
+                updateAddressBalance(trans.getTokenId(), trans.getToAddress(), getBalance(trans.getToAddress(), trans.getTokenId()));
             } catch (Exception e) {
                 // not mine transaction
             }

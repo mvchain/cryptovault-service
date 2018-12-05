@@ -51,4 +51,17 @@ public class DTransactionVO implements Serializable {
     @ApiModelProperty
     private BigInteger id;
 
+    public String getTransactionTypeStr() {
+        return transactionType == 1 ? "购买" : "出售";
+    }
+
+    public String getStatusStr() {
+        if (status == 0) {
+            return "挂单中";
+        } else if (status == 1) {
+            return "交易完成";
+        } else {
+            return "已撤销";
+        }
+    }
 }
