@@ -53,6 +53,9 @@ public class AssetController extends BaseController {
     @GetMapping("transactions")
     @SwaggerMock("${asset.transactions}")
     public Result<List<TransactionSimpleVO>> getTransactions(@ModelAttribute @Valid TransactionSearchDTO transactionSearchDTO) {
+        if (null != transactionSearchDTO.getTransactionType() && transactionSearchDTO.getTransactionType() == 0) {
+            transactionSearchDTO.setTransactionType(null);
+        }
         return new Result<>(assetService.getTransactions(getUserId(), transactionSearchDTO));
     }
 
