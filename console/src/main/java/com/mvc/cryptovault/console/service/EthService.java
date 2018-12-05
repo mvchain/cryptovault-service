@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,8 +50,9 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author qiyichen
  * @create 2018/11/29 14:03
  */
-@Service
+@Service("EthService")
 @Transactional(rollbackFor = RuntimeException.class)
+@Primary
 public class EthService extends BlockService {
 
     @Autowired
@@ -134,7 +136,7 @@ public class EthService extends BlockService {
                     }
                     blockSignService.update(sign);
                 }
-                Thread.sleep(5);
+                Thread.sleep(20);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -156,6 +158,7 @@ public class EthService extends BlockService {
             String hash = result.getTransactionHash();
             sign.setHash(hash);
             sign.setStatus(1);
+            blockTransactionService.updateHash(sign.getOrderId(), hash);
         }
     }
 
@@ -172,6 +175,7 @@ public class EthService extends BlockService {
             blockTransactionService.updateSuccess(obj);
         });
     }
+
 
     private void newListener() {
         web3j.pendingTransactionObservable().subscribe(
@@ -238,7 +242,7 @@ public class EthService extends BlockService {
         String lastNumber = getHeight();
         while (true) {
             try {
-                Thread.sleep(10);
+                Thread.sleep(100);
                 BigInteger height = web3j.ethBlockNumber().send().getBlockNumber();
                 if (lastNumber.equals(String.valueOf(height))) {
                     continue;

@@ -142,7 +142,7 @@ public class BlockController extends BaseController {
             throw new IllegalArgumentException("文件格式错误");
         }
         Assert.isTrue(null != list && list.size() > 0 && list.get(0).getAddress() != null, "文件格式错误");
-        Boolean result = blockService.importAddress(list);
+        Boolean result = blockService.importAddress(list, file.getOriginalFilename());
         return new Result<>(true);
     }
 

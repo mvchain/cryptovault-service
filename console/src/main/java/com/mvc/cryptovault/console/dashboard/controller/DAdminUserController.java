@@ -11,7 +11,6 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
 import com.mvc.cryptovault.console.common.BaseController;
 import com.mvc.cryptovault.console.service.AdminUserService;
-import com.mvc.cryptovault.console.service.BlockService;
 import com.mvc.cryptovault.console.service.CommonAddressService;
 import com.mvc.cryptovault.console.service.CommonTokenService;
 import com.mvc.cryptovault.console.util.PageUtil;
@@ -121,7 +120,7 @@ public class DAdminUserController extends BaseController {
     @GetMapping("balance")
     public Result<BigDecimal> getBalance(@RequestParam(value = "tokenId", required = false) BigInteger tokenId) {
         CommonToken token = commonTokenService.findById(tokenId);
-        if(null == token){
+        if (null == token) {
             return new Result<>(BigDecimal.ZERO);
         }
         BigDecimal result = commonAddressService.getBalance(token.getTokenName());

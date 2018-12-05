@@ -64,8 +64,8 @@ public class BlockService extends BaseService {
         return result.getData();
     }
 
-    public Boolean importAddress(List<CommonAddress> list) {
-        remoteService.importAddress(list);
+    public Boolean importAddress(List<CommonAddress> list, String fileName) {
+        remoteService.importAddress(list, fileName);
         return true;
     }
 

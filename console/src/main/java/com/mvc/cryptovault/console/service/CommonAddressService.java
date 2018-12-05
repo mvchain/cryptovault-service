@@ -62,7 +62,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         BigInteger gasPrice = Convert.toWei(new BigDecimal(token.getTransaferFee()), Convert.Unit.GWEI).toBigInteger();
         BigInteger nonce = getNonce(nonceMap, cold.getAddress());
         BigDecimal value = transaction.getValue().multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
-        BigInteger gasLimit = blockService.getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
+        BigInteger gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
         orders.setFromAddress(cold.getAddress());
         orders.setTokenType(token.getTokenType());
         orders.setValue(value);
@@ -112,11 +112,11 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         //erc20地址需要先运行approve方法
         if (address.getApprove() == 0 && address.getTokenType().equalsIgnoreCase("ETH") && !address.getAddressType().equalsIgnoreCase("ETH")) {
             nonce = getNonce(nonceMap, address.getAddress());
-            BigInteger gasLimit = blockService.getEthEstimateApprove(token.getTokenContractAddress(), address.getAddress(), cold.getAddress());
+            BigInteger gasLimit = blockService.get("ETH").getEthEstimateApprove(token.getTokenContractAddress(), address.getAddress(), cold.getAddress());
             //预先发送手续费,该操作gasPrice暂时固定
             BigDecimal value = Convert.fromWei(new BigDecimal(gasLimit.multiply(gasPrice)), Convert.Unit.ETHER);
             if (web3j.ethGetBalance(address.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().compareTo(gasLimit.multiply(gasPrice)) < 0) {
-                blockService.send(hot, address.getAddress(), value);
+                blockService.get("ETH").send(hot, address.getAddress(), value);
             }
             orders.setFromAddress(address.getAddress());
             orders.setTokenType(address.getTokenType());
@@ -158,10 +158,10 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
     }
 
     private BigInteger getNonce(Map<String, BigInteger> nonceMap, String address) throws IOException {
-        return blockService.getNonce(nonceMap, address);
+        return blockService.get("ETH").getNonce(nonceMap, address);
     }
 
     public BigDecimal getBalance(String tokenName) {
-        return blockService.getBalance(tokenName);
+        return blockService.get("ETH").getBalance(tokenName);
     }
 }

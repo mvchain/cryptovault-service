@@ -144,7 +144,7 @@ public interface ConsoleRemoteService {
     Result<List<DPairVO>> getPair();
 
     @PostMapping("dashboard/commonAddress")
-    Result<Boolean> importAddress(@RequestBody List<CommonAddress> list);
+    Result<Boolean> importAddress(@RequestBody List<CommonAddress> list, @RequestParam("fileName") String fileName);
 
     @PostMapping("dashboard/blockSign")
     Result<Boolean> importSign(@RequestBody List<BlockSign> list, @RequestParam("fileName") String fileName);

@@ -15,6 +15,7 @@ import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.BlockTransactionMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         transaction.setUserId(userId);
         transaction.setTokenId(transactionDTO.getTokenId());
         transaction.setStatus(0);
-        transaction.setTokenType(transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) ? "USDT" : "ETH");
+        transaction.setTokenType(transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) ? "BTC" : "ETH");
         transaction.setToAddress(transactionDTO.getAddress());
         transaction.setOrderNumber("P" + String.format("%09d", id));
         save(transaction);
@@ -145,5 +146,11 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         ConditionUtil.andCondition(criteria, "opr_type = ", 2);
         List<BlockTransaction> list = findByCondition(condition);
         return list;
+    }
+
+    public void updateHash(String orderId, String hash) {
+        if (StringUtils.isNotBlank(orderId)){
+            blockTransactionMapper.updateHash(orderId, hash);
+        }
     }
 }

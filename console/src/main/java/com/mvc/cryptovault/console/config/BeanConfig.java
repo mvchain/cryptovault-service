@@ -3,20 +3,30 @@ package com.mvc.cryptovault.console.config;
 import cn.jiguang.common.ClientConfig;
 import cn.jpush.api.JPushClient;
 import com.mvc.cryptovault.common.util.JwtHelper;
+import com.neemre.btcdcli4j.core.BitcoindException;
+import com.neemre.btcdcli4j.core.CommunicationException;
+import com.neemre.btcdcli4j.core.client.BtcdClient;
+import com.neemre.btcdcli4j.core.client.BtcdClientImpl;
+import lombok.Cleanup;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.mapdb.DBMaker;
 import org.mapdb.HTreeMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.quorum.Quorum;
 
-import java.io.IOException;
+import java.io.*;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -90,5 +100,25 @@ public class BeanConfig {
                     }
                 });
         return builder.build();
+    }
+
+    @Bean
+    public BtcdClient btcdClient() throws IOException, BitcoindException, CommunicationException {
+
+        PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+        CloseableHttpClient httpProvider = HttpClients.custom().setConnectionManager(cm).build();
+        Properties nodeConfig = new Properties();
+        String filePath = System.getProperty("user.dir")
+                + "/application.yml";
+        @Cleanup InputStream inputStream = null;
+        try {
+            inputStream = new BufferedInputStream(new FileInputStream(filePath));
+        } catch (FileNotFoundException e) {
+            ClassPathResource resource = new ClassPathResource("application.yml");
+            inputStream = resource.getInputStream();
+        }
+        nodeConfig.load(inputStream);
+        BtcdClientImpl btcdClient = new BtcdClientImpl(httpProvider, nodeConfig);
+        return btcdClient;
     }
 }
