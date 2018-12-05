@@ -7,6 +7,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUSerDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserBalanceVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
+import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
@@ -62,6 +63,7 @@ public class UserController extends BaseController {
     }
 
     @ApiOperation("用户操作记录导出")
+    @NotLogin
     @GetMapping("{id}/log/excel")
     public void userLogExport(HttpServletResponse response, @RequestParam String sign, @ModelAttribute @Valid PageDTO pageDTO, @PathVariable BigInteger id) throws IOException, ExcelException {
         getUserIdBySign(sign);
