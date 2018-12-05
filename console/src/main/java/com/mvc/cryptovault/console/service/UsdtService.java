@@ -112,6 +112,9 @@ public class UsdtService extends BlockService {
 
     private void sign(BlockSign sign) {
         try {
+            if(null == sign){
+                return;
+            }
             String result = btcdClient.sendRawTransaction(sign.getSign());
             sign.setHash(result);
             sign.setStatus(1);
