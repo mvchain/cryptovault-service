@@ -8,9 +8,6 @@ import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
-import com.mvc.cryptovault.common.bean.CommonToken;
-import com.mvc.cryptovault.console.common.AbstractService;
-import com.mvc.cryptovault.console.common.BaseService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,13 +24,15 @@ import java.util.Map;
  */
 @Service
 @Log4j
-public class JPushService extends AbstractService<CommonToken> implements BaseService<CommonToken>, PushService {
+public class JPushService {
 
     @Autowired
     JPushClient jPushClient;
 
-    public Boolean send(String msg, String... userId) {
-        return send(msg, new HashMap<>(), userId);
+    public Boolean send(String msg, BigInteger orderId, String... userId) {
+        HashMap<String, String> extra = new HashMap<>();
+        extra.put("orderId", String.valueOf(orderId));
+        return send(msg, extra, userId);
     }
 
     public Boolean send(String msg, Map<String, String> extra, String... userId) {
@@ -60,6 +59,11 @@ public class JPushService extends AbstractService<CommonToken> implements BaseSe
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(Audience.alias(userId))
+//                .setNotification(Notification.newBuilder()
+//                        .addPlatformNotification(IosNotification.newBuilder().addExtras(extra).build())
+//                        .addPlatformNotification(AndroidNotification.newBuilder().addExtras(extra).build())
+//                        .build())
+//                .setMessage(Message.newBuilder().setMsgContent(msg).addExtras(extra).build()).build();
                 .setMessage(Message.newBuilder().setMsgContent(msg).addExtras(extra).build())
                 .build();
     }

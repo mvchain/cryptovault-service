@@ -116,6 +116,7 @@ public interface BaseService<T> {
 
     /**
      * 更新指定缓存
+     *
      * @param pvKey
      */
     void updateCache(Object pvKey);

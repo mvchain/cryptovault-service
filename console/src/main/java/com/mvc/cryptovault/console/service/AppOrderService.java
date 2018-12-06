@@ -208,4 +208,34 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrderDetailService.save(detail);
         appMessageService.sendTrade(appOrder.getId(), appOrder.getUserId(), pair.getPairName(), appOrder.getOrderType(), appOrder.getValue(), pair.getTokenName());
     }
+
+    public void saveHzOrder(BigDecimal value, BigInteger userId) {
+        Long time = System.currentTimeMillis();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(0);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(BigInteger.ZERO);
+        appOrder.setOrderContentName(BusinessConstant.CONTENT_EMIT);
+        appOrder.setOrderNumber(getOrderNumber());
+        appOrder.setValue(value);
+        appOrder.setUserId(userId);
+        appOrder.setTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
+        appOrder.setStatus(2);
+        appOrder.setOrderType(2);
+        save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(value);
+        appOrderDetailService.save(detail);
+        appMessageService.transferMsg(appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(BusinessConstant.BASE_TOKEN_ID_BALANCE), 0, 2);
+    }
 }

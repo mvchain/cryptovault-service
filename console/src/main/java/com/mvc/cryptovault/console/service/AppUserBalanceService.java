@@ -31,6 +31,8 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
     CommonTokenService commonTokenService;
     @Autowired
     CommonTokenPriceService commonTokenPriceService;
+    @Autowired
+    AppOrderService appOrderService;
 
     private Comparator comparator = new Comparator<TokenBalanceVO>() {
         @Override
@@ -133,6 +135,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         balance.setTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
         balance = findOneByEntity(balance);
         redisTemplate.boundHashOps(key).put(String.valueOf(balance.getTokenId()), balance.getVisible() + "#" + String.valueOf(balance.getBalance()));
+        appOrderService.saveHzOrder(value, userId);
     }
 
     public void setAssetVisible(AssertVisibleDTO visibleDTO, BigInteger userId) {

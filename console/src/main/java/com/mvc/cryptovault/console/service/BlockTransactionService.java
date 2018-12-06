@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppOrder;
 import com.mvc.cryptovault.common.bean.AppOrderDetail;
 import com.mvc.cryptovault.common.bean.BlockTransaction;
-import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
@@ -139,6 +138,12 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && obj.getOprType() == 1) {
             //只有在更新成功的情况下修改余额,更新冲突时忽略,提现在申请时就已经扣款,因此只有充值需要更新余额
             appUserBalanceService.updateBalance(obj.getUserId(), obj.getTokenId(), obj.getValue());
+            if (!obj.getUserId().equals(BigInteger.ZERO)) {
+                List<AppOrder> orders = orderService.findBy("hash", obj.getHash());
+                orders.forEach(order -> {
+                    orderService.updateOrder(order);
+                });
+            }
         }
     }
 
@@ -172,8 +177,6 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     }
 
     public void updateTrans(BlockTransaction oldTrans, BlockTransaction blockTransaction) {
-        //记录当前是否为第一次由非成功变为成功的状态
-        Boolean flag = oldTrans.getStatus() != 2 && blockTransaction.getStatus() == 2;
         oldTrans.setTransactionStatus(blockTransaction.getTransactionStatus());
         //已经成功的记录不修改,防止余额重复累加
         if (oldTrans.getStatus() != 2) {
@@ -186,12 +189,6 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         oldTrans.setFromAddress(blockTransaction.getFromAddress());
         oldTrans.setErrorMsg(blockTransaction.getErrorMsg());
         update(oldTrans);
-        if (!blockTransaction.getUserId().equals(BigInteger.ZERO) && flag) {
-            List<AppOrder> orders = orderService.findBy("hash", oldTrans.getHash());
-            orders.forEach(obj -> {
-                orderService.updateOrder(obj);
-            });
-        }
     }
 
 }
