@@ -27,7 +27,7 @@ public class AdminUserPermissionService extends AbstractService<AdminUserPermiss
 
     public void updatePermission(BigInteger userId, List<PermissionDTO> permissionList) {
         delete(userId);
-        if(CollectionUtils.isEmpty(permissionList)){
+        if (CollectionUtils.isEmpty(permissionList)) {
             return;
         }
         List<AdminUserPermission> permissions = new ArrayList<>(permissionList.size());
@@ -39,5 +39,7 @@ public class AdminUserPermissionService extends AbstractService<AdminUserPermiss
                 save(permission);
             }
         }
+        String str = adminUserPermissionMapper.findPermissionStr(userId);
+        redisTemplate.opsForValue().set("ADMIN_PERMISSON_" + userId, str);
     }
 }

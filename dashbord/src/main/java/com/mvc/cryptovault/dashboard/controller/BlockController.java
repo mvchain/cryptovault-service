@@ -12,6 +12,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
+import com.mvc.cryptovault.common.permission.PermissionCheck;
 import com.mvc.cryptovault.dashboard.util.EncryptionUtil;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
@@ -88,6 +89,7 @@ public class BlockController extends BaseController {
 
     @ApiOperation("批量操作(1同意 2拒绝)")
     @PutMapping("status")
+    @PermissionCheck("2")
     public Result<Boolean> updateStatus(DBlockStatusDTO dBlockStatusDTO) {
         Boolean result = blockService.updateStatus(dBlockStatusDTO);
         return new Result<>(result);

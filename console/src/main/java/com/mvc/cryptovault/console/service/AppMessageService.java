@@ -25,7 +25,7 @@ import java.util.Map;
 public class AppMessageService {
 
     private static final String MODEL_TRANSFER = "%s %s %s%s";
-    private static final String MODEL_PROJECT = "%s%s %s %s %s %s";
+    private static final String MODEL_PROJECT = "%s%s %s %s %s";
     private static final String MODEL_PUBLISH = "%s %s %s发币 %s%s";
     private static final String MODEL_TRADE = "%s 成功%s %s %s";
 

@@ -8,6 +8,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DUSerDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserBalanceVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
+import com.mvc.cryptovault.common.permission.PermissionCheck;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
@@ -84,6 +85,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("修改用户状态0禁用 1启用")
     @PutMapping("{id}/status")
+    @PermissionCheck("3")
     public Result<Boolean> updateStatus(@PathVariable BigInteger id, @RequestParam Integer status) {
         userService.updateStatus(id, status);
         return new Result<>(true);

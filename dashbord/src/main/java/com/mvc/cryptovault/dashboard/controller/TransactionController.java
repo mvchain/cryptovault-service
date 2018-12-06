@@ -7,6 +7,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.OverTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.OverTransactionVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
+import com.mvc.cryptovault.common.permission.PermissionCheck;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
@@ -42,6 +43,7 @@ public class TransactionController extends BaseController {
 
     @ApiOperation("挂单交易撤销")
     @DeleteMapping("{id}")
+    @PermissionCheck("6")
     public Result<Boolean> cancel(@PathVariable BigInteger id) {
         Boolean result = transactionService.cancelTransaction(id);
         return new Result<>(result);

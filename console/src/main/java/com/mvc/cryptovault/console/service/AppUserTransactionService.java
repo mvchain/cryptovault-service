@@ -148,10 +148,10 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     private void saveChildTransaction(BigInteger userId, TransactionBuyDTO dto, CommonPair pair, Long time, AppUserTransaction transaction, AppUserTransaction targetTransaction) {
         //修改主单购买信息
-        targetTransaction.setSuccessValue(transaction.getSuccessValue().add(dto.getValue()));
+        targetTransaction.setSuccessValue(targetTransaction.getSuccessValue().add(dto.getValue()));
         targetTransaction.setUpdatedAt(time);
-        if (transaction.getSuccessValue().equals(transaction.getValue())) {
-            transaction.setStatus(1);
+        if (targetTransaction.getSuccessValue().equals(transaction.getValue())) {
+            targetTransaction.setStatus(1);
         }
         update(targetTransaction);
         //生成用户主动交易记录

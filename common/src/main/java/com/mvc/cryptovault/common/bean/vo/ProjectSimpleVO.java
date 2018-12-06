@@ -27,6 +27,10 @@ public class ProjectSimpleVO {
     private String baseTokenName;
     @ApiModelProperty("基础货币id")
     private BigInteger baseTokenId;
+    @ApiModelProperty("币种名称")
+    private String tokenName;
+    @ApiModelProperty("货币id")
+    private BigInteger tokenId;
     @ApiModelProperty("项目创建时间")
     private Long createdAt;
     @ApiModelProperty("项目更新时间")

@@ -31,6 +31,8 @@ public class ProjectService {
             ProjectSimpleVO vo = new ProjectSimpleVO();
             BeanUtils.copyProperties(appProject, vo);
             vo.setProjectId(appProject.getId());
+            vo.setTokenId(appProject.getTokenId());
+            vo.setTokenName(appProject.getTokenName());
             vo.setTotal(appProject.getProjectTotal());
             result.add(vo);
         }

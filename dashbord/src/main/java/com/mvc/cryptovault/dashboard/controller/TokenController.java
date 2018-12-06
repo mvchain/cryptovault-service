@@ -9,6 +9,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DTokenDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenTransSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenVO;
+import com.mvc.cryptovault.common.permission.PermissionCheck;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,7 @@ public class TokenController extends BaseController {
 
     @ApiOperation("新建币种")
     @PostMapping()
+    @PermissionCheck("4")
     public Result<Boolean> newToken(@RequestBody @Valid DTokenDTO dTokenDTO) {
         Boolean result = tokenService.newToken(dTokenDTO);
         return new Result<>(result);
@@ -49,6 +51,7 @@ public class TokenController extends BaseController {
 
     @ApiOperation("修改币种")
     @PutMapping("{id}")
+    @PermissionCheck("4")
     public Result<Boolean> updateToken(@RequestBody @Valid DTokenDTO dTokenDTO) {
         Boolean result = tokenService.updateToken(dTokenDTO);
         return new Result<>(result);
@@ -56,6 +59,7 @@ public class TokenController extends BaseController {
 
     @ApiOperation("币种参数设置")
     @PutMapping("setting/{id}")
+    @PermissionCheck("4")
     public Result<Boolean> tokenSetting(@RequestBody @Valid DTokenSettingVO dto) {
         Boolean result = tokenService.tokenSetting(dto);
         return new Result<>(result);
@@ -84,6 +88,7 @@ public class TokenController extends BaseController {
 
     @ApiOperation("币种交易设置")
     @PutMapping("transaction")
+    @PermissionCheck("4")
     public Result<Boolean> setTransSetting(@RequestBody @Valid DTokenTransSettingVO dto) {
         Boolean result = tokenService.setTransSetting(dto);
         return new Result<>(result);

@@ -9,6 +9,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectOrderVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
+import com.mvc.cryptovault.common.permission.PermissionCheck;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
@@ -50,6 +51,7 @@ public class ProjectController extends BaseController {
 
     @ApiOperation("项目新建")
     @PostMapping
+    @PermissionCheck("5")
     public Result<Boolean> newProject(@RequestBody @Valid DProjectDTO dProjectDTO) {
         Boolean result = projectService.newProject(dProjectDTO);
         return new Result<>(result);
@@ -57,6 +59,7 @@ public class ProjectController extends BaseController {
 
     @ApiOperation("项目编辑")
     @PutMapping
+    @PermissionCheck("5")
     public Result<Boolean> updateProject(@RequestBody @Valid DProjectDTO dProjectDTO) {
         Boolean result = projectService.updateProject(dProjectDTO);
         return new Result<>(result);
@@ -64,6 +67,7 @@ public class ProjectController extends BaseController {
 
     @ApiOperation("项目删除")
     @DeleteMapping("{id}")
+    @PermissionCheck("5")
     public Result<Boolean> deleteProject(@PathVariable BigInteger id) {
         Boolean result = projectService.deleteProject(id);
         return new Result<>(result);
@@ -79,6 +83,7 @@ public class ProjectController extends BaseController {
 
     @ApiOperation("项目预约订单取消")
     @DeleteMapping("order/{id}")
+    @PermissionCheck("5")
     public Result<Boolean> cancelOrder(@PathVariable BigInteger id) {
         Boolean result = projectService.cancel(id);
         return new Result<>(result);

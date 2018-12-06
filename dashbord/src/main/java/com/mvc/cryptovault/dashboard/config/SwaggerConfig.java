@@ -2,6 +2,7 @@ package com.mvc.cryptovault.dashboard.config;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -32,6 +33,8 @@ import java.util.Locale;
 @Configuration
 public class SwaggerConfig extends WebMvcConfigurationSupport {
 
+    @Autowired
+    ServiceAuthRestInterceptor serviceAuthRestInterceptor;
     /**
      * 发现如果继承了WebMvcConfigurationSupport，则在yml中配置的相关内容会失效。
      * 需要重新指定静态资源
@@ -51,7 +54,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
-        InterceptorRegistration addInterceptor = registry.addInterceptor(new ServiceAuthRestInterceptor());
+        InterceptorRegistration addInterceptor = registry.addInterceptor(serviceAuthRestInterceptor);
         // 排除配置
         addInterceptor.excludePathPatterns("/error");
         addInterceptor.excludePathPatterns("/login**");
