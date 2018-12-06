@@ -101,6 +101,7 @@ public class AppOrder implements Serializable {
     @Column(name = "from_address")
     private String fromAddress;
 
+    private BigInteger projectId;
     /**
      * app_order
      */
@@ -188,7 +189,7 @@ public class AppOrder implements Serializable {
 
     /**
      * 0转入 1转出
-     * @return order_type 0转入 1转出
+     * @return order_type 1转入 2转出
      */
     public Integer getOrderType() {
         return orderType;
@@ -196,7 +197,7 @@ public class AppOrder implements Serializable {
 
     /**
      * 0转入 1转出
-     * @param orderType 0转入 1转出
+     * @param orderType 1转入 2转出
      */
     public void setOrderType(Integer orderType) {
         this.orderType = orderType;

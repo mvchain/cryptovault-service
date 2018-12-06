@@ -252,8 +252,8 @@ public class AppUserTransaction implements Serializable {
     }
 
     /**
-     * 交易类型0转入 1转出
-     * @return transaction_type 交易类型0转入 1转出
+     * 交易类型1转入 2转出
+     * @return transaction_type 交易类型1转入 2转出
      */
     public Integer getTransactionType() {
         return transactionType;
@@ -261,7 +261,7 @@ public class AppUserTransaction implements Serializable {
 
     /**
      * 交易类型0转入 1转出
-     * @param transactionType 交易类型0转入 1转出
+     * @param transactionType 交易类型1转入 2转出
      */
     public void setTransactionType(Integer transactionType) {
         this.transactionType = transactionType;

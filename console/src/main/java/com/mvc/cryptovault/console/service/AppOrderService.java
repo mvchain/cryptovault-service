@@ -1,9 +1,7 @@
 package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
-import com.mvc.cryptovault.common.bean.AppOrder;
-import com.mvc.cryptovault.common.bean.CommonToken;
-import com.mvc.cryptovault.common.bean.CommonTokenPrice;
+import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.TransactionSearchDTO;
 import com.mvc.cryptovault.common.bean.vo.TransactionDetailVO;
 import com.mvc.cryptovault.common.bean.vo.TransactionSimpleVO;
@@ -19,6 +17,7 @@ import org.springframework.util.Assert;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +31,14 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     CommonTokenService commonTokenService;
     @Autowired
     CommonTokenPriceService commonTokenPriceService;
+    @Autowired
+    CommonAddressService commonAddressService;
+    @Autowired
+    AppMessageService appMessageService;
+    @Autowired
+    CommonTokenService tokenService;
+    @Autowired
+    CommonPairService commonPairService;
 
     public TransactionDetailVO getDetail(BigInteger userId, BigInteger id) {
         var order = findById(id);
@@ -81,5 +88,124 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
             result.add(vo);
         });
         return result;
+    }
+
+    public void saveOrderTarget(BlockTransaction blockTransaction) {
+        Long time = System.currentTimeMillis();
+        //如果操作类型为提现并且地址为内部地址,需要给对应目标用户生成一条订单信息
+        if (blockTransaction.getOprType() == 2) {
+            CommonAddress address = commonAddressService.findOneBy("address", blockTransaction.getToAddress());
+            if (null != address && !BigInteger.ZERO.equals(address.getUserId())) {
+                //地址存在且有对应用户， 则生成记录
+                blockTransaction.setUserId(address.getUserId());
+                blockTransaction.setOprType(blockTransaction.getOprType() == 1 ? 2 : 1);
+                saveOrder(blockTransaction);
+            }
+        }
+    }
+
+    public void saveOrder(BlockTransaction blockTransaction) {
+        Long time = System.currentTimeMillis();
+        //非管理员操作才需要添加到订单列表
+        AppOrder order = new AppOrder();
+        order.setStatus(1);
+        order.setProjectId(BigInteger.ZERO);
+        order.setOrderContentId(blockTransaction.getId());
+        order.setOrderType(blockTransaction.getOprType());
+        order.setUserId(blockTransaction.getUserId());
+        order.setValue(blockTransaction.getValue());
+        order.setOrderNumber(getOrderNumber());
+        order.setOrderContentName(BusinessConstant.CONTENT_BLOCK);
+        order.setHash(blockTransaction.getHash());
+        order.setFromAddress(blockTransaction.getFromAddress());
+        order.setUpdatedAt(time);
+        order.setCreatedAt(time);
+        order.setTokenId(blockTransaction.getTokenId());
+        order.setClassify(BusinessConstant.CLASSIFY_BLOCK);
+        save(order);
+        AppOrderDetail appOrderDetail = new AppOrderDetail();
+        appOrderDetail.setValue(blockTransaction.getValue());
+        appOrderDetail.setOrderId(order.getId());
+        appOrderDetail.setToAddress(blockTransaction.getToAddress());
+        appOrderDetail.setHash(blockTransaction.getHash());
+        appOrderDetail.setFromAddress(blockTransaction.getFromAddress());
+        appOrderDetail.setFee(blockTransaction.getFee());
+        appOrderDetail.setUpdatedAt(time);
+        appOrderDetail.setCreatedAt(time);
+        appOrderDetailService.save(appOrderDetail);
+    }
+
+    public void updateOrder(AppOrder obj) {
+        //修改订单列表,并发送通知
+        obj.setStatus(2);
+        obj.setUpdatedAt(System.currentTimeMillis());
+        update(obj);
+        appMessageService.transferMsg(obj.getId(), obj.getUserId(), obj.getValue(), tokenService.getTokenName(obj.getTokenId()), obj.getOrderType(), obj.getStatus());
+
+    }
+
+    public void saveOrder(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
+        Long time = appProjectUserTransaction.getCreatedAt();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(0);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(appProjectUserTransaction.getId());
+        appOrder.setOrderContentName(BusinessConstant.CONTENT_PROJECT);
+        appOrder.setOrderNumber(appProjectUserTransaction.getProjectOrderNumber());
+        appOrder.setValue(appProjectUserTransaction.getPayed());
+        appOrder.setUserId(appProjectUserTransaction.getUserId());
+        appOrder.setTokenId(project.getBaseTokenId());
+        appOrder.setStatus(0);
+        appOrder.setOrderType(1);
+        save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(appProjectUserTransaction.getValue());
+        appOrderDetailService.save(detail);
+        //发送推送
+        appMessageService.sendProject(appProjectUserTransaction.getUserId(), project.getId(), appOrder.getId(), 1, project.getStatus(), project.getTokenName(), project.getProjectName(), appProjectUserTransaction.getValue());
+    }
+
+    public void saveOrder(AppUserTransaction transaction) {
+        CommonPair pair = commonPairService.findById(transaction.getParentId());
+        if (null == pair) {
+            return;
+        }
+        Long time = transaction.getCreatedAt();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(0);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(transaction.getId());
+        appOrder.setOrderContentName(BusinessConstant.CONTENT_TRANSACTION);
+        appOrder.setOrderNumber(transaction.getOrderNumber());
+        appOrder.setValue(transaction.getSuccessValue());
+        appOrder.setUserId(transaction.getUserId());
+        appOrder.setTokenId(pair.getTokenId());
+        appOrder.setStatus(2);
+        appOrder.setOrderType(transaction.getTransactionType());
+        save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(transaction.getValue());
+        appOrderDetailService.save(detail);
+        appMessageService.sendTrade(appOrder.getId(), appOrder.getUserId(), pair.getPairName(), appOrder.getOrderType(), appOrder.getValue(), pair.getTokenName());
     }
 }

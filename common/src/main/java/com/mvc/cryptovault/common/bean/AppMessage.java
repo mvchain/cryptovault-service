@@ -87,7 +87,7 @@ public class AppMessage implements Serializable {
      * 预约推送时间
      */
     @Column(name = "push_time")
-    private BigInteger pushTime;
+    private Long pushTime;
 
     /**
      * app_message
@@ -202,21 +202,4 @@ public class AppMessage implements Serializable {
         this.userId = userId;
     }
 
-    /**
-     * 预约推送时间
-     *
-     * @return push_time 预约推送时间
-     */
-    public BigInteger getPushTime() {
-        return pushTime;
-    }
-
-    /**
-     * 预约推送时间
-     *
-     * @param pushTime 预约推送时间
-     */
-    public void setPushTime(BigInteger pushTime) {
-        this.pushTime = pushTime;
-    }
 }

@@ -17,6 +17,7 @@ import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.AppProjectUserTransactionMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,14 +74,28 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
     public Boolean buy(BigInteger userId, BigInteger projectId, ProjectBuyDTO dto) {
         putAll(userId);
         Long time = System.currentTimeMillis();
-        AppUser user = appUserService.findById(userId);
-        Assert.isTrue(user.getTransactionPassword().equalsIgnoreCase(dto.getPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
-        AppProject project = appProjectService.findById(projectId);
-        ProjectBuyVO balance = appUserBalanceService.getBalance(userId, project);
-        Assert.isTrue(balance.getBalance().compareTo(dto.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
-        Assert.isTrue(balance.getLimitValue().subtract(dto.getValue()).compareTo(BigDecimal.ZERO) >= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
-        Assert.isTrue(dto.getValue().subtract(balance.getProjectMin()).compareTo(BigDecimal.ZERO) >= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
-        Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
+        AppProject project = buyCheck(userId, projectId, dto);
+
+
+        AppProjectUserTransaction appProjectUserTransaction = saveAppProjectUserTransaction(userId, projectId, dto, time, project);
+        updateCache(userId, dto, project, appProjectUserTransaction);
+        appOrderService.saveOrder(appProjectUserTransaction, project);
+        return true;
+    }
+
+    private void updateCache(BigInteger userId, ProjectBuyDTO dto, AppProject project, AppProjectUserTransaction appProjectUserTransaction) {
+        appUserBalanceService.updateBalance(userId, project.getBaseTokenId(), BigDecimal.ZERO.subtract(appProjectUserTransaction.getPayed()));
+        //TODO 异步发送推送,修改余额,生成统一订单,添加到getReservation缓存列表
+        String balanceKey = "AppProjectUserTransaction".toUpperCase() + "_BALANCE_" + userId;
+        redisTemplate.boundHashOps(balanceKey).increment(String.valueOf(appProjectUserTransaction.getProjectId()), Double.valueOf(String.valueOf(dto.getValue())));
+        String key = "AppProjectUserTransaction".toUpperCase() + "_INDEX_" + userId;
+        String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
+        redisTemplate.boundHashOps(key).put(String.valueOf(appProjectUserTransaction.getId()), String.valueOf(appProjectUserTransaction.getIndex()));
+        redisTemplate.boundListOps(listKey).rightPush(JSON.toJSONString(appProjectUserTransaction));
+    }
+
+    @NotNull
+    private AppProjectUserTransaction saveAppProjectUserTransaction(BigInteger userId, BigInteger projectId, ProjectBuyDTO dto, Long time, AppProject project) {
         AppProjectUserTransaction appProjectUserTransaction = new AppProjectUserTransaction();
         appProjectUserTransaction.setCreatedAt(time);
         appProjectUserTransaction.setUpdatedAt(time);
@@ -91,45 +106,23 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         appProjectUserTransaction.setUserId(userId);
         appProjectUserTransaction.setResult(BusinessConstant.APP_PROJECT_STATUS_WAIT);
         appProjectUserTransaction.setValue(dto.getValue());
-        appProjectUserTransaction.setProjectOrderNumber("P" + String.format("%09d", id));
+        appProjectUserTransaction.setProjectOrderNumber(getOrderNumber());
         //花费金额=购买数量*货币比值
         BigDecimal balanceCost = dto.getValue().multiply(BigDecimal.valueOf(project.getRatio()));
         appProjectUserTransaction.setPayed(balanceCost);
-        appUserBalanceService.updateBalance(userId, project.getBaseTokenId(), BigDecimal.ZERO.subtract(balanceCost));
         appProjectUserTransactionMapper.insert(appProjectUserTransaction);
-        //TODO 异步发送推送,修改余额,生成统一订单,添加到getReservation缓存列表
-        String balanceKey = "AppProjectUserTransaction".toUpperCase() + "_BALANCE_" + userId;
-        redisTemplate.boundHashOps(balanceKey).increment(String.valueOf(appProjectUserTransaction.getProjectId()), Double.valueOf(String.valueOf(dto.getValue())));
-        String key = "AppProjectUserTransaction".toUpperCase() + "_INDEX_" + userId;
-        String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
-        redisTemplate.boundHashOps(key).put(String.valueOf(appProjectUserTransaction.getId()), String.valueOf(appProjectUserTransaction.getIndex()));
-        redisTemplate.boundListOps(listKey).rightPush(JSON.toJSONString(appProjectUserTransaction));
-        AppOrder appOrder = new AppOrder();
-        appOrder.setClassify(0);
-        appOrder.setCreatedAt(time);
-        appOrder.setUpdatedAt(time);
-        appOrder.setFromAddress("");
-        appOrder.setHash("");
-        appOrder.setOrderContentId(appProjectUserTransaction.getId());
-        appOrder.setOrderContentName("BLOCK");
-        appOrder.setOrderNumber(appProjectUserTransaction.getProjectOrderNumber());
-        appOrder.setValue(balanceCost);
-        appOrder.setUserId(userId);
-        appOrder.setTokenId(project.getBaseTokenId());
-        appOrder.setStatus(0);
-        appOrder.setOrderType(1);
-        appOrderService.save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUpdatedAt(time);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(dto.getValue());
-        appOrderDetailService.save(detail);
-        return true;
+        return appProjectUserTransaction;
+    }
+
+    private AppProject buyCheck(BigInteger userId, BigInteger projectId, ProjectBuyDTO dto) {
+        AppUser user = appUserService.findById(userId);
+        Assert.isTrue(user.getTransactionPassword().equalsIgnoreCase(dto.getPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
+        AppProject project = appProjectService.findById(projectId);
+        ProjectBuyVO balance = appUserBalanceService.getBalance(userId, project);
+        Assert.isTrue(balance.getBalance().compareTo(dto.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+        Assert.isTrue(balance.getLimitValue().subtract(dto.getValue()).compareTo(BigDecimal.ZERO) >= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
+        Assert.isTrue(dto.getValue().subtract(balance.getProjectMin()).compareTo(BigDecimal.ZERO) >= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
+        return project;
     }
 
     public List<PurchaseVO> getReservation(BigInteger userId, ReservationDTO reservationDTO) {

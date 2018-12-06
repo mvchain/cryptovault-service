@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.common;
 
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
+import com.mvc.cryptovault.console.constant.BusinessConstant;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.mapdb.HTreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public abstract class AbstractService<T> implements BaseService<T> {
     @Autowired
     protected MyMapper<T> mapper;
     private Class<T> modelClass;
+
+    protected String getOrderNumber() {
+        Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
+        return "P" + String.format("%09d", id);
+    }
 
     public AbstractService() {
         // 获得具体model，通过反射来根据属性条件查找数据

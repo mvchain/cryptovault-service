@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -31,11 +32,16 @@ public class JPushService extends AbstractService<CommonToken> implements BaseSe
     @Autowired
     JPushClient jPushClient;
 
-    public void send(BigInteger userId, String msg, Map<String, String> extra) {
-        PushPayload payload = buildPush(userId, msg, extra);
+    public Boolean send(String msg, String... userId) {
+        return send(msg, new HashMap<>(), userId);
+    }
+
+    public Boolean send(String msg, Map<String, String> extra, String... userId) {
+        PushPayload payload = buildPush(msg, extra, userId);
         try {
             PushResult result = jPushClient.sendPush(payload);
             log.info("Got result - " + result);
+            return true;
         } catch (APIConnectionException e) {
             // Connection error, should retry later
             log.error("Connection error, should retry later", e);
@@ -46,14 +52,44 @@ public class JPushService extends AbstractService<CommonToken> implements BaseSe
             log.info("Error Code: " + e.getErrorCode());
             log.info("Error Message: " + e.getErrorMessage());
         }
+        //失败则添加到队列并重发
+        return false;
     }
 
-    private PushPayload buildPush(BigInteger userId, String msg, Map<String, String> extra) {
+    private PushPayload buildPush(String msg, Map<String, String> extra, String... userId) {
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.alias(String.valueOf(userId)))
+                .setAudience(Audience.alias(userId))
                 .setMessage(Message.newBuilder().setMsgContent(msg).addExtras(extra).build())
                 .build();
     }
 
+    public Boolean sendTag(String msg, BigInteger projectId) {
+        HashMap<String, String> extra = new HashMap<>();
+        PushPayload payload = buildTagPush(msg, extra, projectId);
+        try {
+            PushResult result = jPushClient.sendPush(payload);
+            log.info("Got result - " + result);
+            return true;
+        } catch (APIConnectionException e) {
+            // Connection error, should retry later
+            log.error("Connection error, should retry later", e);
+        } catch (APIRequestException e) {
+            // Should review the error, and fix the request
+            log.error("Should review the error, and fix the request", e);
+            log.info("HTTP Status: " + e.getStatus());
+            log.info("Error Code: " + e.getErrorCode());
+            log.info("Error Message: " + e.getErrorMessage());
+        }
+        //失败则添加到队列并重发
+        return false;
+    }
+
+    private PushPayload buildTagPush(String msg, Map<String, String> extra, BigInteger projectId) {
+        return PushPayload.newBuilder()
+                .setPlatform(Platform.all())
+                .setAudience(Audience.tag(String.valueOf(projectId)))
+                .setMessage(Message.newBuilder().setMsgContent(msg).addExtras(extra).build())
+                .build();
+    }
 }

@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppOrder;
 import com.mvc.cryptovault.common.bean.AppOrderDetail;
 import com.mvc.cryptovault.common.bean.BlockTransaction;
+import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
@@ -44,6 +45,8 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     AppUserService appUserService;
     @Autowired
     BlockTransactionMapper blockTransactionMapper;
+    @Autowired
+    CommonAddressService commonAddressService;
 
     public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
@@ -149,8 +152,46 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     }
 
     public void updateHash(String orderId, String hash) {
-        if (StringUtils.isNotBlank(orderId)){
+        if (StringUtils.isNotBlank(orderId)) {
             blockTransactionMapper.updateHash(orderId, hash);
         }
     }
+
+    public Boolean saveTrans(BlockTransaction blockTransaction) {
+        save(blockTransaction);
+        if (findBy("hash", blockTransaction.getHash()).size() > 1) {
+            //插入后如果数据重复则删除
+            deleteById(blockTransaction.getId());
+            return null;
+        }
+        if (!blockTransaction.getUserId().equals(BigInteger.ZERO)) {
+            orderService.saveOrder(blockTransaction);
+            orderService.saveOrderTarget(blockTransaction);
+        }
+        return true;
+    }
+
+    public void updateTrans(BlockTransaction oldTrans, BlockTransaction blockTransaction) {
+        //记录当前是否为第一次由非成功变为成功的状态
+        Boolean flag = oldTrans.getStatus() != 2 && blockTransaction.getStatus() == 2;
+        oldTrans.setTransactionStatus(blockTransaction.getTransactionStatus());
+        //已经成功的记录不修改,防止余额重复累加
+        if (oldTrans.getStatus() != 2) {
+            oldTrans.setStatus(blockTransaction.getStatus());
+        }
+        oldTrans.setUpdatedAt(System.currentTimeMillis());
+        oldTrans.setHeight(blockTransaction.getHeight());
+        oldTrans.setFee(blockTransaction.getFee());
+        oldTrans.setErrorData(blockTransaction.getErrorData());
+        oldTrans.setFromAddress(blockTransaction.getFromAddress());
+        oldTrans.setErrorMsg(blockTransaction.getErrorMsg());
+        update(oldTrans);
+        if (!blockTransaction.getUserId().equals(BigInteger.ZERO) && flag) {
+            List<AppOrder> orders = orderService.findBy("hash", oldTrans.getHash());
+            orders.forEach(obj -> {
+                orderService.updateOrder(obj);
+            });
+        }
+    }
+
 }

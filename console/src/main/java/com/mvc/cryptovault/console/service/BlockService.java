@@ -46,26 +46,9 @@ public abstract class BlockService implements CommandLineRunner {
         }
         BlockTransaction trans = blockTransactionService.findOneBy("hash", blockTransaction.getHash());
         if (null == trans) {
-            blockTransactionService.save(blockTransaction);
-            if (blockTransactionService.findBy("hash", blockTransaction.getHash()).size() > 1) {
-                //插入后如果数据重复则删除
-                blockTransactionService.deleteById(blockTransaction.getId());
-                return null;
-            }
-            return true;
+            return blockTransactionService.saveTrans(blockTransaction);
         } else {
-            trans.setTransactionStatus(blockTransaction.getTransactionStatus());
-            //已经成功的记录不修改,防止余额重复累加
-            if (trans.getStatus() != 2) {
-                trans.setStatus(blockTransaction.getStatus());
-            }
-            trans.setUpdatedAt(System.currentTimeMillis());
-            trans.setHeight(blockTransaction.getHeight());
-            trans.setFee(blockTransaction.getFee());
-            trans.setErrorData(blockTransaction.getErrorData());
-            trans.setFromAddress(blockTransaction.getFromAddress());
-            trans.setErrorMsg(blockTransaction.getErrorMsg());
-            blockTransactionService.update(trans);
+            blockTransactionService.updateTrans(trans, blockTransaction);
             return false;
         }
         //TODO 添加通用订单以及推送

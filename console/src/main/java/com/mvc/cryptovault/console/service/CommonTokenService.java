@@ -211,4 +211,8 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         commonPairService.updatePair(dto.getId(), dto.getVrt(), dto.getBalance());
     }
 
+    public String getTokenName(BigInteger tokenId) {
+        CommonToken token = findById(tokenId);
+        return token.getTokenName();
+    }
 }

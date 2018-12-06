@@ -20,7 +20,6 @@ public class AppOrderDetail implements Serializable {
      * 
      */
     @Id
-
     @Column(name = "order_id")
     private BigInteger orderId;
 

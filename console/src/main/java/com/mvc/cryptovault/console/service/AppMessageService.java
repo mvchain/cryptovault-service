@@ -2,20 +2,38 @@ package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
 import com.mvc.cryptovault.common.bean.AppMessage;
+import com.mvc.cryptovault.common.bean.AppOrder;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TimeSearchDTO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AppMessageService extends AbstractService<AppMessage> implements BaseService<AppMessage> {
+
+    private static final String MODEL_TRANSFER = "%s %s %s%s";
+    private static final String MODEL_PROJECT = "%s%s %s %s %s %s";
+    private static final String MODEL_PUBLISH = "%s %s %s发币 %s%s";
+    private static final String MODEL_TRADE = "%s 成功%s %s %s";
+
+    @Autowired
+    JPushService jPushService;
+    @Autowired
+    AppProjectUserTransactionService appProjectUserTransactionService;
 
     public List<AppMessage> list(BigInteger userId, TimeSearchDTO timeSearchDTO, PageDTO pageDTO) {
         Condition condition = new Condition(AppMessage.class);
@@ -29,5 +47,70 @@ public class AppMessageService extends AbstractService<AppMessage> implements Ba
             ConditionUtil.andCondition(criteria, "created_at < ", timeSearchDTO.getTimestamp());
         }
         return findByCondition(condition);
+    }
+
+    @Async
+    public void transferMsg(BigInteger orderId, BigInteger userId, BigDecimal value, String tokenName, Integer transferType, Integer status) {
+        String transferTypeStr = transferType == 1 ? "收款" : transferType == 2 ? "提现" : "划账";
+        String statusStr = status == 2 ? "成功" : "失败";
+        String msg = String.format(MODEL_TRANSFER, value, tokenName, transferTypeStr, statusStr);
+        Boolean result = jPushService.send(msg, String.valueOf(userId));
+        saveMsg(userId, result, orderId, msg);
+    }
+
+    @Async
+    public void sendProject(BigInteger userId, BigInteger projectId, BigInteger orderId, Integer status, Integer projectStatus, String tokenName, String projectName, BigDecimal value) {
+        Map<String, String> extra = new HashMap<>(1);
+        extra.put("projectId", projectId.toString());
+        String statusStr = status == 0 ? "失败" : "成功";
+        //项目状态0即将开始 1进行中 2已结束 3发币中 9取消
+        String projectStatusStr = projectStatus == 0 || projectStatus == 1 ? "预约" : "购买";
+        String valueStr = status == 0 ? "" : ":" + value + " " + tokenName;
+        String msg = String.format(MODEL_PROJECT, projectStatusStr, statusStr, tokenName, projectName, valueStr);
+        Boolean result = jPushService.send(msg, String.valueOf(userId));
+        saveMsg(userId, result, orderId, msg);
+    }
+
+    @Async
+    public void sendPublish(BigInteger projectId, String projectName, Long time, BigDecimal value, String tokenName, List<AppOrder> list) {
+        String dataStr = new SimpleDateFormat("yyyy月MM日").format(new Date(time));
+        String msg = String.format(MODEL_PUBLISH, tokenName, projectName, dataStr, value, tokenName);
+        Boolean result = jPushService.sendTag(msg, projectId);
+        saveMsgByProjectId(projectId, result, msg, list);
+    }
+
+    private void saveMsgByProjectId(BigInteger projectId, Boolean result, String msg, List<AppOrder> list) {
+        AppOrder appOrder = new AppOrder();
+        appOrder.setProjectId(projectId);
+        appOrder.setStatus(2);
+        list.forEach(obj -> {
+            saveMsg(obj.getUserId(), result, obj.getId(), msg);
+        });
+    }
+
+    @Async
+    public void sendTrade(BigInteger orderId, BigInteger userId, String pairName, Integer transferType, BigDecimal value, String tokenName) {
+        String transferTypeStr = transferType == 1 ? "购买" : "出售";
+        String msg = String.format(MODEL_TRADE, pairName, transferTypeStr, value, tokenName);
+        Boolean result = jPushService.send(msg, String.valueOf(userId));
+        saveMsg(userId, result, orderId, msg);
+    }
+
+    private AppMessage saveMsg(BigInteger userId, Boolean result, BigInteger orderId, String msg) {
+        Long time = System.currentTimeMillis();
+        AppMessage appMessage = new AppMessage();
+        appMessage.setIsRead(0);
+        appMessage.setUserId(userId);
+        appMessage.setUpdatedAt(time);
+        appMessage.setStatus(result ? 1 : 0);
+        appMessage.setSendFlag(1);
+        appMessage.setPushTime(time);
+        appMessage.setMessageType(1);
+        appMessage.setCreatedAt(time);
+        appMessage.setContentType("ORDER");
+        appMessage.setContentId(orderId);
+        appMessage.setMessage(msg);
+        save(appMessage);
+        return appMessage;
     }
 }
