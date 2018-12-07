@@ -1,7 +1,10 @@
 package com.mvc.cryptovault.dashboard.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.vo.ExportPartake;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectOrderDTO;
@@ -15,14 +18,20 @@ import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.Cleanup;
+import org.apache.commons.io.IOUtils;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 /**
  * @author qiyichen
@@ -117,4 +126,34 @@ public class ProjectController extends BaseController {
         return projectTransactionMap;
     }
 
+    @ApiOperation("导出众筹参与数据,用于系统之间的交互,json格式")
+    @GetMapping("{id}/partake")
+    @NotLogin
+    public void exportPartake(@PathVariable BigInteger id, HttpServletResponse response) throws Exception {
+        List<ExportPartake> list = projectService.exportPartake(id);
+        response.setContentType("text/plain");
+        response.addHeader("Content-Disposition", "attachment; filename=" + String.format("partake_%s.json", id));
+        @Cleanup OutputStream os = response.getOutputStream();
+        @Cleanup BufferedOutputStream buff = new BufferedOutputStream(os);
+        String jsonStr = JSON.toJSONString(list);
+        buff.write(JSON.toJSONBytes(list));
+    }
+
+    @ApiOperation("导入众筹参与数据,用于系统之间的交互,json格式")
+    @PostMapping("{id}/partake")
+    @NotLogin
+    public Result<Boolean> importPartake(@RequestBody MultipartFile file, @PathVariable BigInteger id, HttpServletResponse response) throws Exception {
+        String fileName = file.getOriginalFilename();
+        @Cleanup InputStream in = file.getInputStream();
+        String jsonStr = IOUtils.toString(in);
+        List<ImportPartake> list = null;
+        try {
+            list = JSON.parseArray(jsonStr, ImportPartake.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("文件格式错误");
+        }
+        Assert.isTrue(null != list && list.size() > 0, "文件格式错误");
+        Boolean result = projectService.importPartake(id, list, fileName);
+        return new Result<>(true);
+    }
 }

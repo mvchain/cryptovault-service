@@ -14,4 +14,5 @@ public interface RedisConstant {
     String TRANS_IMPORT = "TRANS_IMPORT_";
     String USDT_LAST_HEIGHT = "USDT_LAST_HEIGHT";
     String ADDRESS_IMPORT = "ADDRESS_IMPORT_";
+    String PARTAKE_IMPORT = "PARTAKE_IMPORT_";
 }

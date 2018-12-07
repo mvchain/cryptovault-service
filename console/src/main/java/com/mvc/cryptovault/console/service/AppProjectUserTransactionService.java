@@ -3,7 +3,10 @@ package com.mvc.cryptovault.console.service;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.mvc.cryptovault.common.bean.*;
+import com.mvc.cryptovault.common.bean.AppProject;
+import com.mvc.cryptovault.common.bean.AppProjectUserTransaction;
+import com.mvc.cryptovault.common.bean.AppUser;
+import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.ProjectBuyDTO;
 import com.mvc.cryptovault.common.bean.dto.ReservationDTO;
 import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
@@ -75,10 +78,9 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         putAll(userId);
         Long time = System.currentTimeMillis();
         AppProject project = buyCheck(userId, projectId, dto);
-
-
         AppProjectUserTransaction appProjectUserTransaction = saveAppProjectUserTransaction(userId, projectId, dto, time, project);
         updateCache(userId, dto, project, appProjectUserTransaction);
+        appProjectUserTransaction.setResult(0);
         appOrderService.saveOrder(appProjectUserTransaction, project);
         return true;
     }
@@ -107,6 +109,8 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         appProjectUserTransaction.setResult(BusinessConstant.APP_PROJECT_STATUS_WAIT);
         appProjectUserTransaction.setValue(dto.getValue());
         appProjectUserTransaction.setProjectOrderNumber(getOrderNumber());
+        appProjectUserTransaction.setSuccessPayed(BigDecimal.ZERO);
+        appProjectUserTransaction.setSuccessValue(BigDecimal.ZERO);
         //花费金额=购买数量*货币比值
         BigDecimal balanceCost = dto.getValue().multiply(BigDecimal.valueOf(project.getRatio()));
         appProjectUserTransaction.setPayed(balanceCost);
@@ -238,5 +242,57 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
             return true;
         }
         return false;
+    }
+
+    public void updatePartake(ImportPartake partake, AppProject appProject) {
+        AppProjectUserTransaction appProjectUserTransaction = new AppProjectUserTransaction();
+        appProjectUserTransaction.setProjectId(partake.getProjectId());
+        appProjectUserTransaction.setResult(0);
+        appProjectUserTransaction.setUserId(partake.getUserId());
+        List<AppProjectUserTransaction> list = findByEntity(appProjectUserTransaction);
+        BigDecimal value = partake.getValue();
+        for (AppProjectUserTransaction transaction : list) {
+            if (value.equals(BigDecimal.ZERO)) {
+                break;
+            }
+            if (value.compareTo(transaction.getValue()) <= 0) {
+                transaction.setSuccessValue(value);
+                transaction.setSuccessPayed(value.multiply(new BigDecimal(appProject.getRatio())));
+                transaction.setResult(1);
+                appProjectUserTransactionMapper.updateSuccess(transaction, System.currentTimeMillis());
+                //添加到统一订单并添加推送
+                if (transaction.getSuccessValue().compareTo(transaction.getValue()) != 0) {
+                    //没有全额成功,退还剩余费用
+                    appUserBalanceService.updateBalance(transaction.getUserId(), appProject.getBaseTokenId(), transaction.getPayed().subtract(transaction.getSuccessPayed()));
+                }
+                appOrderService.saveOrderProject(transaction, appProject);
+                break;
+            } else {
+                //单笔订单购买数量小于总购买数量,需要分多次处理
+                value = value.subtract(transaction.getValue());
+                transaction.setSuccessValue(transaction.getValue());
+                transaction.setResult(1);
+                transaction.setSuccessPayed(transaction.getValue().multiply(new BigDecimal(appProject.getRatio())));
+                appProjectUserTransactionMapper.updateSuccess(transaction, System.currentTimeMillis());
+                appOrderService.saveOrderProject(transaction, appProject);
+            }
+        }
+
+    }
+
+    public void updateFailPartake(BigInteger projectId, AppProject project) {
+        AppProjectUserTransaction transaction = new AppProjectUserTransaction();
+        transaction.setProjectId(projectId);
+        transaction.setResult(0);
+        List<AppProjectUserTransaction> list = findByEntity(transaction);
+        list.stream().forEach(trans -> {
+            trans.setResult(9);
+            appProjectUserTransactionMapper.updateSuccess(trans, System.currentTimeMillis());
+            appUserBalanceService.updateBalance(trans.getUserId(), project.getBaseTokenId(), trans.getPayed().subtract(trans.getSuccessPayed()));
+            trans.setSuccessValue(trans.getValue());
+            trans.setSuccessPayed(trans.getPayed());
+            appOrderService.saveOrderProject(trans, project);
+        });
+
     }
 }

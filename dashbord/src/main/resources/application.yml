@@ -43,6 +43,10 @@ service:
 hystrix.command.default.execution:
   isolation.thread.timeoutInMilliseconds: 500
   timeout.enabled: true
+ribbon:
+  ReadTimeout: 30000
+  ConnectTimeout: 30000
+
 
 oss:
   endpoint: oss-cn-hongkong.aliyuncs.com

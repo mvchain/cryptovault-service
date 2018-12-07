@@ -3,8 +3,11 @@ package com.mvc.cryptovault.console.dashboard.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppProject;
+import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.vo.ExportPartake;
 import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
@@ -17,6 +20,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -80,6 +84,23 @@ public class DAppProjectController extends BaseController {
     public Result<PageInfo<DProjectVO>> projects(@ModelAttribute PageDTO pageDTO) {
         PageInfo<DProjectVO> result = appProjectService.projects(pageDTO);
         return new Result<>(result);
+    }
+
+
+    @GetMapping("{id}/partake")
+    Result<List<ExportPartake>> exportPartake(@PathVariable("id") BigInteger id) throws InterruptedException {
+        List<ExportPartake> result = appProjectService.exportPartake(id);
+        return new Result<>(result);
+    }
+
+    @PostMapping("{id}/partake")
+    Result<Boolean> importPartake(@RequestBody List<ImportPartake> list, @RequestParam("fileName") String fileName) {
+        String key = RedisConstant.PARTAKE_IMPORT + fileName;
+        if (null != redisTemplate.opsForValue().get(key)) {
+            throw new IllegalArgumentException("该文件正在导入,请稍后");
+        }
+        appProjectService.importPartake(list, fileName);
+        return new Result<>(true);
     }
 
 }

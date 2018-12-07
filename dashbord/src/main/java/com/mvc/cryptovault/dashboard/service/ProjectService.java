@@ -1,17 +1,21 @@
 package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.vo.ExportPartake;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectOrderDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectOrderVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author qiyichen
@@ -48,12 +52,23 @@ public class ProjectService extends BaseService {
     }
 
     public PageInfo<DProjectOrderVO> findOrders(DProjectOrderDTO dto) {
-        Result<PageInfo<DProjectOrderVO>> result = remoteService.findOrders( dto);
+        Result<PageInfo<DProjectOrderVO>> result = remoteService.findOrders(dto);
         return result.getData();
     }
 
     public Boolean cancel(BigInteger id) {
         Result<Boolean> result = remoteService.cancelProject(id);
+        return result.getData();
+    }
+
+    public List<ExportPartake> exportPartake(BigInteger id) {
+        Result<List<ExportPartake>> result = remoteService.exportPartake(id);
+        return result.getData();
+    }
+
+    @Async
+    public Boolean importPartake(BigInteger id,List<ImportPartake> list, String fileName) {
+        Result<Boolean> result = remoteService.importPartake(id, list, fileName);
         return result.getData();
     }
 }

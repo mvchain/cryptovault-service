@@ -158,8 +158,8 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setValue(appProjectUserTransaction.getPayed());
         appOrder.setUserId(appProjectUserTransaction.getUserId());
         appOrder.setTokenId(project.getBaseTokenId());
-        appOrder.setStatus(0);
-        appOrder.setOrderType(1);
+        appOrder.setStatus(appProjectUserTransaction.getResult());
+        appOrder.setOrderType(appProjectUserTransaction.getResult() != 9 && appProjectUserTransaction.getResult() != 4 ? 2 : 1);
         save(appOrder);
         AppOrderDetail detail = new AppOrderDetail();
         detail.setCreatedAt(time);
@@ -172,7 +172,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setValue(appProjectUserTransaction.getValue());
         appOrderDetailService.save(detail);
         //发送推送
-        appMessageService.sendProject(appProjectUserTransaction.getUserId(), project.getId(), appOrder.getId(), 1, project.getStatus(), project.getTokenName(), project.getProjectName(), appProjectUserTransaction.getValue());
+        appMessageService.sendProject(appProjectUserTransaction.getUserId(), project.getId(), appOrder.getId(), appProjectUserTransaction.getResult(), project.getStatus(), project.getTokenName(), project.getProjectName(), appProjectUserTransaction.getValue());
     }
 
     public void saveOrder(AppUserTransaction transaction) {
@@ -237,5 +237,11 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setValue(value);
         appOrderDetailService.save(detail);
         appMessageService.transferMsg(appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(BusinessConstant.BASE_TOKEN_ID_BALANCE), 0, 2);
+    }
+
+    public void saveOrderProject(AppProjectUserTransaction appProjectUserTransaction, AppProject appProject) {
+        appProjectUserTransaction.setValue(appProjectUserTransaction.getSuccessValue());
+        appProjectUserTransaction.setPayed(appProjectUserTransaction.getSuccessPayed());
+        saveOrder(appProjectUserTransaction, appProject);
     }
 }

@@ -35,6 +35,14 @@ public class JPushService {
         return send(msg, extra, userId);
     }
 
+    /**
+     * TODO 有发送频率限制,超过限制需要添加到队列等待发送
+     *
+     * @param msg
+     * @param extra
+     * @param userId
+     * @return
+     */
     public Boolean send(String msg, Map<String, String> extra, String... userId) {
         PushPayload payload = buildPush(msg, extra, userId);
         try {

@@ -5,8 +5,10 @@ import com.mvc.cryptovault.common.bean.AdminUser;
 import com.mvc.cryptovault.common.bean.BlockSign;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.ExportOrders;
+import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.DPairVO;
+import com.mvc.cryptovault.common.bean.vo.ExportPartake;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.*;
 import com.mvc.cryptovault.common.dashboard.bean.vo.*;
@@ -152,5 +154,9 @@ public interface ConsoleRemoteService {
     @PutMapping("dashboard/appUser/{id}/status")
     Result<Boolean> updateUserStatus(@PathVariable("id") BigInteger id, @RequestParam("status") Integer status);
 
+    @GetMapping("dashboard/appProject/{id}/partake")
+    Result<List<ExportPartake>> exportPartake(@PathVariable("id") BigInteger id);
 
+    @PostMapping("dashboard/appProject/{id}/partake")
+    Result<Boolean> importPartake(@PathVariable("id") BigInteger id, @RequestBody List<ImportPartake> list, @RequestParam("fileName") String fileName);
 }

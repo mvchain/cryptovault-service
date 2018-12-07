@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.dashboard;
 
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -21,8 +22,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 @EnableAsync
 @Configuration
-@ComponentScan({"com.mvc.cryptovault.common.swaggermock", "com.mvc.cryptovault"})
-//@EnableCircuitBreaker
+@EnableCircuitBreaker
 @EnableHystrix
 @EnableEurekaClient
 @EnableFeignClients
