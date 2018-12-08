@@ -256,7 +256,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setOrderContentId(appProjectPartake.getProjectId());
         appOrder.setOrderContentName(BusinessConstant.CONTENT_PROJECT);
         appOrder.setOrderNumber(getOrderNumber());
-        appOrder.setValue(appProjectPartake.getValue());
+        appOrder.setValue(appProjectPartake.getReverseValue());
         appOrder.setUserId(appProjectPartake.getUserId());
         appOrder.setTokenId(appProjectPartake.getTokenId());
         appOrder.setStatus(2);
