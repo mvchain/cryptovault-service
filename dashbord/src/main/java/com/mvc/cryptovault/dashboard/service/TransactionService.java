@@ -2,6 +2,7 @@ package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.ExportOrders;
+import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
@@ -37,6 +38,11 @@ public class TransactionService extends BaseService {
 
     public List<ExportOrders> exportSign() {
         Result<List<ExportOrders>> result = remoteService.exportSign();
+        return result.getData();
+    }
+
+    public Boolean buy(AdminTransactionDTO dto) {
+        Result<Boolean> result = remoteService.buy(dto);
         return result.getData();
     }
 }

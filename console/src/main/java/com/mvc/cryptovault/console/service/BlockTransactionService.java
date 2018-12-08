@@ -2,9 +2,11 @@ package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.AdminUser;
 import com.mvc.cryptovault.common.bean.AppOrder;
 import com.mvc.cryptovault.common.bean.AppOrderDetail;
 import com.mvc.cryptovault.common.bean.BlockTransaction;
+import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
@@ -20,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
@@ -46,6 +49,8 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     BlockTransactionMapper blockTransactionMapper;
     @Autowired
     CommonAddressService commonAddressService;
+    @Autowired
+    AdminUserService adminUserService;
 
     public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
@@ -114,6 +119,11 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         ConditionUtil.andCondition(criteria, "opr_type = ", dBlockeTransactionDTO.getOprType());
         ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
         ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
+        if (null == dBlockeTransactionDTO.getIsAdmin() || dBlockeTransactionDTO.getIsAdmin() == 0) {
+            ConditionUtil.andCondition(criteria, "user_id != ", BigInteger.ZERO);
+        } else {
+            ConditionUtil.andCondition(criteria, "user_id = ", BigInteger.ZERO);
+        }
         List<BlockTransaction> list = findByCondition(condition);
         List<DBlockeTransactionVO> vos = new ArrayList<>(list.size());
         PageInfo result = new PageInfo(list);
@@ -121,7 +131,9 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
             DBlockeTransactionVO vo = new DBlockeTransactionVO();
             BeanUtils.copyProperties(blockTransaction, vo);
             vo.setTokenName(tokenService.findById(vo.getTokenId()).getTokenName());
-            vo.setCellphone(appUserService.findById(blockTransaction.getUserId()).getCellphone());
+            if (!blockTransaction.getUserId().equals(BigInteger.ZERO)) {
+                vo.setCellphone(appUserService.findById(blockTransaction.getUserId()).getCellphone());
+            }
             vos.add(vo);
         }
         result.setList(vos);
@@ -189,6 +201,27 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         oldTrans.setFromAddress(blockTransaction.getFromAddress());
         oldTrans.setErrorMsg(blockTransaction.getErrorMsg());
         update(oldTrans);
+    }
+
+    public void buy(AdminTransactionDTO dto) {
+        AdminUser admin = adminUserService.findById(BigInteger.ONE);
+        Assert.isTrue(admin.getPassword().equalsIgnoreCase(dto.getPassword()), "管理员密码错误");
+        Long now = System.currentTimeMillis();
+        BlockTransaction transaction = new BlockTransaction();
+        transaction.setCreatedAt(now);
+        transaction.setUpdatedAt(now);
+        transaction.setOprType(BusinessConstant.OPR_TYPE_WITHDRAW);
+        transaction.setValue(dto.getValue());
+        transaction.setUserId(BigInteger.ZERO);
+        transaction.setTokenId(dto.getTokenId());
+        transaction.setStatus(0);
+        transaction.setTransactionStatus(1);
+        transaction.setFromAddress("");
+        transaction.setTransactionStatus(2);
+        transaction.setTokenType(dto.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) ? "BTC" : "ETH");
+        transaction.setToAddress(dto.getToAddress());
+        transaction.setOrderNumber(getOrderNumber());
+        save(transaction);
     }
 
 }

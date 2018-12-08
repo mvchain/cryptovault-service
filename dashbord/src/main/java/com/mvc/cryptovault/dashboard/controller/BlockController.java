@@ -7,12 +7,16 @@ import com.mvc.cryptovault.common.bean.BlockSign;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.OrderEntity;
+import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
+import com.mvc.cryptovault.common.bean.dto.TransactionBuyDTO;
+import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.permission.PermissionCheck;
+import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
 import com.mvc.cryptovault.dashboard.util.EncryptionUtil;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
@@ -168,11 +172,17 @@ public class BlockController extends BaseController {
         return new Result<>(true);
     }
 
-    @ApiOperation("账户库存数据获取")
-    @GetMapping("account/count")
-    public Result<Integer> accountCount(@RequestParam String tokenType) {
-        Integer result = blockService.accountCount(tokenType);
+    @ApiOperation("中心钱包信息查看")
+    @GetMapping("wallet")
+    public Result<AdminWalletVO> getAdminWallet(){
+        AdminWalletVO result = blockService.getAdminWallet();
         return new Result<>(result);
+    }
+
+    @ApiOperation("发起挂单")
+    @PostMapping("transaction")
+    public Result<Boolean> buy(@RequestBody AdminTransactionDTO dto) {
+        return new Result<>(transactionService.buy(dto));
     }
 
 }

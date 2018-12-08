@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.console.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
@@ -31,6 +32,12 @@ public class DBlockTransactionController extends BaseController {
     public Result<PageInfo<DBlockeTransactionVO>> getTransactions(@ModelAttribute PageDTO pageDTO, @ModelAttribute DBlockeTransactionDTO dBlockeTransactionDTO) {
         PageInfo<DBlockeTransactionVO> result = blockTransactionService.getTransactions(pageDTO, dBlockeTransactionDTO);
         return new Result<>(result);
+    }
+
+    @PostMapping("")
+    public Result<Boolean> buy(@RequestBody AdminTransactionDTO dto) {
+        blockTransactionService.buy(dto);
+        return new Result<>(true);
     }
 
 }

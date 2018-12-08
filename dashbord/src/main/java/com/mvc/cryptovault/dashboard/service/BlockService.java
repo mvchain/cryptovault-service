@@ -3,6 +3,7 @@ package com.mvc.cryptovault.dashboard.service;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.BlockSign;
 import com.mvc.cryptovault.common.bean.CommonAddress;
+import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
@@ -72,5 +73,10 @@ public class BlockService extends BaseService {
     public Boolean importSign(List<BlockSign> list, String fileName) {
         remoteService.importSign(list, fileName);
         return true;
+    }
+
+    public AdminWalletVO getAdminWallet() {
+        Result<AdminWalletVO> result = remoteService.getAdminWallet();
+        return result.getData();
     }
 }

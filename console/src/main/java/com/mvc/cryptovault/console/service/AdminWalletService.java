@@ -41,4 +41,10 @@ public class AdminWalletService extends AbstractService<AdminWallet> implements 
         }
         return address;
     }
+
+    public AdminWallet getBtcCold() {
+        AdminWallet adminWallet = new AdminWallet();
+        adminWallet.setBlockType(2);
+        return mapper.selectOne(adminWallet);
+    }
 }

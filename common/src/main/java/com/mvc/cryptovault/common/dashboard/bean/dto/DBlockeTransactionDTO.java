@@ -25,4 +25,8 @@ public class DBlockeTransactionDTO extends PageDTO implements Serializable {
     private Integer transactionStatus;
     @ApiModelProperty("操作类型 1充值 2提现")
     private Integer oprType;
+    @ApiModelProperty("是否为管理员操作,默认为非管理员")
+    private Integer isAdmin;
+
+
 }

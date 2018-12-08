@@ -2,18 +2,21 @@ package com.mvc.cryptovault.console.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AdminUser;
+import com.mvc.cryptovault.common.bean.AdminWallet;
 import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.dto.TransactionBuyDTO;
+import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminPasswordDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
+import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
 import com.mvc.cryptovault.console.common.BaseController;
-import com.mvc.cryptovault.console.service.AdminUserService;
-import com.mvc.cryptovault.console.service.CommonAddressService;
-import com.mvc.cryptovault.console.service.CommonTokenService;
+import com.mvc.cryptovault.console.service.*;
 import com.mvc.cryptovault.console.util.PageUtil;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -39,6 +42,10 @@ public class DAdminUserController extends BaseController {
     CommonTokenService commonTokenService;
     @Autowired
     CommonAddressService commonAddressService;
+    @Autowired
+    AdminWalletService adminWalletService;
+    @Autowired
+    BlockHeightService blockHeightService;
 
     @GetMapping()
     public Result<PageInfo<AdminVO>> getAdmins(@RequestParam BigInteger userId, @ModelAttribute PageDTO dto) {
@@ -126,5 +133,28 @@ public class DAdminUserController extends BaseController {
         BigDecimal result = commonAddressService.getBalance(token.getTokenName());
         return new Result<>(result);
     }
+
+    @GetMapping("wallet")
+    public Result<AdminWalletVO> getAdminWallet() {
+        AdminWalletVO adminWalletVO = new AdminWalletVO();
+        AdminWallet ethHot = adminWalletService.getEthHot();
+        AdminWallet ethCold = adminWalletService.getEthCold();
+        AdminWallet btcCold = adminWalletService.getBtcCold();
+        if (null != ethHot) {
+            adminWalletVO.setEthHot(ethHot.getAddress());
+        }
+        if (null != ethCold) {
+            adminWalletVO.setEthCold(ethCold.getAddress());
+        }
+        if (null != btcCold) {
+            adminWalletVO.setUsdtCold(btcCold.getAddress());
+        }
+        Integer btcCount = blockHeightService.accountCount("BTC");
+        Integer ethCount = blockHeightService.accountCount("ETH");
+        adminWalletVO.setUsdtAddressCount(btcCount);
+        adminWalletVO.setEthAddressCount(ethCount);
+        return new Result<>(adminWalletVO);
+    }
+
 
 }

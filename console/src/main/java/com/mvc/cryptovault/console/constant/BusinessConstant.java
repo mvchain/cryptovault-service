@@ -47,13 +47,13 @@ public interface BusinessConstant {
      */
     Integer TRANSACTION_TYPE_SELL = 2;
     /**
-     * 提现
-     */
-    Integer OPR_TYPE_WITHDRAW = 2;
-    /**
      * 充值
      */
     Integer OPR_TYPE_RECHARGE= 1;
+    /**
+     * 提现
+     */
+    Integer OPR_TYPE_WITHDRAW = 2;
     /**
      * 取消状态
      */

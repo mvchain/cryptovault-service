@@ -5,8 +5,10 @@ import com.mvc.cryptovault.common.bean.AdminUser;
 import com.mvc.cryptovault.common.bean.BlockSign;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.ExportOrders;
+import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
 import com.mvc.cryptovault.common.bean.vo.DPairVO;
 import com.mvc.cryptovault.common.bean.vo.ExportPartake;
 import com.mvc.cryptovault.common.bean.vo.Result;
@@ -159,4 +161,10 @@ public interface ConsoleRemoteService {
 
     @PostMapping("dashboard/appProject/{id}/partake")
     Result<Boolean> importPartake(@PathVariable("id") BigInteger id, @RequestBody List<ImportPartake> list, @RequestParam("fileName") String fileName);
+
+    @GetMapping("dashboard/adminUser/wallet")
+    Result<AdminWalletVO> getAdminWallet();
+
+    @PostMapping("dashboard/blockTransaction")
+    Result<Boolean> buy(@RequestBody AdminTransactionDTO dto);
 }
