@@ -1,8 +1,5 @@
 package com.mvc.cryptovault.common.constant;
 
-import java.util.List;
-import java.util.Map;
-
 public interface RedisConstant {
 
     String APP_USER_USERNAME = "APP_USER_USERNAME_";
@@ -16,4 +13,5 @@ public interface RedisConstant {
     String ADDRESS_IMPORT = "ADDRESS_IMPORT_";
     String PARTAKE_IMPORT = "PARTAKE_IMPORT_";
     String PROJECT_START = "PROJECT_START";
+    String PROJECT_GAINS = "PROJECT_GAINS";
 }

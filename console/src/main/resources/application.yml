@@ -77,3 +77,10 @@ node.bitcoind.http.auth_scheme: Basic
 node.bitcoind.notification.alert.port: 5158
 node.bitcoind.notification.block.port: 5159
 usdt.propId: 1
+
+
+#scheduled.kline: '0 0 12 * * ?'
+scheduled.kline: '*/60 * * * * ?'
+scheduled.project.value: '*/10 * * * * ?'
+#释放间隔,实际为一天一次,单位毫秒
+project.frequency: 60000

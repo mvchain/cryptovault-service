@@ -244,4 +244,24 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appProjectUserTransaction.setPayed(appProjectUserTransaction.getSuccessPayed());
         saveOrder(appProjectUserTransaction, appProject);
     }
+
+    public AppOrder saveOrder(AppProjectPartake appProjectPartake) {
+        Long time = System.currentTimeMillis();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(2);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(appProjectPartake.getProjectId());
+        appOrder.setOrderContentName(BusinessConstant.CONTENT_PROJECT);
+        appOrder.setOrderNumber(getOrderNumber());
+        appOrder.setValue(appProjectPartake.getValue());
+        appOrder.setUserId(appProjectPartake.getUserId());
+        appOrder.setTokenId(appProjectPartake.getTokenId());
+        appOrder.setStatus(2);
+        appOrder.setOrderType(1);
+        save(appOrder);
+        return appOrder;
+    }
 }

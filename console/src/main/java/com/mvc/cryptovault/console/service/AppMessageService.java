@@ -26,7 +26,7 @@ public class AppMessageService {
 
     private static final String MODEL_TRANSFER = "%s %s %s%s";
     private static final String MODEL_PROJECT = "%s%s %s %s %s";
-    private static final String MODEL_PUBLISH = "%s %s %s发币 %s%s";
+    private static final String MODEL_PUBLISH = "%s %s %s金额已释放";
     private static final String MODEL_TRADE = "%s 成功%s %s %s";
 
     @Autowired
@@ -71,9 +71,9 @@ public class AppMessageService {
     }
 
     @Async
-    public void sendPublish(BigInteger projectId, String projectName, Long time, BigDecimal value, String tokenName, List<AppOrder> list) {
+    public void sendPublish(BigInteger projectId, String projectName, Long time, String tokenName, List<AppOrder> list) {
         String dataStr = new SimpleDateFormat("yyyy月MM日").format(new Date(time));
-        String msg = String.format(MODEL_PUBLISH, tokenName, projectName, dataStr, value.stripTrailingZeros().toPlainString(), tokenName);
+        String msg = String.format(MODEL_PUBLISH, tokenName, projectName, dataStr);
         Boolean result = jPushService.sendTag(msg, projectId);
         saveMsgByProjectId(projectId, result, msg, list);
     }

@@ -67,17 +67,14 @@ public class JPushService {
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(Audience.alias(userId))
-//                .setNotification(Notification.newBuilder()
-//                        .addPlatformNotification(IosNotification.newBuilder().addExtras(extra).build())
-//                        .addPlatformNotification(AndroidNotification.newBuilder().addExtras(extra).build())
-//                        .build())
-//                .setMessage(Message.newBuilder().setMsgContent(msg).addExtras(extra).build()).build();
                 .setMessage(Message.newBuilder().setMsgContent(msg).addExtras(extra).build())
                 .build();
     }
 
     public Boolean sendTag(String msg, BigInteger projectId) {
         HashMap<String, String> extra = new HashMap<>();
+        extra.put("orderId", String.valueOf(0));
+
         PushPayload payload = buildTagPush(msg, extra, projectId);
         try {
             PushResult result = jPushClient.sendPush(payload);

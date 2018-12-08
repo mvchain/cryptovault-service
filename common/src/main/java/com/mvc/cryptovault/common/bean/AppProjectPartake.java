@@ -23,5 +23,7 @@ public class AppProjectPartake implements Serializable {
     private BigDecimal value;
     private Integer times;
     private BigDecimal reverseValue;
+    private Long publishTime;
+    private BigInteger tokenId;
 
 }

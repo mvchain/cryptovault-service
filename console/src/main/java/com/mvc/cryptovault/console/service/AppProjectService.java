@@ -14,6 +14,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
+import com.mvc.cryptovault.console.dao.AppProjectMapper;
 import com.mvc.cryptovault.console.util.PageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +38,7 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
     @Autowired
     AppProjectPartakeService appProjectPartakeService;
     @Autowired
-    AppProjectService appProjectService;
+    AppProjectMapper appProjectMapper;
 
     public void newProject(DProjectDTO dProjectDTO) {
         BigInteger pairId = commonPairService.findByTokenId(dProjectDTO.getBaseTokenId(), dProjectDTO.getTokenId());
@@ -73,7 +74,7 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
         AppProject appProject = null;
         for (ImportPartake partake : list) {
             if (null == appProject) {
-                appProject = appProjectService.findById(partake.getProjectId());
+                appProject = findById(partake.getProjectId());
             }
             //修改成功的众筹
             appProjectPartakeService.savePartake(partake, appProject);
@@ -108,5 +109,11 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
             result.add(partake);
         });
         return result;
+    }
+
+    public void updateProjectStatus() {
+        Long currentTimeMillis  = System.currentTimeMillis();
+        appProjectMapper.updateProjectStartStatus(currentTimeMillis);
+        appProjectMapper.updateProjectStopStatus(currentTimeMillis);
     }
 }
