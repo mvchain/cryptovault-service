@@ -51,7 +51,9 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             return result;
         }
         for (BlockTransaction transaction : list) {
-            addEthWithdrawOrder(result, nonceMap, tokenMap, hot, cold, transaction);
+            if (transaction.getTokenType().equalsIgnoreCase("ETH")) {
+                addEthWithdrawOrder(result, nonceMap, tokenMap, hot, cold, transaction);
+            }
         }
         return result;
     }
