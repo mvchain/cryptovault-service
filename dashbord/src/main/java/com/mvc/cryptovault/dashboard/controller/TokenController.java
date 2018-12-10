@@ -29,7 +29,7 @@ public class TokenController extends BaseController {
     @ApiOperation("币种列表查询,结果不分页 isBlock:0区块链货币，默认所有")
     @GetMapping
     public Result<List<DTokenVO>> findTokens(@RequestParam(required = false) String tokenName, @RequestParam(value = "isBlock", required = false) Integer blockType) {
-        List<DTokenVO> result = tokenService.findTokens(tokenName);
+        List<DTokenVO> result = tokenService.findTokens(tokenName, blockType);
         return new Result<>(result);
     }
 

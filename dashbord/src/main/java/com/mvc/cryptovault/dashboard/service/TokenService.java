@@ -26,8 +26,8 @@ import java.util.List;
 public class TokenService extends BaseService {
 
 
-    public List<DTokenVO> findTokens(String tokenName) {
-        Result<List<DTokenVO>> result = remoteService.findTokens(tokenName);
+    public List<DTokenVO> findTokens(String tokenName, Integer blockType) {
+        Result<List<DTokenVO>> result = remoteService.findTokens(tokenName, blockType);
         return result.getData();
     }
 

@@ -61,7 +61,7 @@ public interface ConsoleRemoteService {
     Result<Boolean> setFee(@RequestBody List<DHoldVO> list);
 
     @GetMapping("dashboard/commonToken")
-    Result<List<DTokenVO>> findTokens(@RequestParam(value = "tokenName", required = false) String tokenName);
+    Result<List<DTokenVO>> findTokens(@RequestParam(value = "tokenName", required = false) String tokenName, @RequestParam(value = "isBlock", required = false) Integer blockType);
 
     @PostMapping("dashboard/commonToken")
     Result<Boolean> newToken(@RequestBody DTokenDTO dTokenDTO);
