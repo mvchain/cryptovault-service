@@ -104,6 +104,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         appProjectUserTransaction.setPairId(project.getPairId());
         appProjectUserTransaction.setProjectId(projectId);
         AppProjectUserTransaction temp = new AppProjectUserTransaction();
+        temp.setUserId(userId);
         appProjectUserTransaction.setIndex(appProjectUserTransactionMapper.selectCount(temp));
         appProjectUserTransaction.setUserId(userId);
         appProjectUserTransaction.setResult(BusinessConstant.APP_PROJECT_STATUS_WAIT);
