@@ -3,7 +3,6 @@ package com.mvc.cryptovault.dashboard.controller;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.DPairVO;
-import com.mvc.cryptovault.common.bean.vo.PairVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTokenDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenSettingVO;
@@ -27,9 +26,9 @@ import java.util.List;
 @Api(tags = "令牌管理相关")
 public class TokenController extends BaseController {
 
-    @ApiOperation("币种列表查询,结果不分页")
+    @ApiOperation("币种列表查询,结果不分页 isBlock:0区块链货币，默认所有")
     @GetMapping
-    public Result<List<DTokenVO>> findTokens(@RequestParam(required = false) String tokenName) {
+    public Result<List<DTokenVO>> findTokens(@RequestParam(required = false) String tokenName, @RequestParam(value = "isBlock", required = false) Integer blockType) {
         List<DTokenVO> result = tokenService.findTokens(tokenName);
         return new Result<>(result);
     }

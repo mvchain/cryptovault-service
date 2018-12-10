@@ -12,6 +12,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenTransSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.service.BlockHeightService;
 import com.mvc.cryptovault.console.service.CommonPairService;
 import com.mvc.cryptovault.console.service.CommonTokenService;
@@ -42,7 +43,7 @@ public class DCommonTokenController extends BaseController {
     CommonTokenService commonTokenService;
 
     @GetMapping("")
-    public Result<List<DTokenVO>> findTokens(@RequestParam(value = "tokenName", required = false) String tokenName) {
+    public Result<List<DTokenVO>> findTokens(@RequestParam(value = "tokenName", required = false) String tokenName,@RequestParam(value = "isBlock", required = false) Integer blockType) {
         List<CommonToken> list = null;
         if (StringUtils.isNotBlank(tokenName)) {
             list = commonTokenService.findBy("tokenName", tokenName);
@@ -51,6 +52,10 @@ public class DCommonTokenController extends BaseController {
         }
         List<DTokenVO> result = new ArrayList<>();
         for (CommonToken token : list) {
+            if(null != blockType &&  BusinessConstant.CLASSIFY_BLOCK.equals(0) && StringUtils.isBlank(token.getTokenType())){
+               //只筛选区块链类型
+                continue;
+            }
             DTokenVO vo = new DTokenVO();
             vo.setTokenId(token.getId());
             List<CommonPair> pair = commonPairService.findBy("tokenId", token.getId());

@@ -22,7 +22,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import tk.mybatis.mapper.entity.Condition;
@@ -52,6 +51,8 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     CommonTokenControlService commonTokenControlService;
     @Autowired
     AppOrderService appOrderService;
+    @Autowired
+    TokenVolumeService tokenVolumeService;
 
     public List<OrderVO> getTransactions(OrderDTO dto) {
         Condition condition = new Condition(AppUserTransaction.class);
@@ -143,7 +144,14 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             saveTopTransaction(transaction);
         } else {
             saveChildTransaction(userId, dto, pair, time, transaction, targetTransaction);
+            //记录成交量
+            TokenVolume tokenVolume = new TokenVolume();
+            tokenVolume.setCreatedAt(System.currentTimeMillis());
+            tokenVolume.setValue(dto.getValue());
+            tokenVolume.setTokenId(pair.getTokenId());
+            tokenVolumeService.save(tokenVolume);
         }
+
     }
 
     private void saveChildTransaction(BigInteger userId, TransactionBuyDTO dto, CommonPair pair, Long time, AppUserTransaction transaction, AppUserTransaction targetTransaction) {
@@ -228,6 +236,10 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     private void checkPrice(TransactionBuyDTO dto, CommonPair pair, CommonTokenPrice tokenPrice) {
         CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
         Float floatValue = dto.getPrice().subtract(tokenPrice.getTokenPrice()).divide(dto.getValue()).floatValue();
+        if (null != tokenControl.getMinLimit() && !tokenControl.getMinLimit().equals(BigDecimal.ZERO)) {
+            //如果设置了最小购买数量,需要校验
+            Assert.isTrue(dto.getValue().compareTo(tokenControl.getMinLimit()) >= 0, MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
+        }
         if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
             Assert.isTrue(tokenControl.getBuyMin() / 100 <= floatValue && tokenControl.getBuyMax() / 100 >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
         } else {

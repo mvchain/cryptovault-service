@@ -1,6 +1,6 @@
 spring:
   redis:
-    database: 2
+    database: 1
     host: 192.168.15.31
     timeout: 1000ms
     jedis:

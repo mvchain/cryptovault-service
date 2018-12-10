@@ -2,10 +2,7 @@ package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.mvc.cryptovault.common.bean.AdminUser;
-import com.mvc.cryptovault.common.bean.AppOrder;
-import com.mvc.cryptovault.common.bean.AppOrderDetail;
-import com.mvc.cryptovault.common.bean.BlockTransaction;
+import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
@@ -13,6 +10,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
+import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
@@ -53,7 +51,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     AdminUserService adminUserService;
 
     public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
-        Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
+        checkTransaction(userId, transactionDTO);
         Long now = System.currentTimeMillis();
         BlockTransaction transaction = new BlockTransaction();
         transaction.setCreatedAt(now);
@@ -65,7 +63,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         transaction.setStatus(0);
         transaction.setTokenType(transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) ? "BTC" : "ETH");
         transaction.setToAddress(transactionDTO.getAddress());
-        transaction.setOrderNumber("P" + String.format("%09d", id));
+        transaction.setOrderNumber(getOrderNumber());
         save(transaction);
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(0);
@@ -93,6 +91,16 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         detail.setValue(transactionDTO.getValue());
         appOrderDetailService.save(detail);
         appUserBalanceService.updateBalance(userId, transaction.getTokenId(), BigDecimal.ZERO.subtract(transaction.getValue()));
+    }
+
+    private void checkTransaction(BigInteger userId, TransactionDTO transactionDTO) {
+        //校验密码是否正确
+        AppUser user = appUserService.findById(userId);
+        Assert.isTrue(transactionDTO.getPassword().equalsIgnoreCase(user.getTransactionPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
+        //校验余额是否足够
+        BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, transactionDTO.getTokenId());
+        Assert.isTrue(balance.compareTo(transactionDTO.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+
     }
 
     public void updateStatus(DBlockStatusDTO dBlockStatusDTO) {

@@ -77,6 +77,12 @@ public class CommonTokenControl implements Serializable {
     private BigDecimal priceBase;
 
     /**
+     * 最小购买量
+     */
+    @Column(name = "min_limit")
+    private BigDecimal minLimit;
+
+    /**
      * 下个基准价格
      */
     @Column(name = "next_price")

@@ -62,4 +62,7 @@ public class DTokenTransSettingVO implements Serializable {
 
     @ApiModelProperty("交易状态")
     private Integer transactionStatus;
+
+    @ApiModelProperty("最小购买量")
+    private BigDecimal minLimit;
 }
