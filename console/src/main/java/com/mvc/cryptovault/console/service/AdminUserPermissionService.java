@@ -40,6 +40,9 @@ public class AdminUserPermissionService extends AbstractService<AdminUserPermiss
             }
         }
         String str = adminUserPermissionMapper.findPermissionStr(userId);
+        if (null == str) {
+            str = "";
+        }
         redisTemplate.opsForValue().set("ADMIN_PERMISSON_" + userId, str);
     }
 }
