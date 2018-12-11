@@ -72,4 +72,9 @@ public class UserService {
         String username = (String) BaseContextHandler.get("username");
         return JwtHelper.createToken(username, userId);
     }
+
+    public String getTag(BigInteger userId) {
+        Result<String> result = userRemoteService.getTag(userId);
+        return result.getData();
+    }
 }

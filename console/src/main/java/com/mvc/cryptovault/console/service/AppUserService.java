@@ -29,9 +29,11 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
     AppUserBalanceService appUserBalanceService;
     @Autowired
     AppMessageService appMessageService;
+    @Autowired
+    AppProjectPartakeService appProjectPartakeService;
 
     public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone) {
-        PageHelper.startPage(pageDTO.getPageNum(),pageDTO.getPageSize()  , "id desc");
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), "id desc");
         Condition condition = new Condition(AppUser.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "cellphone = ", cellphone);
@@ -69,5 +71,10 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         PageInfo result = new PageInfo(list);
         result.setList(vos);
         return result;
+    }
+
+    public String getTag(BigInteger userId) {
+        String tag = appProjectPartakeService.getTag(userId);
+        return tag;
     }
 }

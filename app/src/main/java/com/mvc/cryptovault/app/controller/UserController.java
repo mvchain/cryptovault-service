@@ -1,21 +1,17 @@
 package com.mvc.cryptovault.app.controller;
 
 import com.mvc.cryptovault.common.bean.dto.UserDTO;
+import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TokenVO;
 import com.mvc.cryptovault.common.bean.vo.UserSimpleVO;
-import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
-import com.mvc.cryptovault.common.util.BaseContextHandler;
-import com.mvc.cryptovault.common.util.JwtHelper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.el.parser.Token;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.math.BigInteger;
 
 /**
  * 用户相关
@@ -52,5 +48,11 @@ public class UserController extends BaseController {
         return new Result<>(user);
     }
 
+    @ApiOperation("用户分组信息获取,用户推送设置(tag),内容为英文逗号分隔开的id列表")
+    @GetMapping("tag")
+    public Result<String> getTag() {
+        String result = userService.getTag(getUserId());
+        return new Result<>(result);
+    }
 
 }

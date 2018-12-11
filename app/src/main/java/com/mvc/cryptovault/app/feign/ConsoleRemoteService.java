@@ -105,4 +105,6 @@ public interface ConsoleRemoteService {
     @GetMapping("user/username")
     Result<AppUser> getUserByUsername(@RequestParam("username") String username);
 
+    @GetMapping("user/{id}/tag")
+    Result<String> getTag(@PathVariable("id") BigInteger userId);
 }

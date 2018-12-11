@@ -50,5 +50,9 @@ public class UserController extends BaseController {
         return new Result(appUserService.findById(id));
     }
 
-
+    @GetMapping("{id}/tag")
+    public Result<String> getTag(@PathVariable("id") BigInteger userId) {
+        String result = appUserService.getTag(userId);
+        return new Result<>(result);
+    }
 }

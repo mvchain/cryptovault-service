@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.NumberUtils;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
@@ -70,7 +71,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             if (null == lastValue) {
                 vo.setIncrease(vo.getRatio().floatValue() * 100);
             } else {
-                Float increase = lastValue.divide(null == price ? BigDecimal.ZERO : price.getTokenPrice()).setScale(2, RoundingMode.HALF_DOWN).floatValue();
+                Float increase = lastValue.divide(null == price ? BigDecimal.ONE : price.getTokenPrice(), RoundingMode.HALF_DOWN).setScale(10, RoundingMode.HALF_DOWN).floatValue();
                 vo.setIncrease(increase * 100);
             }
             result.add(vo);
@@ -84,6 +85,8 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         BigDecimal price = null;
         if (StringUtils.isBlank(obj)) {
             price = update24HBeforePrice(tokenId, key);
+        } else {
+            price = NumberUtils.parseNumber(obj, BigDecimal.class);
         }
         return price;
     }
@@ -187,6 +190,8 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
                 tokenControl.setStartStatus(0);
             }
             commonTokenControlService.save(tokenControl);
+            //创建初始化k线数据
+            commonTokenPriceService.init(tokenControl);
         } else {
             Integer startStatus = tokenControl.getStartStatus();
             tokenControl = new CommonTokenControl();
@@ -214,5 +219,9 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
     public String getTokenName(BigInteger tokenId) {
         CommonToken token = findById(tokenId);
         return token.getTokenName();
+    }
+
+    public List<CommonToken> findKlineToken() {
+        return commonTokenMapper.findKlineToken();
     }
 }

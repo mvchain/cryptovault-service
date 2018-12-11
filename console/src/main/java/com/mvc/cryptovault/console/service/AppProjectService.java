@@ -18,7 +18,6 @@ import com.mvc.cryptovault.console.dao.AppProjectMapper;
 import com.mvc.cryptovault.console.util.PageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -112,7 +111,7 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
     }
 
     public void updateProjectStatus() {
-        Long currentTimeMillis  = System.currentTimeMillis();
+        Long currentTimeMillis = System.currentTimeMillis();
         appProjectMapper.updateProjectStartStatus(currentTimeMillis);
         appProjectMapper.updateProjectStopStatus(currentTimeMillis);
     }

@@ -43,6 +43,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -219,7 +220,7 @@ public class EthService extends BlockService {
                 CommonToken token = commonTokenService.findById(tokenId);
                 if (null != token) {
                     BigInteger balanceWei = contractService.balanceOf(token.getTokenContractAddress(), address);
-                    balance = new BigDecimal(balanceWei).divide(BigDecimal.TEN.pow(token.getTokenDecimal()));
+                    balance = new BigDecimal(balanceWei).divide(BigDecimal.TEN.pow(token.getTokenDecimal()), RoundingMode.HALF_DOWN);
                 }
             }
             return balance;
@@ -409,7 +410,7 @@ public class EthService extends BlockService {
             } catch (Exception e) {
                 return BigDecimal.ZERO;
             }
-            BigDecimal result = new BigDecimal(amount.getValue()).divide(BigDecimal.TEN.pow(commonToken.getTokenDecimal()));
+            BigDecimal result = new BigDecimal(amount.getValue()).divide(BigDecimal.TEN.pow(commonToken.getTokenDecimal()), RoundingMode.HALF_DOWN);
             return result;
         } else {
             return BigDecimal.ZERO;
@@ -544,7 +545,7 @@ public class EthService extends BlockService {
                 if (null == contract) {
                     return BigDecimal.ZERO;
                 }
-                result = new BigDecimal(balance).divide(BigDecimal.TEN.pow(contract.getTokenDecimal()));
+                result = new BigDecimal(balance).divide(BigDecimal.TEN.pow(contract.getTokenDecimal()), RoundingMode.HALF_DOWN);
             }
             return result;
         } catch (IOException e) {

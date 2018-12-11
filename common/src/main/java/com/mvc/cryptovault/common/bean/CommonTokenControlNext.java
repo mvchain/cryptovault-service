@@ -36,6 +36,16 @@ public class CommonTokenControlNext implements Serializable {
     private Integer nextType;
 
     /**
+     * 当前进度总量
+     */
+    private BigDecimal totalSuccess;
+
+    /**
+     * 下一个小浮动价格
+     */
+    private BigDecimal floatPrice;
+
+    /**
      * common_token_control_next
      */
     private static final long serialVersionUID = 1L;

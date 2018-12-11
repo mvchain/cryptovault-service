@@ -14,4 +14,6 @@ public interface RedisConstant {
     String PARTAKE_IMPORT = "PARTAKE_IMPORT_";
     String PROJECT_START = "PROJECT_START";
     String PROJECT_GAINS = "PROJECT_GAINS";
+    String TOKEN_VOLUME = "TOKEN_VOLUME";
+    String KLINE_SCHEDULED = "KLINE_SCHEDULED_";
 }

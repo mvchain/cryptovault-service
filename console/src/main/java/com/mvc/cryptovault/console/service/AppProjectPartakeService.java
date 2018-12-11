@@ -16,6 +16,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,7 +51,7 @@ public class AppProjectPartakeService extends AbstractService<AppProjectPartake>
             appProjectPartake.setValue(partake.getValue());
             appProjectPartake.setPublishTime(appProject.getPublishAt());
             appProjectPartake.setTimes(new Float(100f / appProject.getReleaseValue()).intValue());
-            appProjectPartake.setReverseValue(appProjectPartake.getValue().divide(BigDecimal.valueOf(appProjectPartake.getTimes())));
+            appProjectPartake.setReverseValue(appProjectPartake.getValue().divide(BigDecimal.valueOf(appProjectPartake.getTimes()), RoundingMode.HALF_DOWN));
             save(appProjectPartake);
         }
     }
@@ -86,5 +87,10 @@ public class AppProjectPartakeService extends AbstractService<AppProjectPartake>
                 appMessageService.sendPublish(project.getId(), project.getProjectName(), time, project.getTokenName(), orders);
             }
         }
+    }
+
+    public String getTag(BigInteger userId) {
+        String result = appProjectPartakeMapper.getTag(userId);
+        return result;
     }
 }

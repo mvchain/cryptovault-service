@@ -18,5 +18,5 @@ public class TokenVolume {
     private BigInteger tokenId;
     private BigDecimal value;
     private Long createdAt;
-
+    private Integer used;
 }

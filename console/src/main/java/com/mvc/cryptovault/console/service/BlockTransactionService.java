@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.console.service;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
@@ -11,6 +12,7 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
+import com.mvc.cryptovault.console.bean.bo.BlockTransactionBO;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
@@ -49,9 +51,10 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     CommonAddressService commonAddressService;
     @Autowired
     AdminUserService adminUserService;
+    @Autowired
+    RedisTaskContainer redisTaskContainer;
 
-    public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
-        checkTransaction(userId, transactionDTO);
+    public void doSendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Long now = System.currentTimeMillis();
         BlockTransaction transaction = new BlockTransaction();
         transaction.setCreatedAt(now);
@@ -61,6 +64,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         transaction.setUserId(userId);
         transaction.setTokenId(transactionDTO.getTokenId());
         transaction.setStatus(0);
+        transaction.setTransactionStatus(1);
         transaction.setTokenType(transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) ? "BTC" : "ETH");
         transaction.setToAddress(transactionDTO.getAddress());
         transaction.setOrderNumber(getOrderNumber());
@@ -91,6 +95,14 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         detail.setValue(transactionDTO.getValue());
         appOrderDetailService.save(detail);
         appUserBalanceService.updateBalance(userId, transaction.getTokenId(), BigDecimal.ZERO.subtract(transaction.getValue()));
+    }
+
+    public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
+        checkTransaction(userId, transactionDTO);
+        BlockTransactionBO bo = new BlockTransactionBO();
+        bo.setUserId(userId);
+        bo.setTransactionDTO(transactionDTO);
+        redisTaskContainer.getRedisQueue().pushFromHead(JSON.toJSONString(bo));
     }
 
     private void checkTransaction(BigInteger userId, TransactionDTO transactionDTO) {

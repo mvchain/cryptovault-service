@@ -70,4 +70,5 @@ public interface BusinessConstant {
      * 区跨链类型
      */
     Integer CLASSIFY_BLOCK = 0;
+    String REDIS_QUEUE = "REDIS_QUEUE";
 }
