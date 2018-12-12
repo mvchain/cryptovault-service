@@ -94,7 +94,6 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         detail.setOrderId(appOrder.getId());
         detail.setValue(transactionDTO.getValue());
         appOrderDetailService.save(detail);
-        appUserBalanceService.updateBalance(userId, transaction.getTokenId(), BigDecimal.ZERO.subtract(transaction.getValue()));
     }
 
     public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
@@ -103,6 +102,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         bo.setUserId(userId);
         bo.setTransactionDTO(transactionDTO);
         redisTaskContainer.getRedisQueue().pushFromHead(JSON.toJSONString(bo));
+        appUserBalanceService.updateBalance(userId, transactionDTO.getTokenId(), BigDecimal.ZERO.subtract(transactionDTO.getValue()));
     }
 
     private void checkTransaction(BigInteger userId, TransactionDTO transactionDTO) {
