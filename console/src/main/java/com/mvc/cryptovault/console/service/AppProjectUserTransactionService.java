@@ -166,6 +166,11 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
             vo.setReservationType(appProjectUserTransaction.getResult());
             vo.setReleaseValue(project.getReleaseValue());
             vo.setRatio(project.getRatio());
+            vo.setTokenId(project.getTokenId());
+            vo.setTokenName(project.getTokenName());
+            vo.setBaseTokenName(project.getBaseTokenName());
+            vo.setSuccessPayed(appProjectUserTransaction.getSuccessPayed());
+            vo.setSuccessValue(appProjectUserTransaction.getSuccessValue());
             vo.setPublishAt(project.getPublishAt());
             result.add(vo);
         }

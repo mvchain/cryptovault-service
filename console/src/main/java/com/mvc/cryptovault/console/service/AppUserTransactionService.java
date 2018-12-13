@@ -83,6 +83,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             vo.setNickname(user.getNickname());
             vo.setTotal(obj.getValue());
             vo.setId(obj.getId());
+            vo.setPrice(obj.getPrice());
             result.add(vo);
         });
         return result;

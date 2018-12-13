@@ -25,5 +25,7 @@ public class OrderVO {
     private BigDecimal total;
     @ApiModelProperty("订单id")
     private BigInteger id;
+    @ApiModelProperty("挂单价格")
+    private BigDecimal price;
 
 }

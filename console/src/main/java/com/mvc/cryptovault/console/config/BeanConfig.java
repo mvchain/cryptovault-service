@@ -3,6 +3,7 @@ package com.mvc.cryptovault.console.config;
 import cn.jiguang.common.ClientConfig;
 import cn.jpush.api.JPushClient;
 import com.mvc.cryptovault.common.util.JwtHelper;
+import com.mvc.cryptovault.console.util.btc.BtcAction;
 import com.neemre.btcdcli4j.core.BitcoindException;
 import com.neemre.btcdcli4j.core.CommunicationException;
 import com.neemre.btcdcli4j.core.client.BtcdClient;
@@ -50,9 +51,10 @@ public class BeanConfig {
     private Long refresh;
     @Value("${service.base64Secret}")
     private String base64Secret;
-
     @Value("${eth.geth}")
     public String WALLET_SERVICE;
+    @Value("${usdt.propId}")
+    private Integer propId;
 
     @Bean
     public HTreeMap hTreeMap() {
@@ -104,7 +106,6 @@ public class BeanConfig {
 
     @Bean
     public BtcdClient btcdClient() throws IOException, BitcoindException, CommunicationException {
-
         PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
         CloseableHttpClient httpProvider = HttpClients.custom().setConnectionManager(cm).build();
         Properties nodeConfig = new Properties();
@@ -119,6 +120,9 @@ public class BeanConfig {
         }
         nodeConfig.load(inputStream);
         BtcdClientImpl btcdClient = new BtcdClientImpl(httpProvider, nodeConfig);
+        BtcAction.init(propId, btcdClient);
         return btcdClient;
     }
+
+
 }

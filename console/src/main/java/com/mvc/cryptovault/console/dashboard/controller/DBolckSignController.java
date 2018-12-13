@@ -22,7 +22,6 @@ public class DBolckSignController extends BaseController {
 
     @PostMapping()
     Result<Boolean> importSign(@RequestBody List<BlockSign> list, @RequestParam("fileName") String fileName) {
-
         String obj = redisTemplate.boundValueOps(RedisConstant.TRANS_IMPORT + fileName).get();
         if (null != obj) {
             throw new IllegalArgumentException("该文件正在导入,请稍后");

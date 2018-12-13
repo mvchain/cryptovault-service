@@ -8,10 +8,11 @@ import com.mvc.cryptovault.common.bean.vo.ExchangeRateVO;
 import com.mvc.cryptovault.common.bean.vo.ExchangeResponse;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
-import com.mvc.cryptovault.console.service.AppKlineService;
-import com.mvc.cryptovault.console.service.AppProjectPartakeService;
-import com.mvc.cryptovault.console.service.AppProjectService;
-import com.mvc.cryptovault.console.service.CommonTokenService;
+import com.mvc.cryptovault.console.service.*;
+import com.mvc.cryptovault.console.util.btc.BtcAction;
+import com.mvc.cryptovault.console.util.btc.entity.OmniWalletAddressBalance;
+import com.neemre.btcdcli4j.core.BitcoindException;
+import com.neemre.btcdcli4j.core.CommunicationException;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -47,11 +49,16 @@ public class Job {
     @Autowired
     AppProjectService appProjectService;
     @Autowired
+    AdminWalletService adminWalletService;
+    @Autowired
     AppProjectPartakeService appProjectPartakeService;
     @Autowired
     AppKlineService appKlineService;
     @Autowired
     CommonTokenService commonTokenService;
+    @Autowired
+    UsdtService usdtService;
+
     RestTemplate restTemplate = new RestTemplate();
 
     /**
@@ -60,7 +67,7 @@ public class Job {
     @Scheduled(cron = "*/10 * * * * ?")
     public void newAccount() {
         final String key = RedisConstant.PROJECT_START;
-        Boolean result = getRedisLock(key);
+        Boolean result = getRedisLock(key, 5);
         if (!result) {
             return;
         }
@@ -74,7 +81,7 @@ public class Job {
     @Scheduled(cron = "${scheduled.project.value}")
     public void sendProject() {
         final String key = RedisConstant.PROJECT_GAINS;
-        Boolean result = getRedisLock(key);
+        Boolean result = getRedisLock(key, 120);
         if (!result) {
             return;
         }
@@ -85,16 +92,14 @@ public class Job {
     /**
      * 发送BTC手续费
      */
-//    @Scheduled(cron = "{scheduled.kline}")
+    @Scheduled(cron = "${scheduled.usdt.fee}")
     public void senBtcGas() {
-
-
-        final String key = RedisConstant.PROJECT_GAINS;
-        Boolean result = getRedisLock(key);
+        final String key = RedisConstant.USDT_FEE;
+        Boolean result = getRedisLock(key, 120);
         if (!result) {
             return;
         }
-        appProjectPartakeService.sendProject();
+        usdtService.senBtcGas();
         redisTemplate.delete(key);
     }
 
@@ -106,7 +111,7 @@ public class Job {
         List<CommonToken> tokens = commonTokenService.findKlineToken();
         tokens.forEach(token -> {
             final String key = RedisConstant.KLINE_SCHEDULED + token.getId();
-            Boolean result = getRedisLock(key);
+            Boolean result = getRedisLock(key, 120);
             if (!result) {
                 return;
             }
@@ -195,7 +200,7 @@ public class Job {
         return vo;
     }
 
-    private Boolean getRedisLock(String key) {
+    private Boolean getRedisLock(String key, Integer timeoutSec) {
         return redisTemplate.execute(new RedisCallback<Boolean>() {
             @Override
             public Boolean doInRedis(RedisConnection connection) throws DataAccessException {
@@ -203,9 +208,10 @@ public class Job {
                 byte[] keyByte = serializer.serialize(key);
                 byte[] valueByte = serializer.serialize(String.valueOf(System.currentTimeMillis()));
                 Boolean result = connection.setNX(keyByte, valueByte);
-                redisTemplate.expire(key, 5, TimeUnit.SECONDS);
+                redisTemplate.expire(key, timeoutSec, TimeUnit.SECONDS);
                 return result;
             }
         });
     }
+
 }

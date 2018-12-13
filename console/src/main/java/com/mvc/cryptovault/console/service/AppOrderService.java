@@ -83,6 +83,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
             TransactionSimpleVO vo = new TransactionSimpleVO();
             BeanUtils.copyProperties(obj, vo);
             vo.setTokenName(token.getTokenName());
+            vo.setValue(vo.getValue().abs());
             vo.setRatio(price.getTokenPrice());
             vo.setTransactionType(obj.getOrderType());
             result.add(vo);

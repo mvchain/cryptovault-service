@@ -12,6 +12,8 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.OverTransactionVO;
 import com.mvc.cryptovault.console.common.BaseController;
 import com.mvc.cryptovault.console.service.AppUserTransactionService;
 import com.mvc.cryptovault.console.service.CommonAddressService;
+import com.neemre.btcdcli4j.core.BitcoindException;
+import com.neemre.btcdcli4j.core.CommunicationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +58,7 @@ public class DAppUserTransactionController extends BaseController {
     }
 
     @GetMapping("collect")
-    public Result<List<ExportOrders>> exportCollect() throws IOException {
+    public Result<List<ExportOrders>> exportCollect() throws IOException, BitcoindException, CommunicationException {
         List<ExportOrders> result = commonAddressService.exportCollect();
         return new Result<>(result);
     }

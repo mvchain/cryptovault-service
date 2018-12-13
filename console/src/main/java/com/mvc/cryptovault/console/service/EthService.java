@@ -235,7 +235,7 @@ public class EthService extends BlockService {
     }
 
     private void processDone(String type) {
-        System.out.println("process down: " + type);
+
     }
 
 

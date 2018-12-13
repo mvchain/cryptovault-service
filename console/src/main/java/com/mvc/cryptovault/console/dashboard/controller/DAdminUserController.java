@@ -5,18 +5,15 @@ import com.mvc.cryptovault.common.bean.AdminUser;
 import com.mvc.cryptovault.common.bean.AdminWallet;
 import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
-import com.mvc.cryptovault.common.bean.dto.TransactionBuyDTO;
 import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.AdminPasswordDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
-import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
 import com.mvc.cryptovault.console.common.BaseController;
 import com.mvc.cryptovault.console.service.*;
 import com.mvc.cryptovault.console.util.PageUtil;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -140,6 +137,7 @@ public class DAdminUserController extends BaseController {
         AdminWallet ethHot = adminWalletService.getEthHot();
         AdminWallet ethCold = adminWalletService.getEthCold();
         AdminWallet btcCold = adminWalletService.getBtcCold();
+        AdminWallet btcHot = adminWalletService.getBtcHot();
         if (null != ethHot) {
             adminWalletVO.setEthHot(ethHot.getAddress());
         }
@@ -148,6 +146,9 @@ public class DAdminUserController extends BaseController {
         }
         if (null != btcCold) {
             adminWalletVO.setUsdtCold(btcCold.getAddress());
+        }
+        if (null != btcHot) {
+            adminWalletVO.setUsdtHot(btcHot.getAddress());
         }
         Integer btcCount = blockHeightService.accountCount("BTC");
         Integer ethCount = blockHeightService.accountCount("ETH");

@@ -24,7 +24,7 @@ public abstract class BlockService implements CommandLineRunner {
     @Autowired
     protected BlockTransactionService blockTransactionService;
     @Autowired
-    private CommonAddressService commonAddressService;
+    protected CommonAddressService commonAddressService;
     @Autowired
     private CommonTokenService commonTokenService;
     @Autowired
@@ -74,7 +74,8 @@ public abstract class BlockService implements CommandLineRunner {
             return toAddress;
         } else {
             //两个地址都为钱包地址，则为钱包操作
-            if (fromAddress.getUserId().equals(BigInteger.ZERO)) {
+            if (null == fromAddress.getUserId() || fromAddress.getUserId().equals(BigInteger.ZERO)) {
+                fromAddress.setUserId(BigInteger.ZERO);
                 return fromAddress;
             } else {
                 return toAddress;
@@ -100,7 +101,7 @@ public abstract class BlockService implements CommandLineRunner {
     }
 
     protected void updateError(String orderId, String message, String data) {
-        BlockTransaction transaction = blockTransactionService.findOneBy("order_number", orderId);
+        BlockTransaction transaction = blockTransactionService.findOneBy("orderNumber", orderId);
         if (null != transaction) {
             transaction.setStatus(9);
             transaction.setTransactionStatus(6);

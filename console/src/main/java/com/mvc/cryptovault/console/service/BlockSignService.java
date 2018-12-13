@@ -31,6 +31,9 @@ public class BlockSignService extends AbstractService<BlockSign> implements Base
     public void importSign(List<BlockSign> list, String fileName) {
         String key = RedisConstant.TRANS_IMPORT + fileName;
         for (BlockSign blockSign : list) {
+            if(blockSign.getTokenType().equalsIgnoreCase("BTC")){
+                blockSign.setContractAddress(null);
+            }
             save(blockSign);
         }
         //导入成功后删除标记

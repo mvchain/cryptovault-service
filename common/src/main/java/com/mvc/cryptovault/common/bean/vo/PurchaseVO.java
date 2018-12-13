@@ -38,5 +38,15 @@ public class PurchaseVO {
     private Integer reservationType;
     @ApiModelProperty("众筹订单号")
     private String projectOrderId;
+    @ApiModelProperty("基础货币名称")
+    private String baseTokenName;
+    @ApiModelProperty("众筹货币名称")
+    private String tokenName;
+    @ApiModelProperty("成功购买金额")
+    private BigDecimal successPayed;
+    @ApiModelProperty("成功购买数量")
+    private BigDecimal successValue;
+    @ApiModelProperty("令牌id")
+    private BigInteger tokenId;
 
 }

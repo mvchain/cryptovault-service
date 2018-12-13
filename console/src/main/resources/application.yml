@@ -84,6 +84,9 @@ scheduled.kline: '*/10 * * * * ?'
 scheduled.project.value: '*/10 * * * * ?'
 #第三方价格获取间隔,建议为k线时间的1/4至1/2
 scheduled.usdt: '*/5 * * * * ?'
+#实际建议为不小于1小时(比特区块确认很慢)
+scheduled.usdt.fee: '0 0 * * * ?'
+
 #释放间隔,实际为一天一次,单位毫秒
 project.frequency: 60000
 

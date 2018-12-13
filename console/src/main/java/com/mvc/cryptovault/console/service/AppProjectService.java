@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.AppProjectUserTransaction;
 import com.mvc.cryptovault.common.bean.AppUser;
+import com.mvc.cryptovault.common.bean.CommonPair;
 import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.ExportPartake;
@@ -40,15 +41,16 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
     AppProjectMapper appProjectMapper;
 
     public void newProject(DProjectDTO dProjectDTO) {
-        BigInteger pairId = commonPairService.findByTokenId(dProjectDTO.getBaseTokenId(), dProjectDTO.getTokenId());
         AppProject appProject = new AppProject();
         BeanUtils.copyProperties(dProjectDTO, appProject);
-        appProject.setPairId(pairId);
         appProject.setStatus(0);
+        CommonPair pair = commonPairService.findByTokenId(dProjectDTO.getBaseTokenId(), dProjectDTO.getTokenId());
+        appProject.setPairId(null == pair ? BigInteger.ZERO : pair.getId());
+        appProject.setTokenName(null == pair ? "" : pair.getTokenName());
+        appProject.setBaseTokenName(null == pair ? "" : pair.getBaseTokenName());
         save(appProject);
         String key = "AppProject".toUpperCase() + "_" + dProjectDTO.getId();
         redisTemplate.opsForValue().set(key, JSON.toJSONString(appProject), 24, TimeUnit.HOURS);
-
     }
 
     public PageInfo<DProjectVO> projects(PageDTO pageDTO) {

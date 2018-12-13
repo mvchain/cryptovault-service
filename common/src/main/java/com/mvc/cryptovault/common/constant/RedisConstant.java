@@ -16,4 +16,5 @@ public interface RedisConstant {
     String PROJECT_GAINS = "PROJECT_GAINS";
     String TOKEN_VOLUME = "TOKEN_VOLUME";
     String KLINE_SCHEDULED = "KLINE_SCHEDULED_";
+    String USDT_FEE = "USDT_FEE";
 }
