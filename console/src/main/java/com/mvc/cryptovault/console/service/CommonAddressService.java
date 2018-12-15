@@ -213,6 +213,11 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         AdminWallet coldBtc = adminWalletService.getBtcCold();
         if (null == list) return;
         for (TetherBalance tetherAddress : list) {
+            CommonAddress commonAddress = findOneBy("address", tetherAddress.getAddress());
+            if (null == commonAddress || tetherAddress.getAddress().equalsIgnoreCase(coldBtc.getAddress())) {
+                //不是本系统中的地址或者地址为中心冷钱包地址则不需要汇总
+                continue;
+            }
             ExportOrders orders = new ExportOrders();
             List<Output> unspents = BtcAction.listUnspent(Arrays.asList(tetherAddress.getAddress()));
             if (unspents.size() <= 0) return;

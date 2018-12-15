@@ -429,7 +429,6 @@ public class UsdtService extends BlockService {
             List<TetherBalance> list = BtcAction.getTetherBalance();
             List<String> addresses = new ArrayList<>(list.size());
             for (TetherBalance tetherBalance : list) {
-                String pvKey = btcdClient.dumpPrivKey(tetherBalance.getAddress());
                 //需要发送手续费的地址,不在本系统中的地址也直接忽略,由于无法签名.对于数额过小的也直接忽略(动态设置),已存在足够手续费也忽略
                 CommonAddress address = commonAddressService.findOneBy("address", tetherBalance.getAddress());
                 BigDecimal btcBalance = btcdClient.getBalance(tetherBalance.getAddress());
