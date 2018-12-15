@@ -55,7 +55,8 @@ public class UsdtService extends BlockService {
     CommonTokenService commonTokenService;
     @Autowired
     BlockUsdtWithdrawQueueService blockUsdtWithdrawQueueService;
-
+    @Autowired
+    BlockHotAddressService blockHotAddressService;
     //发送usdt时必然会带上这笔金额,因此发送手续费时需要额外发送这笔数量,否则会从预设手续费中扣除从而导致和期望结果不一致
     private final BigDecimal USDT_LIMIT_FEE = new BigDecimal("0.00000546");
     //地址处于等待中时隔一段时间后运行
@@ -428,14 +429,19 @@ public class UsdtService extends BlockService {
             CommonToken token = commonTokenService.findById(BusinessConstant.BASE_TOKEN_ID_USDT);
             List<TetherBalance> list = BtcAction.getTetherBalance();
             List<String> addresses = new ArrayList<>(list.size());
+            AdminWallet cold = adminWalletService.getBtcCold();
+            if (null == cold) {
+                return;
+            }
             for (TetherBalance tetherBalance : list) {
-                //需要发送手续费的地址,不在本系统中的地址也直接忽略,由于无法签名.对于数额过小的也直接忽略(动态设置),已存在足够手续费也忽略
+                //需要发送手续费的地址[非本系统地址、冷钱包地址、数额过小、临时钱包不需要发送手续费]
                 CommonAddress address = commonAddressService.findOneBy("address", tetherBalance.getAddress());
-                BigDecimal btcBalance = btcdClient.getBalance(tetherBalance.getAddress());
+                BlockHotAddress hotAddress = blockHotAddressService.findOneBy("address", address);
                 Boolean flag = tetherBalance.getBalance().compareTo(BigDecimal.ZERO) <= 0 ||
                         null == address ||
-                        tetherBalance.getBalance().compareTo(BigDecimal.valueOf(token.getHold())) < 0 ||
-                        btcBalance.compareTo(new BigDecimal(String.valueOf(token.getTransaferFee()))) >= 0;
+                        null != hotAddress ||
+                        tetherBalance.getAddress().equalsIgnoreCase(cold.getAddress()) ||
+                        tetherBalance.getBalance().compareTo(BigDecimal.valueOf(token.getHold())) < 0;
                 if (flag) {
                     continue;
                 }
