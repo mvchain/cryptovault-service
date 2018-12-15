@@ -52,6 +52,7 @@ public class BlockHeightService extends AbstractService<BlockHeight> implements 
                 commonAddressMapper.insert(obj);
                 if (obj.getTokenType().equalsIgnoreCase("BTC")) {
                     btcdClient.importAddress(obj.getAddress(), obj.getAddress(), false);
+                    btcdClient.setAccount(obj.getAddress(), obj.getAddress());
                 }
             } catch (Exception e) {
                 //address exist

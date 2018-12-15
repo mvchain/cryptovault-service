@@ -8,7 +8,6 @@ import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.OrderEntity;
 import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
-import com.mvc.cryptovault.common.bean.dto.TransactionBuyDTO;
 import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
@@ -16,7 +15,6 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.permission.PermissionCheck;
-import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
 import com.mvc.cryptovault.dashboard.util.EncryptionUtil;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
@@ -174,7 +172,7 @@ public class BlockController extends BaseController {
 
     @ApiOperation("中心钱包信息查看")
     @GetMapping("wallet")
-    public Result<AdminWalletVO> getAdminWallet(){
+    public Result<AdminWalletVO> getAdminWallet() {
         AdminWalletVO result = blockService.getAdminWallet();
         return new Result<>(result);
     }

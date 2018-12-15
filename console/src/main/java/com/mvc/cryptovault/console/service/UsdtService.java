@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
@@ -52,8 +53,13 @@ public class UsdtService extends BlockService {
     private AdminWallet hotWallet = null;
     @Autowired
     CommonTokenService commonTokenService;
+    @Autowired
+    BlockUsdtWithdrawQueueService blockUsdtWithdrawQueueService;
+
     //发送usdt时必然会带上这笔金额,因此发送手续费时需要额外发送这笔数量,否则会从预设手续费中扣除从而导致和期望结果不一致
     private final BigDecimal USDT_LIMIT_FEE = new BigDecimal("0.00000546");
+    //地址处于等待中时隔一段时间后运行
+    private Long APPROVE_WAIT = 1000 * 60L;
 
     @Override
     public BigInteger getNonce(Map<String, BigInteger> nonceMap, String address) throws IOException {
@@ -103,6 +109,53 @@ public class UsdtService extends BlockService {
                 signJob();
             }
         });
+        executorService.execute(() -> {
+            BaseContextHandler.set("thread-key", "btcQueueJob");
+            try {
+                queueJob();
+            } catch (Exception e) {
+                queueJob();
+            }
+        });
+    }
+
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void queueJob() {
+        while (true) {
+            List<BlockUsdtWithdrawQueue> list = blockUsdtWithdrawQueueService.findStart();
+            for (BlockUsdtWithdrawQueue obj : list) {
+                try {
+                    String result = BtcAction.prepareCollection(obj.getFromAddress(), obj.getToAddress(), obj.getFee(), obj.getValue());
+                    SignatureResult raw = btcdClient.signRawTransaction(result);
+                    if (!raw.getComplete()) {
+                        obj.setStatus(9);
+                        blockUsdtWithdrawQueueService.update(obj);
+                        continue;
+                    }
+                    String hash = btcdClient.sendRawTransaction(raw.getHex());
+                    obj.setStatus(2);
+                    blockUsdtWithdrawQueueService.update(obj);
+                    blockTransactionService.updateHash(obj.getOrderId(), hash);
+                } catch (Exception e) {
+                    if (e.getMessage().equalsIgnoreCase("Error #-26: 258: txn-mempool-conflict") || e.getMessage().startsWith("No unspent on address")) {
+                        //该种错误添加到重试列表
+                        obj.setStartedAt(System.currentTimeMillis() + APPROVE_WAIT);
+                        blockUsdtWithdrawQueueService.update(obj);
+                        continue;
+                    }
+                    obj.setStatus(9);
+                    blockUsdtWithdrawQueueService.update(obj);
+                    continue;
+                }
+            }
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
     private void signJob() {
@@ -123,25 +176,20 @@ public class UsdtService extends BlockService {
             if (null == sign) {
                 return;
             }
-            SignatureResult hex = btcdClient.signRawTransaction(sign.getSign());
-            if (hex.getComplete()) {
-                String result = btcdClient.sendRawTransaction(hex.getHex());
-                sign.setHash(result);
-                sign.setStatus(1);
-                blockSignService.update(sign);
-                blockTransactionService.updateHash(sign.getOrderId(), result);
-            } else {
-                sign.setStatus(9);
-                sign.setResult("签名失败");
-                blockSignService.update(sign);
-                if (StringUtils.isNotBlank(sign.getOrderId())) {
-                    //更新区块交易表
-                    String message = "交易失败";
-                    String data = "签名失败";
-                    updateError(sign.getOrderId(), message, data);
-                }
-            }
+            String result = btcdClient.sendRawTransaction(sign.getSign());
+            sign.setHash(result);
+            sign.setStatus(1);
+            blockSignService.update(sign);
+            blockTransactionService.updateHash(sign.getOrderId(), result);
+            //开始更新usdt排队列表
+            blockUsdtWithdrawQueueService.start(sign.getOrderId(), sign.getToAddress());
         } catch (Exception e) {
+            if (e.getMessage().equalsIgnoreCase("Error #-26: 258: txn-mempool-conflict")) {
+                //该种错误添加到重试列表
+                sign.setStartedAt(System.currentTimeMillis() + APPROVE_WAIT);
+                blockSignService.update(sign);
+                return;
+            }
             sign.setStatus(9);
             sign.setResult(e.getMessage());
             blockSignService.update(sign);
@@ -185,6 +233,13 @@ public class UsdtService extends BlockService {
             transaction.setOprType(2);
         }
         transaction.setTokenId(BusinessConstant.BASE_TOKEN_ID_USDT);
+        if (tx.getValid() == false) {
+            //校验是否成功
+            transaction.setStatus(9);
+            transaction.setTransactionStatus(6);
+            transaction.setErrorMsg(tx.getInvalidreason());
+            transaction.setErrorData(tx.getInvalidreason());
+        }
         return transaction;
     }
 
@@ -215,10 +270,6 @@ public class UsdtService extends BlockService {
     private void readTxList(List<String> txList) {
         for (String txId : txList) {
             try {
-                if (txId.equalsIgnoreCase("cf61368aee250714856873b96146bd972e7e3432507b08e9627d437182bd1c44")) {
-                    System.out.println(1111);
-                }
-
                 UsdtTransaction tx = null;
                 Object txStr = btcdClient.remoteCall("omni_gettransaction", Arrays.asList(txId));
                 tx = JSON.parseObject(String.valueOf(txStr), UsdtTransaction.class);
@@ -354,7 +405,7 @@ public class UsdtService extends BlockService {
             input.add(obj);
         }
         for (String address : addresses) {
-            BigDecimal value = new BigDecimal(String.valueOf(token.getTransaferFee()));
+            BigDecimal value = new BigDecimal(String.valueOf(token.getTransaferFee())).add(USDT_LIMIT_FEE);
             use = use.add(value);
             output.put(address, value);
         }
@@ -379,7 +430,6 @@ public class UsdtService extends BlockService {
             List<String> addresses = new ArrayList<>(list.size());
             for (TetherBalance tetherBalance : list) {
                 String pvKey = btcdClient.dumpPrivKey(tetherBalance.getAddress());
-                System.out.println(tetherBalance.getAddress() + ":" + pvKey);
                 //需要发送手续费的地址,不在本系统中的地址也直接忽略,由于无法签名.对于数额过小的也直接忽略(动态设置),已存在足够手续费也忽略
                 CommonAddress address = commonAddressService.findOneBy("address", tetherBalance.getAddress());
                 BigDecimal btcBalance = btcdClient.getBalance(tetherBalance.getAddress());

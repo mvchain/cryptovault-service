@@ -93,7 +93,11 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         Condition condition = new Condition(AppUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "pair_id = ", dto.getPairId());
-        ConditionUtil.andCondition(criteria, "status = ", dto.getStatus());
+        if (null == dto.getStatus()) {
+            ConditionUtil.andCondition(criteria, "status in (0, 1)");
+        } else {
+            ConditionUtil.andCondition(criteria, "status = ", dto.getStatus());
+        }
         ConditionUtil.andCondition(criteria, "transaction_type = ", dto.getTransactionType());
         ConditionUtil.andCondition(criteria, "user_id = ", userId);
         PageHelper.startPage(1, dto.getPageSize());

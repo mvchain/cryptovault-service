@@ -9,19 +9,18 @@ import com.neemre.btcdcli4j.core.BitcoindException;
 import com.neemre.btcdcli4j.core.CommunicationException;
 import com.neemre.btcdcli4j.core.client.BtcdClient;
 import com.neemre.btcdcli4j.core.domain.Output;
+import com.neemre.btcdcli4j.core.domain.OutputOverview;
 import com.neemre.btcdcli4j.core.domain.SignatureResult;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BtcAction {
 
     protected static ObjectMapper objectMapper = new ObjectMapper();
-    protected static Integer propId;
+    public static Integer propId;
     protected static BtcdClient btcdClient;
 
     public static void init(Integer id, BtcdClient client) {
@@ -34,7 +33,7 @@ public class BtcAction {
     }
 
     public static List<OmniWalletAddressBalance> getOmniBalance() throws BitcoindException, IOException, CommunicationException {
-        Object result = btcdClient.remoteCall("omni_getwalletaddressbalances", Arrays.asList());
+        Object result = btcdClient.remoteCall("omni_getwalletaddressbalances", Arrays.asList(true));
         List<OmniWalletAddressBalance> omniBalanceList = objectMapper.readValue(result.toString(), new TypeReference<List<OmniWalletAddressBalance>>() {
         });
         return omniBalanceList;
@@ -66,10 +65,6 @@ public class BtcAction {
         }
     }
 
-    public static String sendToAddress(String address, BigDecimal amount) throws BitcoindException, IOException, CommunicationException {
-        return btcdClient.sendToAddress(address, amount);
-    }
-
     /**
      * 1.Get tether balance.
      * 2.Get tether address unspent.
@@ -82,7 +77,7 @@ public class BtcAction {
      * @param tetherAddress
      * @return
      */
-    public static String prepareCollection(String tetherAddress, String toAddress) throws BitcoindException, IOException, CommunicationException {
+    public static String prepareCollection(String tetherAddress, String toAddress, BigDecimal fee, BigDecimal value) throws BitcoindException, IOException, CommunicationException {
         // 1.Get tether balance.
         TetherBalance tetherBalance = getTetherBalance(tetherAddress);
 
@@ -90,14 +85,19 @@ public class BtcAction {
         List<Output> unspents = listUnspent(Arrays.asList(tetherAddress));
         Output unspent = null;
         if (unspents.size() > 0) {
+            unspents = unspents.stream().filter(obj -> obj.getAmount().compareTo(fee) >= 0).collect(Collectors.toList());
+            if (unspents.size() == 0) {
+                throw new RuntimeException("No unspent on address-" + tetherAddress + " found!");
+            }
             unspent = unspents.get(0);
         } else {
             throw new RuntimeException("No unspent on address-" + tetherAddress + " found!");
         }
 
         // 3.Send how much tether.
+        BigDecimal balance = null == value ? tetherBalance.getBalance() : value;
         String simpleSendResult = objectMapper.readValue(btcdClient.remoteCall("omni_createpayload_simplesend",
-                Arrays.asList(propId, tetherBalance.getBalance().toString())).toString(), String.class);
+                Arrays.asList(propId, balance.toString())).toString(), String.class);
 
         // 4.Create BTC Raw Transaction.
         String createRawTransactionResult = btcdClient.createRawTransaction(Arrays.asList(unspent), new HashMap<>());
@@ -113,21 +113,64 @@ public class BtcAction {
                 String.class);
 
         // 7.Add fee.
-//        BigDecimal fee = new BigDecimal(config.get("tetherCollectFee"));
-        BigDecimal fee = new BigDecimal(0);
-        OmniCreaterawtxChangeRequiredEntity entity = new OmniCreaterawtxChangeRequiredEntity(unspent.getTxId(), unspent.getVOut(), unspent.getScriptPubKey(), fee);
+        OmniCreaterawtxChangeRequiredEntity entity = new OmniCreaterawtxChangeRequiredEntity(unspent.getTxId(), unspent.getVOut(), unspent.getScriptPubKey(), unspent.getAmount());
         String changeResult = objectMapper.readValue(btcdClient.remoteCall("omni_createrawtx_change",
                 Arrays.asList(referenceResult, Arrays.asList(entity), tetherAddress, fee)).toString(),
                 String.class);
 
-        System.out.println("#Tether Balance        : " + tetherBalance);
-        System.out.println("#Unspent on Address    : " + unspent);
-        System.out.println("#Simple Send Result    : " + simpleSendResult);
-        System.out.println("#Raw Transaction Result: " + createRawTransactionResult);
-        System.out.println("#Combined Result       : " + combinedResult);
-        System.out.println("#Reference Result      : " + referenceResult);
-        System.out.println("#Change Result         : " + changeResult);
+//        System.out.println("#Tether Balance        : " + tetherBalance);
+//        System.out.println("#Unspent on Address    : " + unspent);
+//        System.out.println("#Simple Send Result    : " + simpleSendResult);
+//        System.out.println("#Raw Transaction Result: " + createRawTransactionResult);
+//        System.out.println("#Combined Result       : " + combinedResult);
+//        System.out.println("#Reference Result      : " + referenceResult);
+//        System.out.println("#Change Result         : " + changeResult);
         return changeResult;
+    }
+
+    /**
+     * @param centerAddress 除了目标地址外的找零地址
+     * @param fee           单个地址的手续费,目标地址为多个时累加计算
+     * @param value         发送数量,仅支持相同数量的发送
+     * @param addresses     发送的目标地址列表
+     * @return
+     */
+    public static String sendToAddressWithRaw(String centerAddress, BigDecimal fee, BigDecimal value, List<String> addresses) throws BitcoindException, CommunicationException {
+        if (fee.compareTo(BigDecimal.ZERO) == 0 || addresses.size() == 0) {
+            throw new RuntimeException("Input Failed!");
+        }
+        BigDecimal total = btcdClient.getBalance();
+        BigDecimal use = BigDecimal.ZERO;
+        Map<String, BigDecimal> output = new HashMap<>(addresses.size());
+        List<Output> listUnspent = btcdClient.listUnspent();
+        listUnspent = listUnspent.stream().filter(obj -> obj.getSpendable() == true).collect(Collectors.toList());
+        if (listUnspent.size() == 0) {
+            //如果余额不足则直接
+            return null;
+        }
+        List<OutputOverview> input = new ArrayList<>(addresses.size());
+        for (Output obj : listUnspent) {
+            //使用后余额也还原到该地址
+            input.add(obj);
+        }
+        for (String address : addresses) {
+            use = use.add(value);
+            output.put(address, value);
+        }
+        //找零 = 总余额 - 发送余额 - 预设手续费
+        output.put(centerAddress, total.subtract(use).subtract(fee));
+        String row = btcdClient.createRawTransaction(input, output);
+        SignatureResult res = btcdClient.signRawTransaction(row);
+        if (res.getComplete()) {
+            return btcdClient.sendRawTransaction(res.getHex());
+        } else {
+            throw new RuntimeException("Sign Raw Transaction Failed!");
+        }
+    }
+
+
+    public static String sendToAddress(String address, BigDecimal amount) throws BitcoindException, IOException, CommunicationException {
+        return btcdClient.sendToAddress(address, amount);
     }
 
     public static SignatureResult signRawTransaction(String rawTx) throws BitcoindException, IOException, CommunicationException {

@@ -31,19 +31,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalAccessException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     public Result illegalAccessExceptionException(IllegalAccessException e) {
         return new Result(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     public Result illegalArgumentExceptionException(IllegalArgumentException e) {
         return new Result(HttpStatus.BAD_REQUEST.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.OK)
     public Result methodArgumentNotValidExceptionException(MethodArgumentNotValidException e) {
         return new Result(HttpStatus.BAD_REQUEST.value(), e.getBindingResult().getAllErrors().get(0).getDefaultMessage(), null);
     }

@@ -39,7 +39,7 @@ public class TransactionDetailVO {
     private String tokenName;
 
     @ApiModelProperty("交易hash")
-    private String hash;
+    private String blockHash;
 
     @ApiModelProperty("目标地址")
     private String toAddress;

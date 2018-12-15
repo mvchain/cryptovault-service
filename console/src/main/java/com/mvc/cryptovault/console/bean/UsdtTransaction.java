@@ -31,4 +31,6 @@ public class UsdtTransaction {
     private BigInteger positioninblock;
     private BigInteger block;
     private BigInteger confirmations;
+    private String invalidreason;
+
 }

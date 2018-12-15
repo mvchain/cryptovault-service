@@ -59,6 +59,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         addInterceptor.excludePathPatterns("/error");
         addInterceptor.excludePathPatterns("/login**");
         addInterceptor.excludePathPatterns("/webjars/**");
+        addInterceptor.excludePathPatterns("/null/**");
         addInterceptor.excludePathPatterns("/static/");
         addInterceptor.excludePathPatterns("/");
         addInterceptor.excludePathPatterns("/csrf");

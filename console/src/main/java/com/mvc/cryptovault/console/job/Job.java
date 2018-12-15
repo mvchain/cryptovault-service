@@ -93,7 +93,7 @@ public class Job {
      * 发送BTC手续费
      */
     @Scheduled(cron = "${scheduled.usdt.fee}")
-    public void senBtcGas() {
+    public void sendBtcGas() {
         final String key = RedisConstant.USDT_FEE;
         Boolean result = getRedisLock(key, 120);
         if (!result) {

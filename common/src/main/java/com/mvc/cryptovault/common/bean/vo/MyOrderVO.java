@@ -33,5 +33,7 @@ public class MyOrderVO {
     private Long updatedAt;
     @ApiModelProperty("成交数量")
     private BigDecimal deal;
+    @ApiModelProperty("订单状态0进行中 1完成")
+    private Integer status;
 
 }

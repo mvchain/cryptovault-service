@@ -63,7 +63,7 @@ public class DAppUserTransactionController extends BaseController {
         return new Result<>(result);
     }
     @GetMapping("sign")
-    public Result<List<ExportOrders>> exportSign() throws IOException {
+    public Result<List<ExportOrders>> exportSign() throws IOException, BitcoindException, CommunicationException {
         List<ExportOrders> result = commonAddressService.exportSign();
         return new Result<>(result);
     }

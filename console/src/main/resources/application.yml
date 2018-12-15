@@ -68,7 +68,7 @@ eth:
   geth: http://47.75.14.213:8545
 
 node.bitcoind.rpc.protocol: http
-node.bitcoind.rpc.host: 34.228.215.38
+node.bitcoind.rpc.host: 47.75.14.213
 #node.bitcoind.rpc.host: localhost
 node.bitcoind.rpc.port: 12421
 node.bitcoind.rpc.user: test
