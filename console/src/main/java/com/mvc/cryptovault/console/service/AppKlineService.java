@@ -31,7 +31,7 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
     CommonTokenHistoryMapper commonTokenHistoryMapper;
 
     private final String KLINE_HEADER = "KLINE_HEADER_";
-
+    private final Long KLINE_CACHE_TIME = 1000 * 60 * 5L;
 
     /**
      * @param tokenId
@@ -54,6 +54,7 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
                 appKline.setPrice(BigDecimal.ZERO);
             }
             redisTemplate.boundListOps(key).rightPush(JSON.toJSONString(appKline));
+            redisTemplate.opsForHash().put(KLINE_HEADER + tokenId, "TIME", String.valueOf(System.currentTimeMillis() - 100));
         }
     }
 
@@ -99,16 +100,35 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
 
     public KLineVO getKLine(BigInteger pairId) {
         CommonPair pair = commonPairService.findById(pairId);
-        String key = KLINE_HEADER + pair.getTokenId();
-        String time = (String) redisTemplate.opsForHash().get(key, "TIME");
-        if (StringUtils.isBlank(time)) {
-            updateKline(pair.getTokenId());
+        String key = "AppKline".toUpperCase() + "_" + pair.getTokenId();
+        List<String> strList = redisTemplate.boundListOps(key).range(0, redisTemplate.boundListOps(key).size());
+        if (strList.size() == 0) {
+            resetTokenKline(pair.getTokenId());
         }
-        String xStr = (String) redisTemplate.opsForHash().get(KLINE_HEADER + pair.getTokenId(), "X");
-        String yStr = (String) redisTemplate.opsForHash().get(KLINE_HEADER + pair.getTokenId(), "Y");
+        String last = (String) redisTemplate.opsForHash().get(KLINE_HEADER + pair.getTokenId(), "TIME");
+        Long time = StringUtils.isBlank(last) ? System.currentTimeMillis() + KLINE_CACHE_TIME : Long.valueOf(last) + KLINE_CACHE_TIME;
+        String x = (String) redisTemplate.opsForHash().get(KLINE_HEADER + pair.getTokenId(), "X");
+        String y = (String) redisTemplate.opsForHash().get(KLINE_HEADER + pair.getTokenId(), "Y");
         KLineVO vo = new KLineVO();
-        vo.setTimeX(strArr2ObjArr(xStr, Long.class));
-        vo.setValueY(strArr2ObjArr(yStr, BigDecimal.class));
+        if (time < System.currentTimeMillis() || StringUtils.isBlank(x)) {
+            //数据已过期,需要重新获取
+            Long[] timeX = new Long[strList.size()];
+            BigDecimal[] valueY = new BigDecimal[strList.size()];
+            for (int i = 0; i < strList.size(); i++) {
+                CommonTokenHistory history = JSON.parseObject(strList.get(i), CommonTokenHistory.class);
+                timeX[i] = history.getCreatedAt();
+                valueY[i] = history.getPrice();
+            }
+            vo.setTimeX(timeX);
+            vo.setValueY(valueY);
+            redisTemplate.opsForHash().put(KLINE_HEADER + pair.getTokenId(), "X", JSON.toJSONString(timeX));
+            redisTemplate.opsForHash().put(KLINE_HEADER + pair.getTokenId(), "Y", JSON.toJSONString(valueY));
+        } else {
+            List<Long> xList = JSON.parseArray(x, Long.class);
+            List<BigDecimal> yList = JSON.parseArray(y, BigDecimal.class);
+            vo.setTimeX(xList.toArray(new Long[]{}));
+            vo.setValueY(yList.toArray(new BigDecimal[]{}));
+        }
         return vo;
 
     }
