@@ -42,8 +42,9 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uri = getAbsUri(request.getRequestURI());
-        if (uri.startsWith("null")) {
-            response.sendRedirect(uri.replaceFirst("null", "/"));
+        if (uri.startsWith("null") || uri.startsWith("swagger-ui.html")) {
+            uri = uri.replaceFirst("null", "/").replaceFirst("swagger-ui.html", "/");
+            response.sendRedirect("/" + getAbsUri(uri));
             return false;
         }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
