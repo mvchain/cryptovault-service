@@ -31,6 +31,8 @@ server:
     min-spare-threads: 1000
     max-connections: 5000
   connection-timeout: 1000ms
+  servlet:
+    context-path: /
 
 cors.allowedOrigin: '*'
 
