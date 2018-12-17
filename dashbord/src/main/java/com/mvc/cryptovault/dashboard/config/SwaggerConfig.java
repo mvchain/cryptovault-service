@@ -46,7 +46,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
         registry.addResourceHandler("**/swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/").setCachePeriod(0);
-        registry.addResourceHandler("/webjars*")
+        registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/").setCachePeriod(0);
         super.addResourceHandlers(registry);
     }
