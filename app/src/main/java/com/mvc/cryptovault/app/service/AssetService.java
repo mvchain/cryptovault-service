@@ -6,8 +6,11 @@ import com.mvc.cryptovault.common.bean.dto.DebitDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionSearchDTO;
 import com.mvc.cryptovault.common.bean.vo.*;
+import com.mvc.cryptovault.common.constant.RedisConstant;
+import com.mvc.cryptovault.common.util.MessageConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -18,6 +21,8 @@ public class AssetService {
 
     @Autowired
     ConsoleRemoteService consoleRemoteService;
+    private final static String USDT_REG_ARR = "^[123mn][a-zA-Z1-9]{24,34}$";
+    private final static String ETH_REG = "^(0x)?[0-9a-fA-F]{40}$";
 
     public List<TokenBalanceVO> getAsset(BigInteger userId) {
         Result<List<TokenBalanceVO>> result = consoleRemoteService.getAsset(userId);
@@ -60,6 +65,15 @@ public class AssetService {
     }
 
     public Boolean sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
+        Boolean regResult = false;
+        if(transactionDTO.getTokenId().equals(BigInteger.valueOf(4))){
+            //usdt
+            regResult = transactionDTO.getAddress().matches(USDT_REG_ARR);
+        } else {
+            //ETH OR ERC20
+            regResult = transactionDTO.getAddress().matches(ETH_REG);
+        }
+        Assert.isTrue(regResult, MessageConstants.getMsg("ADDRESS_FAIL"));
         Result<Boolean> result = consoleRemoteService.sendTransaction(userId, transactionDTO);
         return result.getData();
     }
@@ -68,4 +82,5 @@ public class AssetService {
         Result<Boolean> result = consoleRemoteService.updateVisible(userId, assertVisibleDTO);
         return result.getData();
     }
+
 }
