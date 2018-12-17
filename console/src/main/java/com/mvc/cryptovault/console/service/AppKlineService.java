@@ -137,6 +137,9 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
     }
 
     public void saveHistory(BigInteger tokenId, BigDecimal usdtPrice) {
+        if(usdtPrice.compareTo(BigDecimal.ZERO) <=0){
+            return;
+        }
         CommonTokenHistory history = new CommonTokenHistory();
         history.setCreatedAt(System.currentTimeMillis());
         history.setPrice(usdtPrice);
