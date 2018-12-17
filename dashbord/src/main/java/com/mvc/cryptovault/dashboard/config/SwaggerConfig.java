@@ -2,6 +2,7 @@ package com.mvc.cryptovault.dashboard.config;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import io.swagger.annotations.SwaggerDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,7 @@ import java.util.Locale;
 
 @Configuration
 @EnableSwagger2
+@SwaggerDefinition(basePath = "")
 public class SwaggerConfig extends WebMvcConfigurationSupport {
 
     @Autowired
@@ -64,7 +66,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         addInterceptor.excludePathPatterns("/login**");
         addInterceptor.excludePathPatterns("/webjars/**");
         addInterceptor.excludePathPatterns("/static/");
-//        addInterceptor.excludePathPatterns("/null/**");
+        addInterceptor.excludePathPatterns("/null/**");
         addInterceptor.excludePathPatterns("/");
         addInterceptor.excludePathPatterns("/csrf");
         String[] urls = {
