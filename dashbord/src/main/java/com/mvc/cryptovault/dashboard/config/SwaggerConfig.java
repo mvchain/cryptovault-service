@@ -44,9 +44,9 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
-        registry.addResourceHandler("swagger-ui.html")
+        registry.addResourceHandler("**/swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/").setCachePeriod(0);
-        registry.addResourceHandler("/webjars/**")
+        registry.addResourceHandler("/webjars*")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/").setCachePeriod(0);
         super.addResourceHandlers(registry);
     }
@@ -55,6 +55,8 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
         InterceptorRegistration addInterceptor = registry.addInterceptor(serviceAuthRestInterceptor);
+        // 拦截配置
+        addInterceptor.addPathPatterns("/**");
         // 排除配置
         addInterceptor.excludePathPatterns("/error");
         addInterceptor.excludePathPatterns("/login**");
@@ -63,13 +65,12 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         addInterceptor.excludePathPatterns("/static/");
         addInterceptor.excludePathPatterns("/");
         addInterceptor.excludePathPatterns("/csrf");
-        // 拦截配置
-        addInterceptor.addPathPatterns("/**");
         String[] urls = {
                 "/v2/api-docs",
                 "/swagger-resources/**",
                 "/cache/**",
                 "/api/log/save",
+                "/swagger-resources",
                 "/swagger-ui.html"
         };
         addInterceptor.excludePathPatterns(urls);
