@@ -66,6 +66,7 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
         for (Long i = startTime; i < now; i = i + step) {
             CommonTokenHistory appKline = commonTokenHistoryMapper.findByTime(tokenId, i - 100);
             if (null != appKline) {
+                appKline.setCreatedAt(i - 100);
                 redisTemplate.boundListOps(key).rightPush(JSON.toJSONString(appKline));
             } else {
                 appKline = new CommonTokenHistory();
