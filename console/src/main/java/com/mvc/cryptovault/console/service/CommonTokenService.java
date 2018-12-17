@@ -69,7 +69,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             vo.setPairId(obj.getId());
             vo.setTransactionStatus(null == commonTokenControl ? 0 : commonTokenControl.getTransactionStatus());
             if (null == lastValue) {
-                vo.setIncrease(100f);
+                vo.setIncrease(0f);
             } else {
                 BigDecimal now = null == price ? BigDecimal.ONE : price.getTokenPrice();
                 Float increase = now.divide(lastValue, RoundingMode.HALF_DOWN).setScale(10, RoundingMode.HALF_DOWN).floatValue() - 1;
