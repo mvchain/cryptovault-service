@@ -9,10 +9,6 @@ import com.mvc.cryptovault.common.bean.vo.ExchangeResponse;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.service.*;
-import com.mvc.cryptovault.console.util.btc.BtcAction;
-import com.mvc.cryptovault.console.util.btc.entity.OmniWalletAddressBalance;
-import com.neemre.btcdcli4j.core.BitcoindException;
-import com.neemre.btcdcli4j.core.CommunicationException;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -25,7 +21,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -187,15 +182,18 @@ public class Job {
 
     public ExchangeRateVO getRate(Map<String, JSONObject> map, String name) {
         ExchangeRateVO vo = new ExchangeRateVO();
-        vo.setName(name.toUpperCase());
         if ("cny".equalsIgnoreCase(name)) {
             vo.setValue(1f);
+            vo.setName("¥" + name.toUpperCase());
         } else if ("USD".equalsIgnoreCase(name)) {
             Float value = Float.valueOf(map.get("美元").get("bankConversionPri").toString());
             vo.setValue(value / 100);
+            vo.setName("$" + name.toUpperCase());
         } else if ("EUR".equalsIgnoreCase(name)) {
             Float value = Float.valueOf(map.get("欧元").get("bankConversionPri").toString());
             vo.setValue(value / 100);
+            vo.setName(name.toUpperCase());
+            vo.setName("€" + name.toUpperCase());
         }
         return vo;
     }

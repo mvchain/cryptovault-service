@@ -39,6 +39,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
 
     @Autowired
     ServiceAuthRestInterceptor serviceAuthRestInterceptor;
+
     /**
      * 发现如果继承了WebMvcConfigurationSupport，则在yml中配置的相关内容会失效。
      * 需要重新指定静态资源
@@ -106,6 +107,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .version("1.0")
                 .build();
     }
+
     @Bean
     public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver slr = new AcceptHeaderLocaleResolver();

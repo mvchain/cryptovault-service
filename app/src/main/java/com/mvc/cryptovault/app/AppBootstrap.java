@@ -1,7 +1,7 @@
 package com.mvc.cryptovault.app;
 
+import io.swagger.annotations.SwaggerDefinition;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
@@ -19,7 +19,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @create 2018/11/5 16:10
  */
 //@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
-@SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableSwagger2
 @EnableAsync
 @Configuration
