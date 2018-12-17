@@ -64,7 +64,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
         addInterceptor.excludePathPatterns("/login**");
         addInterceptor.excludePathPatterns("/webjars/**");
         addInterceptor.excludePathPatterns("/static/");
-        addInterceptor.excludePathPatterns("/null/**");
+//        addInterceptor.excludePathPatterns("/null/**");
         addInterceptor.excludePathPatterns("/");
         addInterceptor.excludePathPatterns("/csrf");
         String[] urls = {
