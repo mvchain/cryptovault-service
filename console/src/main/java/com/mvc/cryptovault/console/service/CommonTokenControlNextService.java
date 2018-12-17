@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.service;
 
 import com.mvc.cryptovault.common.bean.CommonTokenControl;
 import com.mvc.cryptovault.common.bean.CommonTokenControlNext;
+import com.mvc.cryptovault.common.bean.CommonTokenHistory;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.dao.CommonTokenControlNextMapper;
@@ -21,6 +22,8 @@ public class CommonTokenControlNextService extends AbstractService<CommonTokenCo
     CommonTokenControlService commonTokenControlService;
     @Autowired
     CommonTokenPriceService commonTokenPriceService;
+    @Autowired
+    AppKlineService appKlineService;
 
     public void next(CommonTokenControl tokenControl) {
         CommonTokenControlNext next = new CommonTokenControlNext();
@@ -125,7 +128,8 @@ public class CommonTokenControlNextService extends AbstractService<CommonTokenCo
         } else {
             //此次数量-（波动基数-当前数量）的部分将被记入下一次计算
             BigDecimal nowValue = value.subtract(control.getPriceBase().subtract(next.getTotalSuccess()));
-            commonTokenPriceService.updatePrice(tokenId, next.getFloatPrice());
+            //记录价格变动历史并更新当前价格
+            appKlineService.saveHistory(tokenId,  next.getFloatPrice());
             updateNext(tokenId, control);
             updateTotal(tokenId, nowValue);
         }

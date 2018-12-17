@@ -6,6 +6,6 @@ import org.apache.ibatis.annotations.Select;
 
 public interface TokenVolumeMapper extends MyMapper<TokenVolume> {
 
-    @Select("select * from token_volume where used = 0 order by id asc limit 1")
+    @Select("select * from token_volume where used = 0 and token_id > 4 order by id asc limit 1")
     TokenVolume getNext();
 }

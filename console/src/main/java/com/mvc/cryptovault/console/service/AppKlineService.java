@@ -29,6 +29,8 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
     CommonPairService commonPairService;
     @Autowired
     CommonTokenHistoryMapper commonTokenHistoryMapper;
+    @Autowired
+    CommonTokenPriceService commonTokenPriceService;
 
     private final String KLINE_HEADER = "KLINE_HEADER_";
     private final Long KLINE_CACHE_TIME = 1000 * 60 * 5L;
@@ -140,5 +142,6 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
         history.setPrice(usdtPrice);
         history.setTokenId(tokenId);
         commonTokenHistoryMapper.insert(history);
+        commonTokenPriceService.updatePrice(tokenId, usdtPrice);
     }
 }
