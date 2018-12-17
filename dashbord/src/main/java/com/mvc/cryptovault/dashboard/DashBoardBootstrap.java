@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.dashboard;
 
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import io.swagger.annotations.SwaggerDefinition;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -20,6 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  */
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableSwagger2
+@SwaggerDefinition
 @EnableAsync
 @Configuration
 @EnableCircuitBreaker
