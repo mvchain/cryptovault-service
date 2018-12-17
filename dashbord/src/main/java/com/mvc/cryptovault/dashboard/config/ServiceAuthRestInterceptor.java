@@ -41,6 +41,11 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String uri = getAbsUri(request.getRequestURI());
+        if (uri.startsWith("null")) {
+            response.sendRedirect(uri.replaceFirst("null", "/"));
+            return false;
+        }
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         String token = request.getHeader("Authorization");
         Claims claim = JwtHelper.parseJWT(token);
@@ -52,8 +57,15 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
         return super.preHandle(request, response, handler);
     }
 
+    private String getAbsUri(String requestURI) {
+        while (requestURI.startsWith("/")) {
+            requestURI = requestURI.replaceFirst("/", "");
+        }
+        return requestURI;
+    }
+
     private void checkPermission(Claims claim, PermissionCheck permissionCheck) {
-        if(null == claim){
+        if (null == claim) {
             return;
         }
         Integer userId = claim.get("userId", Integer.class);

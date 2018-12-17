@@ -66,6 +66,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 "/swagger-resources/**",
                 "/cache/**",
                 "/api/log/save",
+                "/swagger-resources",
                 "/swagger-ui.html"
         };
         addInterceptor.excludePathPatterns(urls);
