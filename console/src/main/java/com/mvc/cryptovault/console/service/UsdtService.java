@@ -357,7 +357,7 @@ public class UsdtService extends BlockService {
     }
 
 
-    private AdminWallet getHotWallet() {
+    public AdminWallet getHotWallet() {
         try {
             if (null != hotWallet) {
                 return hotWallet;

@@ -63,6 +63,7 @@ public class Job {
     public void newAccount() {
         final String key = RedisConstant.PROJECT_START;
         Boolean result = getRedisLock(key, 5);
+        usdtService.getHotWallet();
         if (!result) {
             return;
         }
