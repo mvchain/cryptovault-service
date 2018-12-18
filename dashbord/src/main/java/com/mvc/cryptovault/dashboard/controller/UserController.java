@@ -1,6 +1,8 @@
 package com.mvc.cryptovault.dashboard.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
@@ -12,13 +14,18 @@ import com.mvc.cryptovault.common.permission.PermissionCheck;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.Cleanup;
+import org.apache.commons.io.IOUtils;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.util.LinkedHashMap;
@@ -89,5 +96,22 @@ public class UserController extends BaseController {
     public Result<Boolean> updateStatus(@PathVariable BigInteger id, @RequestParam Integer status) {
         userService.updateStatus(id, status);
         return new Result<>(true);
+    }
+
+    @ApiOperation("导入用户,数据为json格式,以用户id区分,不存在则新建,存在则根据修改时间修改,导入时vp方记录时间戳,下次导入尽量使用增量的方式进行更新")
+    @PostMapping
+    public Result<Boolean> importAppUser(@RequestBody MultipartFile file) throws Exception {
+        String fileName = file.getOriginalFilename();
+        @Cleanup InputStream in = file.getInputStream();
+        String jsonStr = IOUtils.toString(in);
+        List<AppUser> list = null;
+        try {
+            list = JSON.parseArray(jsonStr, AppUser.class);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("文件格式错误");
+        }
+        Assert.isTrue(null != list && list.size() > 0, "文件格式错误");
+        Boolean result = userService.importAppUser(list, fileName);
+        return new Result<>(result);
     }
 }

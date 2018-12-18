@@ -73,7 +73,7 @@ public class AppUser implements Serializable {
     @Column(name = "status")
     private Integer status;
 
-
+    private BigInteger vpUserId;
     /**
      * app_user
      */

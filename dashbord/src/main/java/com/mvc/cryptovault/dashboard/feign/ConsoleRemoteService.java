@@ -1,10 +1,7 @@
 package com.mvc.cryptovault.dashboard.feign;
 
 import com.github.pagehelper.PageInfo;
-import com.mvc.cryptovault.common.bean.AdminUser;
-import com.mvc.cryptovault.common.bean.BlockSign;
-import com.mvc.cryptovault.common.bean.CommonAddress;
-import com.mvc.cryptovault.common.bean.ExportOrders;
+import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
@@ -167,4 +164,7 @@ public interface ConsoleRemoteService {
 
     @PostMapping("dashboard/blockTransaction")
     Result<Boolean> buy(@RequestBody AdminTransactionDTO dto);
+
+    @PostMapping("dashboard/appUser")
+    Result<Boolean> importAppUser(@RequestBody List<AppUser> list, @RequestParam("fileName") String fileName);
 }

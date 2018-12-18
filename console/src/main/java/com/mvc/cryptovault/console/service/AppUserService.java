@@ -77,4 +77,5 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         String tag = appProjectPartakeService.getTag(userId);
         return tag;
     }
+
 }

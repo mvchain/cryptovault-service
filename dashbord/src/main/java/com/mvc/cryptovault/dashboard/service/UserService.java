@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
@@ -44,6 +45,11 @@ public class UserService extends BaseService {
 
     public Boolean updateStatus(BigInteger id, Integer status) {
         remoteService.updateUserStatus(id, status);
+        return true;
+    }
+
+    public Boolean importAppUser(List<AppUser> list, String fileName) {
+        remoteService.importAppUser(list, fileName);
         return true;
     }
 }
