@@ -39,8 +39,8 @@ public class DAppUserController extends BaseController {
     BlockSignService blockSignService;
 
     @GetMapping("")
-    public Result<PageInfo<DUSerVO>> findUser(@ModelAttribute PageDTO pageDTO, @RequestParam(value = "cellphone", required = false) String cellphone) {
-        PageInfo<DUSerVO> result = appUserService.findUser(pageDTO, cellphone);
+    public Result<PageInfo<DUSerVO>> findUser(@ModelAttribute PageDTO pageDTO, @RequestParam(value = "cellphone", required = false) String cellphone, @RequestParam(value = "status", required = false) Integer status) {
+        PageInfo<DUSerVO> result = appUserService.findUser(pageDTO, cellphone, status);
         return new Result<>(result);
     }
 

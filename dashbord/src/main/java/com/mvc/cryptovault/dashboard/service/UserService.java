@@ -23,8 +23,8 @@ import java.util.List;
 public class UserService extends BaseService {
 
 
-    public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone) {
-        Result<PageInfo<DUSerVO>> result = remoteService.findUser(pageDTO, cellphone);
+    public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone, Integer status) {
+        Result<PageInfo<DUSerVO>> result = remoteService.findUser(pageDTO, cellphone, status);
         return result.getData();
     }
 

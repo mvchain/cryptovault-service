@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.security.auth.login.LoginException;
 import java.math.BigInteger;
 import java.util.concurrent.TimeUnit;
 
@@ -43,6 +44,7 @@ public class UserService {
         Result<AppUser> userResult = userRemoteService.getUserByUsername(userDTO.getUsername());
         AppUser user = userResult.getData();
         Assert.notNull(user, MessageConstants.getMsg("USER_NOT_EXIST"));
+        Assert.isTrue(user.getStatus() == 1, MessageConstants.getMsg("ACCOUNT_LOCK"));
         Boolean passwordCheck = user.getPassword().equals(userDTO.getPassword());
         if (!passwordCheck) {
             //从第一次错误时间开始计时,10分钟内每次错误则错误次数加1
@@ -67,9 +69,14 @@ public class UserService {
         return vo;
     }
 
-    public String refresh() {
+    public String refresh() throws LoginException {
         BigInteger userId = (BigInteger) BaseContextHandler.get("userId");
         String username = (String) BaseContextHandler.get("username");
+        Result<AppUser> userResult = userRemoteService.getUserByUsername(username);
+        AppUser user = userResult.getData();
+        if(user.getStatus() == 0){
+            throw  new LoginException();
+        }
         return JwtHelper.createToken(username, userId);
     }
 

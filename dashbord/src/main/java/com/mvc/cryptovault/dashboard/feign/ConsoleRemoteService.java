@@ -94,7 +94,7 @@ public interface ConsoleRemoteService {
     Result<Integer> accountCount(@RequestParam("tokenType") String tokenType);
 
     @GetMapping("dashboard/appUser")
-    Result<PageInfo<DUSerVO>> findUser(@RequestBody PageDTO pageDTO, @RequestParam(value = "cellphone", required = false) String cellphone);
+    Result<PageInfo<DUSerVO>> findUser(@RequestBody PageDTO pageDTO, @RequestParam(value = "cellphone", required = false) String cellphone, @RequestParam(value = "status", required = false) Integer status);
 
     @GetMapping("dashboard/appUser/{id}")
     Result<DUSerDetailVO> getUserDetail(@PathVariable("id") BigInteger id);

@@ -10,6 +10,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.LoginException;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -35,7 +36,7 @@ public class UserController extends BaseController {
 
     @PostMapping("refresh")
     @ApiOperation("刷新令牌")
-    Result<String> refresh() {
+    Result<String> refresh() throws LoginException {
         String result = userService.refresh();
         return new Result(result);
     }

@@ -32,11 +32,12 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
     @Autowired
     AppProjectPartakeService appProjectPartakeService;
 
-    public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone) {
+    public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone, Integer status) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), "id desc");
         Condition condition = new Condition(AppUser.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "cellphone = ", cellphone);
+        ConditionUtil.andCondition(criteria, "status = ", status);
         ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
         ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
         List<AppUser> list = findByCondition(condition);
