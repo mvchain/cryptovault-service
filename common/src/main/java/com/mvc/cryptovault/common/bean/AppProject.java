@@ -71,7 +71,7 @@ public class AppProject implements Serializable {
      *
      */
     @Column(name = "created_at")
-    private BigInteger createdAt;
+    private Long createdAt;
     /**
      * 项目状态0即将开始 1进行中 2已结束 3发币中 9取消
      */
@@ -212,20 +212,6 @@ public class AppProject implements Serializable {
      */
     public void setProjectImage(String projectImage) {
         this.projectImage = projectImage;
-    }
-
-    /**
-     * @return created_at
-     */
-    public BigInteger getCreatedAt() {
-        return createdAt;
-    }
-
-    /**
-     * @param createdAt
-     */
-    public void setCreatedAt(BigInteger createdAt) {
-        this.createdAt = createdAt;
     }
 
     /**

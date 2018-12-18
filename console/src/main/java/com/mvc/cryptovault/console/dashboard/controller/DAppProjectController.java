@@ -64,6 +64,7 @@ public class DAppProjectController extends BaseController {
         appProject.setPairId(null == pair ? BigInteger.ZERO : pair.getId());
         appProject.setTokenName(null == pair ? "" : pair.getTokenName());
         appProject.setBaseTokenName(null == pair ? "" : pair.getBaseTokenName());
+        appProject.setUpdatedAt(System.currentTimeMillis());
         appProjectService.update(appProject);
         appProject = appProjectService.findById(dProjectDTO.getId());
         String key = "AppProject".toUpperCase() + "_" + dProjectDTO.getId();

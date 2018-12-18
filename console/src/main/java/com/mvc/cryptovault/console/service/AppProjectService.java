@@ -48,6 +48,8 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
         appProject.setPairId(null == pair ? BigInteger.ZERO : pair.getId());
         appProject.setTokenName(null == pair ? "" : pair.getTokenName());
         appProject.setBaseTokenName(null == pair ? "" : pair.getBaseTokenName());
+        appProject.setCreatedAt(System.currentTimeMillis());
+        appProject.setUpdatedAt(System.currentTimeMillis());
         save(appProject);
         String key = "AppProject".toUpperCase() + "_" + dProjectDTO.getId();
         redisTemplate.opsForValue().set(key, JSON.toJSONString(appProject), 24, TimeUnit.HOURS);
