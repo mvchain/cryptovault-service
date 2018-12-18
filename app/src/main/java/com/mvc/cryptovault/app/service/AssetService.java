@@ -68,10 +68,10 @@ public class AssetService {
         Boolean regResult = false;
         if(transactionDTO.getTokenId().equals(BigInteger.valueOf(4))){
             //usdt
-            regResult = transactionDTO.getAddress().matches(USDT_REG_ARR);
+            regResult = transactionDTO.getAddress().matches(ETH_REG);
         } else {
             //ETH OR ERC20
-            regResult = transactionDTO.getAddress().matches(ETH_REG);
+            regResult = transactionDTO.getAddress().matches(USDT_REG_ARR);
         }
         Assert.isTrue(regResult, MessageConstants.getMsg("ADDRESS_FAIL"));
         Result<Boolean> result = consoleRemoteService.sendTransaction(userId, transactionDTO);

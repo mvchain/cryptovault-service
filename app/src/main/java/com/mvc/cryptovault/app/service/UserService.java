@@ -42,7 +42,7 @@ public class UserService {
         TokenVO vo = new TokenVO();
         Result<AppUser> userResult = userRemoteService.getUserByUsername(userDTO.getUsername());
         AppUser user = userResult.getData();
-        Assert.notNull(null != user, MessageConstants.getMsg("USER_NOT_EXIST"));
+        Assert.notNull(user, MessageConstants.getMsg("USER_NOT_EXIST"));
         Boolean passwordCheck = user.getPassword().equals(userDTO.getPassword());
         if (!passwordCheck) {
             //从第一次错误时间开始计时,10分钟内每次错误则错误次数加1
