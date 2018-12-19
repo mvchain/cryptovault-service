@@ -36,7 +36,7 @@ public abstract class BlockService implements CommandLineRunner {
 
     static {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("address-pool-%d").build();
-        executorService = new ThreadPoolExecutor(6, 6, 1, TimeUnit.MINUTES,
+        executorService = new ThreadPoolExecutor(10, 10, 10, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.DiscardPolicy());
     }
 
