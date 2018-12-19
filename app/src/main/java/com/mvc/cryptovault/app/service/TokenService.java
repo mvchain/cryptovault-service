@@ -98,16 +98,16 @@ public class TokenService {
         ExchangeRateVO vo = new ExchangeRateVO();
         if ("cny".equalsIgnoreCase(name)) {
             vo.setValue(1f);
-            vo.setName("¥" + name.toUpperCase());
+            vo.setName("¥ " + name.toUpperCase());
         } else if ("USD".equalsIgnoreCase(name)) {
             Float value = Float.valueOf(map.get("美元").get("bankConversionPri").toString());
             vo.setValue(value / 100);
-            vo.setName("$" + name.toUpperCase());
+            vo.setName("$ " + name.toUpperCase());
         } else if ("EUR".equalsIgnoreCase(name)) {
             Float value = Float.valueOf(map.get("欧元").get("bankConversionPri").toString());
             vo.setValue(value / 100);
             vo.setName(name.toUpperCase());
-            vo.setName("€" + name.toUpperCase());
+            vo.setName("€ " + name.toUpperCase());
         }
         return vo;
     }

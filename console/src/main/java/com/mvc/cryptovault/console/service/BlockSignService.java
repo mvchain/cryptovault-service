@@ -56,12 +56,14 @@ public class BlockSignService extends AbstractService<BlockSign> implements Base
                     user.setUpdatedAt(time);
                     user.setId(null);
                     appUserService.save(user);
+                    appUserService.updateCache(user.getId());
                 } else {
                     BigInteger userId = temp.getId();
                     BeanUtils.copyProperties(user, temp);
                     temp.setUpdatedAt(time);
                     temp.setId(userId);
                     appUserService.update(temp);
+                    appUserService.updateCache(user.getId());
                 }
             } catch (Exception e) {
                 continue;

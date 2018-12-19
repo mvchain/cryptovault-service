@@ -18,4 +18,5 @@ public interface RedisConstant {
     String KLINE_SCHEDULED = "KLINE_SCHEDULED_";
     String USDT_FEE = "USDT_FEE";
     String USER_IMPORT = "USER_IMPORT";
+    String SMS_VALI_PRE = "SMS_VALI_PRE_";
 }

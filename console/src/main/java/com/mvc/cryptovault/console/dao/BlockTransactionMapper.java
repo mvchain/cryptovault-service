@@ -12,4 +12,5 @@ public interface BlockTransactionMapper extends MyMapper<BlockTransaction> {
 
     @Update("update block_transaction set hash = #{hash},status=1,transaction_status=2,error_msg='',error_data='' where order_number = #{orderId}")
     int updateHash(@Param("orderId") String orderId, @Param("hash") String hash);
+
 }
