@@ -27,5 +27,7 @@ public class TokenDetailVO {
     private Long timestamp;
     @ApiModelProperty("币种类型0余额 1虚拟货币 2区块链货币")
     private Integer tokenType;
+    @ApiModelProperty("是否展示")
+    private Integer visible;
 
 }
