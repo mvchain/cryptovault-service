@@ -7,6 +7,7 @@ import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.util.BaseContextHandler;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
@@ -54,6 +55,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service("EthService")
 @Transactional(rollbackFor = RuntimeException.class)
 @Primary
+@Log4j
 public class EthService extends BlockService {
 
     @Autowired
@@ -242,6 +244,7 @@ public class EthService extends BlockService {
     private void oldListener() {
         String lastNumber = getHeight();
         while (true) {
+            log.info("block listener is running, lastNumber is " + lastNumber);
             try {
                 Thread.sleep(100);
                 BigInteger height = web3j.ethBlockNumber().send().getBlockNumber();
