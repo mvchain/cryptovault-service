@@ -156,14 +156,16 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         BigInteger gasPrice = Convert.toWei(new BigDecimal(token.getTransaferFee()), Convert.Unit.GWEI).toBigInteger();
         BigInteger nonce = getNonce(nonceMap, cold.getAddress());
         BigDecimal value = transaction.getValue().multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
-        BigInteger gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
+        BigInteger gasLimit = null;
 
         if (token.getId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
             //实际转账金额需要扣除手续费
+            gasLimit = BigInteger.valueOf(21000);
             BigDecimal fee = Convert.fromWei(new BigDecimal(gasLimit.multiply(gasPrice)), Convert.Unit.ETHER);
             value = value.subtract(fee);
         } else {
             //erc20需要扣除预设的手续费(实际手续费+浮动手续费,实际手续费必须存在)
+            gasLimit=    blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
             Float fee = null == token.getFee() ? token.getTransaferFee() : token.getTransaferFee() + token.getFee();
             value = value.subtract(BigDecimal.valueOf(fee));
         }
