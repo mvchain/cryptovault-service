@@ -179,13 +179,13 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
     }
 
     private void insertIfNull(BigInteger userId, String addStr, Integer status) {
-        if(StringUtils.isBlank(addStr))return;
-        for(String id : addStr.split(",")){
+        if (StringUtils.isBlank(addStr)) return;
+        for (String id : addStr.split(",")) {
             AppUserBalance appUserBalance = new AppUserBalance();
             appUserBalance.setUserId(userId);
             appUserBalance.setTokenId(new BigInteger(id));
             appUserBalance = findOneByEntity(appUserBalance);
-            if(null == appUserBalance){
+            if (null == appUserBalance) {
                 appUserBalance = new AppUserBalance();
                 appUserBalance.setUserId(userId);
                 appUserBalance.setTokenId(new BigInteger(id));
