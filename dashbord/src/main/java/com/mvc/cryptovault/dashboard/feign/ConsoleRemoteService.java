@@ -31,7 +31,7 @@ public interface ConsoleRemoteService {
     Result<Boolean> deleteAdmin(@RequestParam(value = "userId", required = false) BigInteger userId, @PathVariable("id") BigInteger id);
 
     @GetMapping("dashboard/adminUser/password")
-    Result<Boolean> updatePwd(@RequestParam(value = "userId", required = false) BigInteger userId, @RequestBody AdminPasswordDTO adminPasswordDTO);
+    Result<Boolean> updatePwd(@RequestParam(value = "id", required = false) BigInteger userId, @RequestBody AdminPasswordDTO adminPasswordDTO);
 
     @GetMapping("dashboard/adminUser/username")
     Result<AdminUser> getAdminByUsername(@RequestParam(value = "username", required = false) String username);

@@ -85,7 +85,7 @@ public class DAdminUserController extends BaseController {
     }
 
     @GetMapping("password")
-    public Result<Boolean> updatePwd(@RequestParam(value = "userId", required = false) BigInteger userId, @ModelAttribute AdminPasswordDTO adminPasswordDTO) {
+    public Result<Boolean> updatePwd(@RequestParam(value = "id", required = false) BigInteger userId, @ModelAttribute AdminPasswordDTO adminPasswordDTO) {
         String key = "AdminUser".toUpperCase() + "_" + adminPasswordDTO.getUserId();
         AdminUser admin = adminUserService.findById(userId);
         Assert.isTrue(admin.getAdminType() == 0 || userId.equals(adminPasswordDTO.getUserId()), "没有权限");
