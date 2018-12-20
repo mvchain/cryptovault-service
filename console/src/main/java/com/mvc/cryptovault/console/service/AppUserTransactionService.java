@@ -18,6 +18,7 @@ import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.console.dao.AppUserTransactionMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
@@ -54,6 +55,8 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     AppOrderService appOrderService;
     @Autowired
     TokenVolumeService tokenVolumeService;
+    @Autowired
+    AppUserTransactionMapper appUserTransactionMapper;
 
     public List<OrderVO> getTransactions(OrderDTO dto) {
         Condition condition = new Condition(AppUserTransaction.class);
@@ -135,7 +138,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         //校验浮动范围是否正确
         checkPrice(dto, pair, tokenPrice);
         if (null != dto.getId() && !dto.getId().equals(BigInteger.ZERO)) {
-            targetTransaction = findById(dto.getId());
+            targetTransaction = mapper.selectByPrimaryKey(dto.getId());
             //校验可购买量是否足够
             checkValue(dto, targetTransaction);
         }
@@ -166,12 +169,8 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     private void saveChildTransaction(BigInteger userId, TransactionBuyDTO dto, CommonPair pair, Long time, AppUserTransaction transaction, AppUserTransaction targetTransaction) {
         //修改主单购买信息
-        targetTransaction.setSuccessValue(targetTransaction.getSuccessValue().add(dto.getValue()));
-        targetTransaction.setUpdatedAt(time);
-        if (targetTransaction.getSuccessValue().equals(transaction.getValue())) {
-            targetTransaction.setStatus(1);
-        }
-        update(targetTransaction);
+        Integer result = appUserTransactionMapper.updateValue(dto.getId(), dto.getValue(), System.currentTimeMillis());
+        Assert.isTrue(result > 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         //生成用户主动交易记录
         transaction.setStatus(1);
         transaction.setParentId(targetTransaction.getId());
@@ -202,6 +201,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             appUserBalanceService.updateBalance(userId, pair.getBaseTokenId(), dto.getValue().multiply(dto.getPrice()));
             appUserBalanceService.updateBalance(targetTransaction.getUserId(), pair.getBaseTokenId(), dto.getValue());
         }
+        updateCache(dto.getId());
     }
 
     private void saveTopTransaction(AppUserTransaction transaction) {
