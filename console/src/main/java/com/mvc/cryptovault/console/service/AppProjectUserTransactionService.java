@@ -93,7 +93,8 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         String key = "AppProjectUserTransaction".toUpperCase() + "_INDEX_" + userId;
         String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
         redisTemplate.boundHashOps(key).put(String.valueOf(appProjectUserTransaction.getId()), String.valueOf(appProjectUserTransaction.getIndex()));
-        redisTemplate.boundListOps(listKey).rightPush(JSON.toJSONString(appProjectUserTransaction));
+        redisTemplate.delete(listKey);
+        putAll(userId);
     }
 
     @NotNull
