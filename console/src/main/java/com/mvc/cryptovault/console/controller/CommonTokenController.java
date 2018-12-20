@@ -59,9 +59,9 @@ public class CommonTokenController extends BaseController {
             //暂时返回非精确值
             BigDecimal gasLimit = tokenId.equals(BusinessConstant.BASE_TOKEN_ID_ETH) ? BigDecimal.valueOf(21000) : BigDecimal.valueOf(21000);
             BigDecimal gas = gasLimit.multiply(NumberUtils.parseNumber(String.valueOf(token.getTransaferFee()), BigDecimal.class).divide(BigDecimal.TEN.pow(token.getTokenDecimal() - 9)));
-            vo.setFee(NumberUtils.parseNumber(String.valueOf(gas.floatValue()), BigDecimal.class));
+            vo.setFee(gas.floatValue());
         } else {
-            vo.setFee(NumberUtils.parseNumber(String.valueOf(token.getTransaferFee()), BigDecimal.class));
+            vo.setFee(token.getTransaferFee());
         }
         vo.setFeeTokenName(token.getTokenName());
         return new Result<>(vo);
