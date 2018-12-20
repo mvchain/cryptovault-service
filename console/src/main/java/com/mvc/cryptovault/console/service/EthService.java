@@ -121,7 +121,7 @@ public class EthService extends BlockService {
             try {
                 BlockSign sign = blockSignService.findOneByToken("ETH");
                 if (null != sign) {
-                    if (sign.getOprType() == 0) {
+                    if (sign.getOprType() == 0 && StringUtils.isNotBlank(sign.getContractAddress())) {
                         //汇总时先判断是否approve
                         AdminWallet cold = adminWalletService.getEthCold();
                         if (cold == null) {
@@ -462,6 +462,9 @@ public class EthService extends BlockService {
 
     @Override
     public BigInteger getEthEstimateApprove(String contractAddress, String from, String to) throws IOException {
+        if (StringUtils.isBlank(contractAddress)) {
+            return BigInteger.valueOf(21000);
+        }
         Uint256 limit = new Uint256(BigInteger.TEN.pow(18).multiply(MAX_APPROVE));
         Function function = new Function(
                 "approve",

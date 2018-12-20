@@ -13,6 +13,7 @@ import com.neemre.btcdcli4j.core.BitcoindException;
 import com.neemre.btcdcli4j.core.CommunicationException;
 import com.neemre.btcdcli4j.core.client.BtcdClient;
 import com.neemre.btcdcli4j.core.domain.Output;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -165,7 +166,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             value = value.subtract(fee);
         } else {
             //erc20需要扣除预设的手续费(实际手续费+浮动手续费,实际手续费必须存在)
-            gasLimit=    blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
+            gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
             Float fee = null == token.getFee() ? token.getTransaferFee() : token.getTransaferFee() + token.getFee();
             value = value.subtract(BigDecimal.valueOf(fee));
         }
@@ -261,7 +262,39 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             orders.setContractAddress(token.getTokenContractAddress());
             result.add(orders);
         }
-        //transfer from,由中心账户发起并支付手续费
+        if (token.getId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
+            orders = getEthExportOrders(nonceMap, cold, address, token, gasPrice);
+        } else {
+            //transfer from,由中心账户发起并支付手续费
+            orders = getErc20ExportOrders(nonceMap, cold, address, token, gasPrice);
+        }
+        result.add(orders);
+    }
+
+    @NotNull
+    private ExportOrders getEthExportOrders(Map<String, BigInteger> nonceMap, AdminWallet cold, CommonAddress address, CommonToken token, BigInteger gasPrice) throws IOException {
+        BigInteger nonce;
+        ExportOrders orders;
+        nonce = getNonce(nonceMap, address.getAddress());
+        orders = new ExportOrders();
+        orders.setFromAddress(address.getAddress());
+        orders.setTokenType(address.getTokenType());
+        BigDecimal fee = new BigDecimal("21000").multiply(new BigDecimal(gasPrice)).divide(BigDecimal.TEN.pow(18));
+        orders.setValue(address.getBalance().subtract(fee));
+        orders.setToAddress(cold.getAddress());
+        orders.setGasLimit(new BigDecimal("21000"));
+        orders.setGasPrice(new BigDecimal(gasPrice));
+        orders.setOrderId(null);
+        orders.setNonce(nonce);
+        orders.setContractAddress(token.getTokenContractAddress());
+        orders.setOprType(0);
+        return orders;
+    }
+
+    @NotNull
+    private ExportOrders getErc20ExportOrders(Map<String, BigInteger> nonceMap, AdminWallet cold, CommonAddress address, CommonToken token, BigInteger gasPrice) throws IOException {
+        BigInteger nonce;
+        ExportOrders orders;
         BigDecimal value = address.getBalance().multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
         nonce = getNonce(nonceMap, cold.getAddress());
         orders = new ExportOrders();
@@ -276,7 +309,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         orders.setNonce(nonce);
         orders.setContractAddress(token.getTokenContractAddress());
         orders.setOprType(0);
-        result.add(orders);
+        return orders;
     }
 
     private Map<String, CommonToken> getTokenMap() {
