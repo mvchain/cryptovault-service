@@ -63,7 +63,6 @@ public class SmsService {
         String key = RedisConstant.SMS_VALI_PRE + mobile;
         String valiCode = "" + redisTemplate.opsForHash().get(key, "CODE");
         if (ObjectUtils.equals(valiCode, code)) {
-            redisTemplate.delete(key);
             return true;
         }
         return false;

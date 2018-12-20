@@ -5,6 +5,7 @@ import com.mvc.cryptovault.common.bean.dto.UserDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TokenVO;
 import com.mvc.cryptovault.common.bean.vo.UserSimpleVO;
+import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
 import com.mvc.cryptovault.common.util.MessageConstants;
@@ -37,9 +38,11 @@ public class UserController extends BaseController {
     @SwaggerMock("${user.login}")
     @NotLogin
     public Result<TokenVO> login(HttpServletResponse response, @RequestBody @Valid UserDTO userDTO) {
+        String key = RedisConstant.SMS_VALI_PRE + userDTO.getUsername();
         Boolean result = smsService.checkSmsValiCode(userDTO.getUsername(), userDTO.getValidCode());
         Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
         TokenVO vo = userService.login(userDTO);
+        redisTemplate.delete(key);
         return new Result(vo);
     }
 

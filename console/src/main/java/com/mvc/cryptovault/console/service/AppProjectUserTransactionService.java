@@ -75,7 +75,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
     }
 
     public Boolean buy(BigInteger userId, BigInteger projectId, ProjectBuyDTO dto) {
-        putAll(userId);
+        putAll(userId, false);
         Long time = System.currentTimeMillis();
         AppProject project = buyCheck(userId, projectId, dto);
         AppProjectUserTransaction appProjectUserTransaction = saveAppProjectUserTransaction(userId, projectId, dto, time, project);
@@ -94,7 +94,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
         redisTemplate.boundHashOps(key).put(String.valueOf(appProjectUserTransaction.getId()), String.valueOf(appProjectUserTransaction.getIndex()));
         redisTemplate.delete(listKey);
-        putAll(userId);
+        putAll(userId, true);
     }
 
     @NotNull
@@ -125,7 +125,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         Assert.isTrue(user.getTransactionPassword().equalsIgnoreCase(dto.getPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
         AppProject project = appProjectService.findById(projectId);
         ProjectBuyVO balance = appUserBalanceService.getBalance(userId, project);
-        Assert.isTrue(balance.getBalance().compareTo(dto.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+        Assert.isTrue(balance.getBalance().compareTo(dto.getValue().multiply(NumberUtils.parseNumber(String.valueOf(project.getRatio()), BigDecimal.class))) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
         Assert.isTrue(balance.getLimitValue().subtract(dto.getValue()).compareTo(BigDecimal.ZERO) >= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         Assert.isTrue(dto.getValue().subtract(balance.getProjectMin()).compareTo(BigDecimal.ZERO) >= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         return project;
@@ -133,7 +133,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
 
     public List<PurchaseVO> getReservation(BigInteger userId, ReservationDTO reservationDTO) {
         String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
-        putAll(userId);
+        putAll(userId, false);
         List<String> list = null;
         if (reservationDTO.getId() == null || reservationDTO.getId().equals(BigInteger.ZERO)) {
             list = redisTemplate.boundListOps(listKey).range(0, reservationDTO.getPageSize());
@@ -187,9 +187,9 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         return NumberUtils.parseNumber(index, Integer.class);
     }
 
-    private void putAll(BigInteger userId) {
+    public void putAll(BigInteger userId, Boolean flag) {
         String key = "AppProjectUserTransaction".toUpperCase() + "_INDEX_" + userId;
-        if (!redisTemplate.hasKey(key)) {
+        if (!redisTemplate.hasKey(key) || flag) {
             String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
             List<AppProjectUserTransaction> list = findBy("userId", userId);
             if (list.size() == 0) {
@@ -301,6 +301,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
             trans.setSuccessPayed(trans.getPayed());
             appOrderService.saveOrderProject(trans, project);
             redisTemplate.delete(listKey);
+            putAll(trans.getUserId(), true);
         });
 
     }
