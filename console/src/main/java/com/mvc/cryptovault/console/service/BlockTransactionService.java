@@ -82,7 +82,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         appOrder.setUserId(userId);
         appOrder.setTokenId(transactionDTO.getTokenId());
         appOrder.setStatus(0);
-        appOrder.setOrderType(1);
+        appOrder.setOrderType(2);
         orderService.save(appOrder);
         AppOrderDetail detail = new AppOrderDetail();
         detail.setCreatedAt(now);

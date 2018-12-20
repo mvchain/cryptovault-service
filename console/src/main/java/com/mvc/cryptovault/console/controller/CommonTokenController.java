@@ -6,12 +6,15 @@ import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TransactionTokenVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.service.AppUserBalanceService;
 import com.mvc.cryptovault.console.service.CommonTokenService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.NumberUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -52,7 +55,14 @@ public class CommonTokenController extends BaseController {
         CommonToken token = commonTokenService.findById(tokenId);
         TransactionTokenVO vo = new TransactionTokenVO();
         vo.setBalance(appUserBalanceService.getBalanceByTokenId(userId, tokenId));
-        vo.setFee(token.getTransaferFee());
+        if (null != token.getTokenDecimal() && token.getTokenDecimal() > 0) {
+            //暂时返回非精确值
+            BigDecimal gasLimit = tokenId.equals(BusinessConstant.BASE_TOKEN_ID_ETH) ? BigDecimal.valueOf(21000) : BigDecimal.valueOf(21000);
+            BigDecimal gas = gasLimit.multiply(NumberUtils.parseNumber(String.valueOf(token.getTransaferFee()), BigDecimal.class).divide(BigDecimal.TEN.pow(token.getTokenDecimal() - 9)));
+            vo.setFee(NumberUtils.parseNumber(String.valueOf(gas.floatValue()), BigDecimal.class));
+        } else {
+            vo.setFee(NumberUtils.parseNumber(String.valueOf(token.getTransaferFee()), BigDecimal.class));
+        }
         vo.setFeeTokenName(token.getTokenName());
         return new Result<>(vo);
     }

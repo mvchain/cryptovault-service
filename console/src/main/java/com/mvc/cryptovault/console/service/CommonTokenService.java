@@ -28,7 +28,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,16 +52,18 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
     AppUserTransactionService appUserTransactionService;
 
     public List<PairVO> getPair(PairDTO pairDTO) {
+        Long start = System.currentTimeMillis();
         List<PairVO> result = new ArrayList<>();
         List<CommonPair> list = commonPairService.findAll();
         if (null != pairDTO.getPairType()) {
             list = list.stream().filter(obj -> obj.getStatus() == 1 && obj.getBaseTokenId().equals(BigInteger.valueOf(pairDTO.getPairType()))).collect(Collectors.toList());
         }
+        List<String> tokenIds = list.stream().map(obj -> String.valueOf("commonTokenHistory".toUpperCase() + "_24H_BEFORE" + obj.getTokenId())).collect(Collectors.toList());
+        Map<BigInteger, BigDecimal> lastBefore = get24HBefore(tokenIds);
         list.forEach(obj -> {
             CommonToken token = findById(obj.getTokenId());
             CommonTokenPrice price = commonTokenPriceService.findById(obj.getTokenId());
             CommonTokenControl commonTokenControl = commonTokenControlService.findById(obj.getTokenId());
-            BigDecimal lastValue = get24HBefore(obj.getTokenId());
             PairVO vo = new PairVO();
             vo.setPair(obj.getPairName());
             vo.setTokenImage(token.getTokenImage());
@@ -68,11 +72,11 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             vo.setTokenId(token.getId());
             vo.setPairId(obj.getId());
             vo.setTransactionStatus(null == commonTokenControl ? 0 : commonTokenControl.getTransactionStatus());
-            if (null == lastValue) {
+            if (null == lastBefore.get(token.getId()) || lastBefore.get(token.getId()).equals(BigDecimal.ZERO)) {
                 vo.setIncrease(0f);
             } else {
                 BigDecimal now = null == price ? BigDecimal.ONE : price.getTokenPrice();
-                Float increase = now.divide(lastValue, RoundingMode.HALF_DOWN).setScale(10, RoundingMode.HALF_DOWN).floatValue() - 1;
+                Float increase = now.divide(lastBefore.get(token.getId()), RoundingMode.HALF_DOWN).setScale(10, RoundingMode.HALF_DOWN).floatValue() - 1;
                 vo.setIncrease(increase * 100);
             }
             result.add(vo);
@@ -92,10 +96,29 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         return price;
     }
 
+    public Map<BigInteger, BigDecimal> get24HBefore(List<String> tokenIds) {
+        Map<BigInteger, BigDecimal> result = new HashMap<>(tokenIds.size());
+        List<String> list = redisTemplate.opsForValue().multiGet(tokenIds);
+        for (int i = 0; i < list.size(); i++) {
+            BigInteger tokenId = NumberUtils.parseNumber(tokenIds.get(i).substring(29), BigInteger.class);
+            if (StringUtils.isBlank(list.get(i))) {
+                String key = "commonTokenHistory".toUpperCase() + "_24H_BEFORE" + tokenId;
+                BigDecimal price = update24HBeforePrice(tokenId, key);
+                price = price == null ? BigDecimal.ZERO : price;
+                redisTemplate.opsForValue().set(key, String.valueOf(price));
+                result.put(tokenId, price);
+            } else {
+                BigDecimal price = NumberUtils.parseNumber(list.get(i), BigDecimal.class);
+                result.put(tokenId, price);
+            }
+        }
+        return result;
+    }
+
     @Nullable
     public BigDecimal update24HBeforePrice(BigInteger tokenId, String key) {
-        BigDecimal price;
-        price = commonTokenHistoryMapper.get24HBefore(tokenId, System.currentTimeMillis());
+        PageHelper.clearPage();
+        BigDecimal price = commonTokenHistoryMapper.get24HBefore(tokenId, System.currentTimeMillis());
         if (null == price) {
             price = commonTokenHistoryMapper.getFirst(tokenId);
         }

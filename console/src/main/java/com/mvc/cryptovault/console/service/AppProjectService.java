@@ -116,7 +116,10 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
 
     public void updateProjectStatus() {
         Long currentTimeMillis = System.currentTimeMillis();
-        appProjectMapper.updateProjectStartStatus(currentTimeMillis);
-        appProjectMapper.updateProjectStopStatus(currentTimeMillis);
+        Integer result1 = appProjectMapper.updateProjectStartStatus(currentTimeMillis);
+        Integer result2 = appProjectMapper.updateProjectStopStatus(currentTimeMillis);
+        if (result1 > 0 || result2 > 0) {
+            updateAllCache("id desc");
+        }
     }
 }

@@ -177,7 +177,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveOrder(AppUserTransaction transaction) {
-        CommonPair pair = commonPairService.findById(transaction.getParentId());
+        CommonPair pair = commonPairService.findById(transaction.getPairId());
         if (null == pair) {
             return;
         }
@@ -197,6 +197,14 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setStatus(2);
         appOrder.setOrderType(transaction.getTransactionType());
         save(appOrder);
+        AppOrder baseOrder = new AppOrder();
+        BeanUtils.copyProperties(appOrder, baseOrder);
+        baseOrder.setTokenId(pair.getBaseTokenId());
+        baseOrder.setValue(transaction.getPrice().multiply(transaction.getSuccessValue()));
+        baseOrder.setId(null);
+        baseOrder.setOrderType(transaction.getTransactionType() == 1 ? 2 : 1);
+        baseOrder.setOrderNumber(getOrderNumber());
+        save(baseOrder);
         AppOrderDetail detail = new AppOrderDetail();
         detail.setCreatedAt(time);
         detail.setUpdatedAt(time);
@@ -206,6 +214,9 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setToAddress("");
         detail.setOrderId(appOrder.getId());
         detail.setValue(transaction.getValue());
+        appOrderDetailService.save(detail);
+        detail.setOrderId(baseOrder.getId());
+        detail.setValue(baseOrder.getValue());
         appOrderDetailService.save(detail);
         appMessageService.sendTrade(appOrder.getId(), appOrder.getUserId(), pair.getPairName(), appOrder.getOrderType(), appOrder.getValue(), pair.getTokenName());
     }

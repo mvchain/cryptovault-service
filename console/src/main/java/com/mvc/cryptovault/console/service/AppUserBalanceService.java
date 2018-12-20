@@ -91,7 +91,16 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         AppUserBalance appUserBalance = new AppUserBalance();
         appUserBalance.setTokenId(baseTokenId);
         appUserBalance.setUserId(userId);
-        return appUserBalanceMapper.selectOne(appUserBalance);
+        AppUserBalance balance = appUserBalanceMapper.selectOne(appUserBalance);
+        if (null == balance) {
+            balance = new AppUserBalance();
+            balance.setVisible(0);
+            balance.setBalance(BigDecimal.ZERO);
+            balance.setTokenId(baseTokenId);
+            balance.setUserId(userId);
+            save(balance);
+        }
+        return balance;
     }
 
 
