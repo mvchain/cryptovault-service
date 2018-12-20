@@ -84,7 +84,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
         appUserBalanceMapper.updateBalance(userId, baseTokenId, value);
         userBalance = getAppUserBalance(userId, baseTokenId);
-        if(null != userBalance){
+        if (null != userBalance) {
             redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), userBalance.getVisible() + "#" + String.valueOf(userBalance.getBalance()));
         }
     }
@@ -131,7 +131,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             vo.setRatio(null == tokenPrice ? BigDecimal.ZERO : tokenPrice.getTokenPrice());
             vo.setTokenName(token.getTokenName());
             vo.setTokenImage(token.getTokenImage());
-            if (visible == 1 || ignoreHide) {
+            if (visible == 1 || ignoreHide || token.getId().compareTo(BusinessConstant.BASE_TOKEN_ID_BALANCE) <= 0) {
                 result.add(vo);
             }
         }
