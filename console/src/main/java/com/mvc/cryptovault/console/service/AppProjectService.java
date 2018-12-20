@@ -82,6 +82,8 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
             //修改成功的众筹
             appProjectPartakeService.savePartake(partake, appProject);
             appProjectUserTransactionService.updatePartake(partake, appProject);
+            String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + partake.getUserId();
+            redisTemplate.delete(listKey);
         }
         //将剩余众筹标记为失败
         appProjectUserTransactionService.updateFailPartake(list.get(0).getProjectId(), appProject);

@@ -73,7 +73,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
 
     public void updateBalance(BigInteger userId, BigInteger baseTokenId, BigDecimal value) {
         AppUserBalance userBalance = getAppUserBalance(userId, baseTokenId);
-        if (null == userBalance) {
+        if (null == userBalance && !baseTokenId.equals(BigInteger.ZERO)) {
             userBalance = new AppUserBalance();
             userBalance.setBalance(BigDecimal.ZERO);
             userBalance.setTokenId(baseTokenId);
@@ -84,7 +84,9 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
         appUserBalanceMapper.updateBalance(userId, baseTokenId, value);
         userBalance = getAppUserBalance(userId, baseTokenId);
-        redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), userBalance.getVisible() + "#" + String.valueOf(userBalance.getBalance()));
+        if(null != userBalance){
+            redisTemplate.boundHashOps(key).put(String.valueOf(baseTokenId), userBalance.getVisible() + "#" + String.valueOf(userBalance.getBalance()));
+        }
     }
 
     private AppUserBalance getAppUserBalance(BigInteger userId, BigInteger baseTokenId) {

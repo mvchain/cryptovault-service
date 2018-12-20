@@ -116,16 +116,28 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     }
 
     public void updateStatus(DBlockStatusDTO dBlockStatusDTO) {
-        Condition condition = new Condition(BlockTransaction.class);
-        Example.Criteria criteria = condition.createCriteria();
-        if (dBlockStatusDTO.getIds().endsWith(",")) {
-            dBlockStatusDTO.setIds(dBlockStatusDTO.getIds().substring(0, dBlockStatusDTO.getIds().length() - 1));
+        String[] idArr = dBlockStatusDTO.getIds().split(",");
+        for (String idStr : idArr) {
+            BigInteger id = new BigInteger(idStr);
+            BlockTransaction blockTransaction = blockTransactionMapper.selectByPrimaryKey(id);
+            if (null != blockTransaction) {
+                Integer transactionStatus = dBlockStatusDTO.getStatus() == 1 ? 2 : 3;
+                Integer result = blockTransactionMapper.updateTransactionStatus(transactionStatus, System.currentTimeMillis(), blockTransaction.getUpdatedAt(), id);
+                if (result == 0) {
+                    continue;
+                }
+                //更新成功则修改用户余额并添加通知
+                appUserBalanceService.updateBalance(blockTransaction.getUserId(), blockTransaction.getTokenId(), blockTransaction.getValue());
+                orderService.saveReturnOrder(blockTransaction);
+            }
         }
-        ConditionUtil.andCondition(criteria, String.format("id in (%s)", dBlockStatusDTO.getIds()));
-        BlockTransaction transaction = new BlockTransaction();
-        Integer transactionStatus = dBlockStatusDTO.getStatus() == 1 ? 2 : 3;
-        transaction.setTransactionStatus(transactionStatus);
-        mapper.updateByConditionSelective(transaction, condition);
+    }
+
+    private void returnValue(String ids, Boolean needReturn) {
+        if (needReturn) {
+            blockTransactionMapper.returnValue(ids);
+
+        }
     }
 
     public PageInfo<DBlockeTransactionVO> getTransactions(PageDTO pageDTO, DBlockeTransactionDTO dBlockeTransactionDTO) {

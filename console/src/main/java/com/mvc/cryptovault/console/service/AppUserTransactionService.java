@@ -82,6 +82,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             vo.setLimitValue(obj.getValue().subtract(obj.getSuccessValue()));
             vo.setNickname(user.getNickname());
             vo.setTotal(obj.getValue());
+            vo.setTransactionType(obj.getTransactionType());
             vo.setId(obj.getId());
             vo.setPrice(obj.getPrice());
             result.add(vo);
@@ -155,7 +156,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             tokenVolume.setCreatedAt(System.currentTimeMillis());
             tokenVolume.setValue(dto.getValue());
             tokenVolume.setTokenId(pair.getTokenId());
-            if(pair.getTokenId().compareTo(BusinessConstant.BASE_TOKEN_ID_USDT) <=0){
+            if (pair.getTokenId().compareTo(BusinessConstant.BASE_TOKEN_ID_USDT) <= 0) {
                 tokenVolume.setUsed(1);
             }
             tokenVolumeService.save(tokenVolume);

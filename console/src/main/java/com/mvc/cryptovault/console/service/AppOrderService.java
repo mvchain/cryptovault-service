@@ -276,4 +276,36 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         save(appOrder);
         return appOrder;
     }
+
+    public void saveReturnOrder(BlockTransaction blockTransaction) {
+        Long time = System.currentTimeMillis();
+        //非管理员操作才需要添加到订单列表
+        AppOrder order = new AppOrder();
+        order.setStatus(9);
+        order.setProjectId(BigInteger.ZERO);
+        order.setOrderContentId(blockTransaction.getId());
+        order.setOrderType(1);
+        order.setUserId(blockTransaction.getUserId());
+        order.setValue(blockTransaction.getValue());
+        order.setOrderNumber(getOrderNumber());
+        order.setOrderContentName(BusinessConstant.CONTENT_BLOCK);
+        order.setHash(blockTransaction.getHash());
+        order.setFromAddress(blockTransaction.getFromAddress());
+        order.setUpdatedAt(time);
+        order.setCreatedAt(time);
+        order.setTokenId(blockTransaction.getTokenId());
+        order.setClassify(BusinessConstant.CLASSIFY_BLOCK);
+        save(order);
+        AppOrderDetail appOrderDetail = new AppOrderDetail();
+        appOrderDetail.setValue(blockTransaction.getValue());
+        appOrderDetail.setOrderId(order.getId());
+        appOrderDetail.setToAddress(blockTransaction.getToAddress());
+        appOrderDetail.setHash(blockTransaction.getHash());
+        appOrderDetail.setFromAddress(blockTransaction.getFromAddress());
+        appOrderDetail.setFee(blockTransaction.getFee());
+        appOrderDetail.setUpdatedAt(time);
+        appOrderDetail.setCreatedAt(time);
+        appOrderDetailService.save(appOrderDetail);
+    }
+
 }
