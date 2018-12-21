@@ -213,7 +213,8 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
             deleteById(blockTransaction.getId());
             return null;
         }
-        if (!blockTransaction.getUserId().equals(BigInteger.ZERO)) {
+        //失败的记录不记录订单,除非拒绝,否则需要持续操作至成功方可
+        if (!blockTransaction.getUserId().equals(BigInteger.ZERO) && blockTransaction.getStatus() != 9) {
             orderService.saveOrder(blockTransaction);
             orderService.saveOrderTarget(blockTransaction);
         }
@@ -233,6 +234,8 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         oldTrans.setFromAddress(blockTransaction.getFromAddress());
         oldTrans.setErrorMsg(blockTransaction.getErrorMsg());
         update(oldTrans);
+        //更新订单状态
+        orderService.updateOrderWithBlockTransaction(oldTrans);
     }
 
     public void buy(AdminTransactionDTO dto) {

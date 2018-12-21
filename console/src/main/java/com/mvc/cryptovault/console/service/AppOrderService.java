@@ -142,7 +142,6 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         obj.setUpdatedAt(System.currentTimeMillis());
         update(obj);
         appMessageService.transferMsg(obj.getId(), obj.getUserId(), obj.getValue(), tokenService.getTokenName(obj.getTokenId()), obj.getOrderType(), obj.getStatus());
-
     }
 
     public void saveOrder(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
@@ -278,34 +277,31 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveReturnOrder(BlockTransaction blockTransaction) {
-        Long time = System.currentTimeMillis();
-        //非管理员操作才需要添加到订单列表
         AppOrder order = new AppOrder();
-        order.setStatus(9);
-        order.setProjectId(BigInteger.ZERO);
+        order.setClassify(0);
         order.setOrderContentId(blockTransaction.getId());
-        order.setOrderType(1);
-        order.setUserId(blockTransaction.getUserId());
-        order.setValue(blockTransaction.getValue());
-        order.setOrderNumber(getOrderNumber());
-        order.setOrderContentName(BusinessConstant.CONTENT_BLOCK);
-        order.setHash(blockTransaction.getHash());
-        order.setFromAddress(blockTransaction.getFromAddress());
-        order.setUpdatedAt(time);
-        order.setCreatedAt(time);
-        order.setTokenId(blockTransaction.getTokenId());
-        order.setClassify(BusinessConstant.CLASSIFY_BLOCK);
-        save(order);
-        AppOrderDetail appOrderDetail = new AppOrderDetail();
-        appOrderDetail.setValue(blockTransaction.getValue());
-        appOrderDetail.setOrderId(order.getId());
-        appOrderDetail.setToAddress(blockTransaction.getToAddress());
-        appOrderDetail.setHash(blockTransaction.getHash());
-        appOrderDetail.setFromAddress(blockTransaction.getFromAddress());
-        appOrderDetail.setFee(blockTransaction.getFee());
-        appOrderDetail.setUpdatedAt(time);
-        appOrderDetail.setCreatedAt(time);
-        appOrderDetailService.save(appOrderDetail);
+        List<AppOrder> list = findByEntity(order);
+        list.forEach(obj -> {
+            obj.setStatus(9);
+            obj.setUpdatedAt(System.currentTimeMillis());
+            update(obj);
+        });
     }
 
+    public void updateOrderWithBlockTransaction(BlockTransaction oldTrans) {
+        AppOrder order = new AppOrder();
+        order.setClassify(0);
+        order.setOrderContentId(oldTrans.getId());
+        List<AppOrder> list = findByEntity(order);
+        if (list.size() == 0) {
+            //newOrder
+            saveOrder(oldTrans);
+        } else {
+            list.forEach(obj -> {
+                obj.setStatus(oldTrans.getStatus());
+                obj.setUpdatedAt(System.currentTimeMillis());
+                update(obj);
+            });
+        }
+    }
 }
