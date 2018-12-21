@@ -183,7 +183,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         }
         Long time = transaction.getCreatedAt();
         AppOrder appOrder = new AppOrder();
-        appOrder.setClassify(0);
+        appOrder.setClassify(1);
         appOrder.setCreatedAt(time);
         appOrder.setUpdatedAt(time);
         appOrder.setFromAddress("");
