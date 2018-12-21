@@ -205,6 +205,8 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     public void updateHash(String orderId, String hash) {
         if (StringUtils.isNotBlank(orderId)) {
             blockTransactionMapper.updateHash(orderId, hash);
+            BlockTransaction trans = findOneBy("hash", hash);
+            orderService.updateOrderWithBlockTransaction(trans);
         }
     }
 
