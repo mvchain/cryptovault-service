@@ -172,7 +172,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         }
         orders.setFromAddress(cold.getAddress());
         orders.setTokenType(token.getTokenType());
-        orders.setValue(value);
+        orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         orders.setToAddress(transaction.getToAddress());
         orders.setGasLimit(new BigDecimal(gasLimit));
         orders.setGasPrice(new BigDecimal(gasPrice));
