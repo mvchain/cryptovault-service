@@ -126,9 +126,11 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
                 if (result == 0) {
                     continue;
                 }
-                //更新成功则修改用户余额并添加通知
-                appUserBalanceService.updateBalance(blockTransaction.getUserId(), blockTransaction.getTokenId(), blockTransaction.getValue());
-                orderService.saveReturnOrder(blockTransaction);
+                if(dBlockStatusDTO.getStatus() == 2){
+                    //更新成功则修改用户余额并添加通知
+                    appUserBalanceService.updateBalance(blockTransaction.getUserId(), blockTransaction.getTokenId(), blockTransaction.getValue());
+                    orderService.saveReturnOrder(blockTransaction);
+                }
             }
         }
     }
