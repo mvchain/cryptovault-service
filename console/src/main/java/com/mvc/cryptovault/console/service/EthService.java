@@ -149,7 +149,7 @@ public class EthService extends BlockService {
     private void sendRaw(BlockSign sign) throws IOException {
         EthSendTransaction result = web3j.ethSendRawTransaction(sign.getSign()).send();
         if (null == result || (null != result.getError())) {
-            if (result.getError().getMessage().indexOf("known transaction:") > 0) {
+            if (null != result && result.getError().getMessage().indexOf("known transaction:") > 0) {
                 return;
             }
             sign.setStatus(9);
