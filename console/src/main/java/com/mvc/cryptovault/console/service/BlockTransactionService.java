@@ -185,14 +185,12 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
             //只有在更新成功的情况下修改余额,更新冲突时忽略,提现在申请时就已经扣款,因此只有充值需要更新余额
             appUserBalanceService.updateBalance(obj.getUserId(), obj.getTokenId(), obj.getValue());
         }
-        if (obj.getOprType() == 2) {
-            //提现需要更新订单状态
-            if (!obj.getUserId().equals(BigInteger.ZERO)) {
-                List<AppOrder> orders = orderService.findBy("hash", obj.getHash());
-                orders.forEach(order -> {
-                    orderService.updateOrder(order);
-                });
-            }
+        //提现需要更新订单状态
+        if (!obj.getUserId().equals(BigInteger.ZERO) && num == 1) {
+            List<AppOrder> orders = orderService.findBy("hash", obj.getHash());
+            orders.forEach(order -> {
+                orderService.updateOrder(order);
+            });
         }
     }
 
