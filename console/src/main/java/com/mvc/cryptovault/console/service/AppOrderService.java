@@ -300,6 +300,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
             list.forEach(obj -> {
                 obj.setStatus(oldTrans.getStatus());
                 obj.setUpdatedAt(System.currentTimeMillis());
+                obj.setHash(oldTrans.getHash());
                 update(obj);
             });
         }
