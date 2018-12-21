@@ -181,7 +181,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
      */
     public void updateSuccess(BlockTransaction obj) {
         int num = blockTransactionMapper.updateSuccess(obj, System.currentTimeMillis());
-        if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && obj.getOprType() == 1) {
+        if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && obj.getOprType() == 2) {
             //只有在更新成功的情况下修改余额,更新冲突时忽略,提现在申请时就已经扣款,因此只有充值需要更新余额
             appUserBalanceService.updateBalance(obj.getUserId(), obj.getTokenId(), obj.getValue());
             if (!obj.getUserId().equals(BigInteger.ZERO)) {
