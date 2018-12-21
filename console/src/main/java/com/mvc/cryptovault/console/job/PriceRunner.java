@@ -40,7 +40,9 @@ public class PriceRunner implements CommandLineRunner {
     @Async
     public void run(String... args) throws Exception {
         try {
-            tokenVolume();
+            while (true) {
+                tokenVolume();
+            }
         } catch (Exception e) {
             e.printStackTrace();
             tokenVolume();

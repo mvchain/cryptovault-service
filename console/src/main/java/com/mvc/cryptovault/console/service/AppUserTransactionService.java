@@ -159,6 +159,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             tokenVolume.setCreatedAt(System.currentTimeMillis());
             tokenVolume.setValue(dto.getValue());
             tokenVolume.setTokenId(pair.getTokenId());
+            tokenVolume.setUsed(0);
             if (pair.getTokenId().compareTo(BusinessConstant.BASE_TOKEN_ID_USDT) <= 0) {
                 tokenVolume.setUsed(1);
             }
