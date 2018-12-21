@@ -126,7 +126,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
                 if (result == 0) {
                     continue;
                 }
-                if(dBlockStatusDTO.getStatus() == 2){
+                if (dBlockStatusDTO.getStatus() == 2) {
                     //更新成功则修改用户余额并添加通知
                     appUserBalanceService.updateBalance(blockTransaction.getUserId(), blockTransaction.getTokenId(), blockTransaction.getValue());
                     orderService.saveReturnOrder(blockTransaction);
@@ -181,9 +181,12 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
      */
     public void updateSuccess(BlockTransaction obj) {
         int num = blockTransactionMapper.updateSuccess(obj, System.currentTimeMillis());
-        if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && obj.getOprType() == 2) {
+        if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && obj.getOprType() == 1) {
             //只有在更新成功的情况下修改余额,更新冲突时忽略,提现在申请时就已经扣款,因此只有充值需要更新余额
             appUserBalanceService.updateBalance(obj.getUserId(), obj.getTokenId(), obj.getValue());
+        }
+        if (obj.getOprType() == 2) {
+            //提现需要更新订单状态
             if (!obj.getUserId().equals(BigInteger.ZERO)) {
                 List<AppOrder> orders = orderService.findBy("hash", obj.getHash());
                 orders.forEach(order -> {
