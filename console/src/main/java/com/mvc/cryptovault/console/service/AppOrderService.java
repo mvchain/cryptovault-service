@@ -48,14 +48,14 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         TransactionDetailVO vo = new TransactionDetailVO();
         vo.setClassify(order.getClassify());
         vo.setCreatedAt(order.getCreatedAt());
-        vo.setFee(detail.getFee());
+        vo.setFee(null == detail ? null : detail.getFee());
         vo.setFeeTokenType(token.getTokenType());
         vo.setHashLink(token.getLink() + order.getHash());
         vo.setTokenName(token.getTokenName());
         vo.setFromAddress(order.getFromAddress());
         vo.setBlockHash(order.getHash());
         vo.setStatus(order.getStatus());
-        vo.setToAddress(detail.getToAddress());
+        vo.setToAddress(null == detail ? null : detail.getToAddress());
         vo.setUpdatedAt(order.getUpdatedAt());
         vo.setValue(order.getValue());
         return vo;
