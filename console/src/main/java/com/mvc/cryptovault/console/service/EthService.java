@@ -148,7 +148,10 @@ public class EthService extends BlockService {
 
     private void sendRaw(BlockSign sign) throws IOException {
         EthSendTransaction result = web3j.ethSendRawTransaction(sign.getSign()).send();
-        if (null == result || null != result.getError()) {
+        if (result.getError().getMessage().indexOf("known transaction:") > 0) {
+            return;
+        }
+        if (null == result || (null != result.getError())) {
             sign.setStatus(9);
             sign.setResult(JSON.toJSONString(result.getError()));
             if (StringUtils.isNotBlank(sign.getOrderId())) {
@@ -159,8 +162,6 @@ public class EthService extends BlockService {
             }
         } else {
             String hash = result.getTransactionHash();
-            sign.setHash(hash);
-            sign.setStatus(1);
             blockTransactionService.updateHash(sign.getOrderId(), hash);
         }
     }
