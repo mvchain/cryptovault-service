@@ -244,7 +244,7 @@ public class EthService extends BlockService {
     private void oldListener() {
         String lastNumber = getHeight();
         while (true) {
-            log.info("block listener is running, lastNumber is " + lastNumber);
+//            log.info("block listener is running, lastNumber is " + lastNumber);
             try {
                 Thread.sleep(100);
                 BigInteger height = web3j.ethBlockNumber().send().getBlockNumber();
