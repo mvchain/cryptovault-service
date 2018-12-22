@@ -10,6 +10,6 @@ import java.math.BigInteger;
 
 public interface AppUserTransactionMapper extends MyMapper<AppUserTransaction> {
 
-    @Update("update app_user_transaction set success_value = success_value + #{value}, updated_at = #{currentTimeMillis} ,status = if(success_value + #{value} >=value, 1, 0) where id = #{id}")
+    @Update("update app_user_transaction set status = if(success_value + #{value} >=value, 1, 0), success_value = success_value + #{value}, updated_at = #{currentTimeMillis} where id = #{id}")
     Integer updateValue(@Param("id") BigInteger id, @Param("value") BigDecimal value, @Param("currentTimeMillis") Long currentTimeMillis);
 }

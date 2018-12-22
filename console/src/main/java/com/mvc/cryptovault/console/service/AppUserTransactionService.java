@@ -138,11 +138,18 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         //校验浮动范围是否正确
         checkPrice(dto, pair, tokenPrice);
         if (null != dto.getId() && !dto.getId().equals(BigInteger.ZERO)) {
+            //校验订单信息是否输入错误
             targetTransaction = mapper.selectByPrimaryKey(dto.getId());
+            checkDto(targetTransaction, dto);
             //校验可购买量是否足够
             checkValue(dto, targetTransaction);
         }
         saveAll(userId, dto, targetTransaction, pair);
+    }
+
+    private void checkDto(AppUserTransaction targetTransaction, TransactionBuyDTO dto) {
+        Assert.isTrue(!targetTransaction.getTransactionType().equals(dto.getTransactionType()), MessageConstants.getMsg("TRANS_MSG_ERROR"));
+        Assert.isTrue(dto.getPrice().compareTo(targetTransaction.getPrice()) ==0, MessageConstants.getMsg("TRANS_MSG_ERROR"));
     }
 
     public void saveAll(BigInteger userId, TransactionBuyDTO dto, AppUserTransaction targetTransaction, CommonPair pair) {
@@ -239,9 +246,16 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     }
 
     private void checkBalance(BigInteger userId, TransactionBuyDTO dto, CommonPair pair) {
-        CommonTokenPrice tokenPrice = commonTokenPriceService.findById(pair.getBaseTokenId());
-        BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId());
-        Assert.isTrue(dto.getValue().subtract(tokenPrice.getTokenPrice()).compareTo(balance) <= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+        if(dto.getTransactionType() == 1){
+            //购买，需要校验基础货币余额
+            BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId());
+            Assert.isTrue(dto.getValue().multiply(dto.getPrice()).compareTo(balance) <= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+        } else {
+            //出售，需要校验目标货币余额
+            BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, pair.getTokenId());
+            Assert.isTrue(dto.getValue().compareTo(balance) <= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+        }
+
     }
 
     private void checkPrice(TransactionBuyDTO dto, CommonPair pair, CommonTokenPrice tokenPrice) {
