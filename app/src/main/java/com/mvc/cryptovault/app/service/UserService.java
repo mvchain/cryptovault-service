@@ -40,10 +40,10 @@ public class UserService {
         TokenVO vo = new TokenVO();
         Result<AppUser> userResult = userRemoteService.getUserByUsername(userDTO.getUsername());
         AppUser user = userResult.getData();
-        Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG_MORE"));
+        Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
         Assert.isTrue(user.getStatus() == 1, MessageConstants.getMsg("ACCOUNT_LOCK"));
         Boolean passwordCheck = user.getPassword().equals(userDTO.getPassword());
-        Assert.isTrue(passwordCheck, MessageConstants.getMsg("USER_PASS_WRONG_MORE"));
+        Assert.isTrue(passwordCheck, MessageConstants.getMsg("USER_PASS_WRONG"));
         String token = JwtHelper.createToken(userDTO.getUsername(), user.getId());
         String refreshToken = JwtHelper.createRefresh(userDTO.getUsername(), user.getId());
         vo.setRefreshToken(refreshToken);
