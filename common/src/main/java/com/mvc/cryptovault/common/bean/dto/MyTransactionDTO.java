@@ -23,9 +23,6 @@ public class MyTransactionDTO {
     @ApiModelProperty("订单类型 0买单 1卖单")
     private Integer transactionType;
 
-    @ApiModelProperty("项目名称")
-    private String projectName;
-
     @ApiModelProperty("上一条记录id,如果为0或不存在则重头拉取,否则从目标位置记录增量拉取")
     private BigInteger id;
 

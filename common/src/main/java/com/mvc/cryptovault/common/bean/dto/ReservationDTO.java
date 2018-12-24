@@ -21,5 +21,8 @@ public class ReservationDTO {
     @ApiModelProperty("0上拉 1下拉")
     private Integer type;
 
+    @ApiModelProperty("项目名称")
+    private String projectName;
+
     private Integer pageSize = 10;
 }

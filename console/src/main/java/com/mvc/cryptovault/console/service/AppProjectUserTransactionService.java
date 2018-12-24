@@ -21,6 +21,7 @@ import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.AppProjectUserTransactionMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AppProjectUserTransactionService extends AbstractService<AppProjectUserTransaction> implements BaseService<AppProjectUserTransaction> {
@@ -132,29 +134,23 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
     }
 
     public List<PurchaseVO> getReservation(BigInteger userId, ReservationDTO reservationDTO) {
-        String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
-        putAll(userId, false);
-        List<String> list = null;
-        if (reservationDTO.getId() == null || reservationDTO.getId().equals(BigInteger.ZERO)) {
-            list = redisTemplate.boundListOps(listKey).range(0, reservationDTO.getPageSize());
-        } else {
-            Integer index = getIndex(reservationDTO.getId(), userId);
-            if (null == index) {
-                list = null;
-            } else if (reservationDTO.getType().equals(BusinessConstant.SEARCH_DIRECTION_UP)) {
-                //上拉则最新数据
-                list = redisTemplate.boundListOps(listKey).range(index + 1, index + reservationDTO.getPageSize());
-            } else {
-                list = redisTemplate.boundListOps(listKey).range(index - reservationDTO.getPageSize(), index - 1);
+        List<AppProjectUserTransaction> transList = null;
+        List<PurchaseVO> result = new ArrayList<>(10);
+
+        if (StringUtils.isNotBlank(reservationDTO.getProjectName())) {
+            String ids = appProjectService.findIdsByName(reservationDTO.getProjectName());
+            if (StringUtils.isBlank(ids)) {
+                return new ArrayList<>(0);
             }
+            //按项目名搜索不分页
+            transList = getTransByProjectIds(userId, ids);
+        } else {
+            transList = getAppProjectUserTransactionsCache(userId, reservationDTO);
+            if (transList == null) return null;
         }
-        if (null == list) {
-            return null;
-        }
-        List<PurchaseVO> result = new ArrayList<>(list.size());
-        for (int i = list.size() - 1; i >= 0; i--) {
+        for (int i = transList.size() - 1; i >= 0; i--) {
             PurchaseVO vo = new PurchaseVO();
-            AppProjectUserTransaction appProjectUserTransaction = JSON.parseObject(list.get(i), AppProjectUserTransaction.class);
+            AppProjectUserTransaction appProjectUserTransaction = transList.get(i);
             AppProject project = appProjectService.findById(appProjectUserTransaction.getProjectId());
             vo.setCreatedAt(appProjectUserTransaction.getCreatedAt());
             vo.setId(appProjectUserTransaction.getId());
@@ -176,6 +172,40 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
             result.add(vo);
         }
         return result;
+    }
+
+    private List<AppProjectUserTransaction> getTransByProjectIds(BigInteger userId, String ids) {
+        Condition condition = new Condition(AppProjectUserTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "user_id = ", userId);
+        ConditionUtil.andCondition(criteria, String.format("project_id in (%s)", ids));
+        return findByCondition(condition);
+    }
+
+    @Nullable
+    private List<AppProjectUserTransaction> getAppProjectUserTransactionsCache(BigInteger userId, ReservationDTO reservationDTO) {
+        List<AppProjectUserTransaction> transList;
+        String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
+        putAll(userId, false);
+        List<String> list = null;
+        if (reservationDTO.getId() == null || reservationDTO.getId().equals(BigInteger.ZERO)) {
+            list = redisTemplate.boundListOps(listKey).range(0, reservationDTO.getPageSize());
+        } else {
+            Integer index = getIndex(reservationDTO.getId(), userId);
+            if (null == index) {
+                list = null;
+            } else if (reservationDTO.getType().equals(BusinessConstant.SEARCH_DIRECTION_UP)) {
+                //上拉则最新数据
+                list = redisTemplate.boundListOps(listKey).range(index + 1, index + reservationDTO.getPageSize());
+            } else {
+                list = redisTemplate.boundListOps(listKey).range(index - reservationDTO.getPageSize(), index - 1);
+            }
+        }
+        if (null == list) {
+            return null;
+        }
+        transList = list.stream().map(obj -> JSON.parseObject(obj, AppProjectUserTransaction.class)).collect(Collectors.toList());
+        return transList;
     }
 
     private Integer getIndex(BigInteger id, BigInteger userId) {

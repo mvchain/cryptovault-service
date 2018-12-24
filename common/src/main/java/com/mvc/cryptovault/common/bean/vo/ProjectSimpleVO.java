@@ -47,4 +47,5 @@ public class ProjectSimpleVO {
     private Long stopAt;
     @ApiModelProperty("项目图标")
     private String projectImage;
+
 }

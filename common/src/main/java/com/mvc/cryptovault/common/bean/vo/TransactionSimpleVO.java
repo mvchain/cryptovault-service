@@ -35,5 +35,6 @@ public class TransactionSimpleVO {
     private Integer classify;
     @ApiModelProperty("id")
     private BigInteger id;
-
+    @ApiModelProperty("备注字段,如众筹项目类型则为项目名称,交易则为交易对名称")
+    private String orderRemark;
 }
