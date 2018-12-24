@@ -77,6 +77,7 @@ public class AppOrder implements Serializable {
     @Column(name = "status")
     private Integer status;
 
+    private String orderRemark;
     /**
      * 交易金额变动
      */

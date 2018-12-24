@@ -51,6 +51,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         vo.setFee(null == detail ? null : detail.getFee());
         vo.setFeeTokenType(token.getTokenType());
         vo.setHashLink(token.getLink() + order.getHash());
+        vo.setOrderRemark(order.getOrderRemark());
         vo.setTokenName(token.getTokenName());
         vo.setFromAddress(order.getFromAddress());
         vo.setBlockHash(order.getHash());
@@ -121,6 +122,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         order.setFromAddress(blockTransaction.getFromAddress());
         order.setUpdatedAt(time);
         order.setCreatedAt(time);
+        order.setOrderRemark("");
         order.setTokenId(blockTransaction.getTokenId());
         order.setClassify(BusinessConstant.CLASSIFY_BLOCK);
         save(order);
@@ -159,6 +161,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setUserId(appProjectUserTransaction.getUserId());
         appOrder.setTokenId(project.getBaseTokenId());
         appOrder.setStatus(appProjectUserTransaction.getResult());
+        appOrder.setOrderRemark(project.getProjectName());
         appOrder.setOrderType(appProjectUserTransaction.getResult() != 9 && appProjectUserTransaction.getResult() != 4 ? 2 : 1);
         save(appOrder);
         AppOrderDetail detail = new AppOrderDetail();
@@ -175,7 +178,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appMessageService.sendProject(appProjectUserTransaction.getUserId(), project.getId(), appOrder.getId(), appProjectUserTransaction.getResult(), project.getStatus(), project.getTokenName(), project.getProjectName(), appProjectUserTransaction.getValue());
     }
 
-    public void saveOrder(AppUserTransaction transaction) {
+    public void saveOrder(AppUserTransaction transaction, CommonPair commonPair) {
         CommonPair pair = commonPairService.findById(transaction.getPairId());
         if (null == pair) {
             return;
@@ -195,6 +198,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setTokenId(pair.getTokenId());
         appOrder.setStatus(2);
         appOrder.setOrderType(transaction.getTransactionType());
+        appOrder.setOrderRemark(commonPair.getPairName());
         save(appOrder);
         AppOrder baseOrder = new AppOrder();
         BeanUtils.copyProperties(appOrder, baseOrder);
@@ -256,7 +260,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         saveOrder(appProjectUserTransaction, appProject);
     }
 
-    public AppOrder saveOrder(AppProjectPartake appProjectPartake) {
+    public AppOrder saveOrder(AppProjectPartake appProjectPartake, AppProject appProject) {
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(2);
@@ -272,7 +276,18 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setTokenId(appProjectPartake.getTokenId());
         appOrder.setStatus(2);
         appOrder.setOrderType(1);
+        appOrder.setOrderRemark(null == appProject ? "" : appProject.getProjectName());
         save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(appOrder.getValue());
+        appOrderDetailService.save(detail);
         return appOrder;
     }
 

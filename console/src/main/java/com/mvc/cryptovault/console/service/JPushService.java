@@ -74,7 +74,6 @@ public class JPushService {
     public Boolean sendTag(String msg, BigInteger projectId) {
         HashMap<String, String> extra = new HashMap<>();
         extra.put("orderId", String.valueOf(0));
-
         PushPayload payload = buildTagPush(msg, extra, projectId);
         try {
             PushResult result = jPushClient.sendPush(payload);

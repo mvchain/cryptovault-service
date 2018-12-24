@@ -195,7 +195,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         transaction.setTargetUserId(targetTransaction.getUserId());
         transaction.setSelfOrder(1);
         save(transaction);
-        appOrderService.saveOrder(transaction);
+        appOrderService.saveOrder(transaction, pair);
         //生成目标用户交易记录
         var targetSubTransaction = new AppUserTransaction();
         BeanUtils.copyProperties(transaction, targetSubTransaction);
@@ -207,7 +207,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         targetSubTransaction.setTransactionType(dto.getTransactionType().equals(1) ? 2 : 1);
         targetSubTransaction.setSelfOrder(0);
         save(targetSubTransaction);
-        appOrderService.saveOrder(targetSubTransaction);
+        appOrderService.saveOrder(targetSubTransaction, pair);
         //成交后根据买卖分类更新对应余额
         if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
             //购买成功时添加币种余额

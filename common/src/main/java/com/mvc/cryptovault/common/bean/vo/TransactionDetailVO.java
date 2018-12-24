@@ -20,7 +20,7 @@ public class TransactionDetailVO {
     @ApiModelProperty("订单更新日期")
     private Long updatedAt;
 
-    @ApiModelProperty("订单状态0待打包 1区块确认中 2交易陈宫 9交易失败")
+    @ApiModelProperty("订单状态0待打包 1区块确认中 2交易成功 9交易失败")
     private Integer status;
 
     @ApiModelProperty("手续费")
@@ -49,5 +49,8 @@ public class TransactionDetailVO {
 
     @ApiModelProperty("交易分类[0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）]3划账")
     private Integer classify;
+
+    @ApiModelProperty("备注字段,如众筹项目类型则为项目名称,交易则为交易对名称")
+    private String orderRemark;
 
 }

@@ -63,11 +63,15 @@ public class AppProjectPartakeService extends AbstractService<AppProjectPartake>
         ConditionUtil.andCondition(criteria, "publish_time <= ", time);
         ConditionUtil.andCondition(criteria, "times > ", 0);
         List<AppProjectPartake> list = appProjectPartakeMapper.selectByCondition(condition);
-        Map<BigInteger, Object> projectMap = new HashMap<>(5);
+        Map<BigInteger, AppProject> projectMap = new HashMap<>(5);
         List<AppOrder> orders = new ArrayList<>(list.size());
         list.forEach(appProjectPartake -> {
             //统计所有项目,统一发送推送
-            projectMap.put(appProjectPartake.getProjectId(), 1);
+            AppProject appProject = projectMap.get(appProjectPartake.getProjectId());
+            if(null ==appProject ){
+                appProject =  appProjectService.findById(appProjectPartake.getProjectId());
+                projectMap.put(appProjectPartake.getProjectId(),appProject);
+            }
             appProjectPartake.setTimes(appProjectPartake.getTimes() - 1);
             //没有释放完毕,更新下一次推送时间为下一个周期
             if (appProjectPartake.getTimes() > 0) {
@@ -75,14 +79,14 @@ public class AppProjectPartakeService extends AbstractService<AppProjectPartake>
             }
             update(appProjectPartake);
             //添加到统一订单列表
-            AppOrder order = appOrderService.saveOrder(appProjectPartake);
+            AppOrder order = appOrderService.saveOrder(appProjectPartake, appProject);
             orders.add(order);
             //更新余额
             appUserBalanceService.updateBalance(appProjectPartake.getUserId(), appProjectPartake.getTokenId(), appProjectPartake.getReverseValue());
         });
         //TODO 意外停止服务后需要将message表中不存在的orderid对应数据重新发送
         for (BigInteger key : projectMap.keySet()) {
-            AppProject project = appProjectService.findById(key);
+            AppProject project = projectMap.get(key);
             if (null != project) {
                 appMessageService.sendPublish(project.getId(), project.getProjectName(), time, project.getTokenName(), orders);
             }

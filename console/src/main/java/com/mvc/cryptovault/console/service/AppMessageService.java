@@ -79,9 +79,6 @@ public class AppMessageService {
     }
 
     private void saveMsgByProjectId(BigInteger projectId, Boolean result, String msg, List<AppOrder> list) {
-        AppOrder appOrder = new AppOrder();
-        appOrder.setProjectId(projectId);
-        appOrder.setStatus(2);
         list.forEach(obj -> {
             saveMsg(obj.getUserId(), result, obj.getId(), msg);
         });
