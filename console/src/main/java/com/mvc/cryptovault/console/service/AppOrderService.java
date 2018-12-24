@@ -122,7 +122,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         order.setFromAddress(blockTransaction.getFromAddress());
         order.setUpdatedAt(time);
         order.setCreatedAt(time);
-        order.setOrderRemark(tokenService.getTokenName(blockTransaction.getTokenId()) + (blockTransaction.getOprType() == 1 ? "收入" : "支出"));
+        order.setOrderRemark(tokenService.getTokenName(blockTransaction.getTokenId()));
         order.setTokenId(blockTransaction.getTokenId());
         order.setClassify(BusinessConstant.CLASSIFY_BLOCK);
         save(order);

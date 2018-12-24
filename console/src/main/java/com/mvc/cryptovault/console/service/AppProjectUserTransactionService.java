@@ -136,7 +136,6 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
     public List<PurchaseVO> getReservation(BigInteger userId, ReservationDTO reservationDTO) {
         List<AppProjectUserTransaction> transList = null;
         List<PurchaseVO> result = new ArrayList<>(10);
-
         if (StringUtils.isNotBlank(reservationDTO.getProjectName())) {
             String ids = appProjectService.findIdsByName(reservationDTO.getProjectName());
             if (StringUtils.isBlank(ids)) {
@@ -177,6 +176,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
     private List<AppProjectUserTransaction> getTransByProjectIds(BigInteger userId, String ids) {
         Condition condition = new Condition(AppProjectUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
+        PageHelper.orderBy("id desc");
         ConditionUtil.andCondition(criteria, "user_id = ", userId);
         ConditionUtil.andCondition(criteria, String.format("project_id in (%s)", ids));
         return findByCondition(condition);
