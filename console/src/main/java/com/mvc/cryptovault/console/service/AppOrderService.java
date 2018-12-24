@@ -147,7 +147,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     public void saveOrder(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
         Long time = appProjectUserTransaction.getCreatedAt();
         AppOrder appOrder = new AppOrder();
-        appOrder.setClassify(0);
+        appOrder.setClassify(2);
         appOrder.setCreatedAt(time);
         appOrder.setUpdatedAt(time);
         appOrder.setFromAddress("");
