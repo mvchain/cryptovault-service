@@ -125,4 +125,8 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
             updateAllCache("id desc");
         }
     }
+
+    public String findIdsByName(String projectName) {
+        return appProjectMapper.findIdsByName(projectName);
+    }
 }

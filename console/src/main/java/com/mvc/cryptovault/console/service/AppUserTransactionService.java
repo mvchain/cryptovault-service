@@ -57,6 +57,8 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     TokenVolumeService tokenVolumeService;
     @Autowired
     AppUserTransactionMapper appUserTransactionMapper;
+    @Autowired
+    AppProjectService appProjectService;
 
     public List<OrderVO> getTransactions(OrderDTO dto) {
         Condition condition = new Condition(AppUserTransaction.class);
@@ -66,7 +68,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         ConditionUtil.andCondition(criteria, "transaction_type = ", dto.getTransactionType());
         ConditionUtil.andCondition(criteria, "pair_id =", dto.getPairId());
         PageHelper.startPage(1, dto.getPageSize());
-        if (1 == dto.getTransactionType()) {
+        if (2 == dto.getTransactionType()) {
             PageHelper.orderBy("price asc,id desc");
         } else {
             PageHelper.orderBy("price desc,id desc");
@@ -96,6 +98,13 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     public List<MyOrderVO> getUserTransactions(BigInteger userId, MyTransactionDTO dto) {
         Condition condition = new Condition(AppUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
+        if (StringUtils.isNotBlank(dto.getProjectName())) {
+            String ids = appProjectService.findIdsByName(dto.getProjectName());
+            if (StringUtils.isBlank(ids)) {
+                return new ArrayList<>(0);
+            }
+            ConditionUtil.andCondition(criteria, String.format("project_id in (%s)", ids));
+        }
         ConditionUtil.andCondition(criteria, "pair_id = ", dto.getPairId());
         if (null == dto.getStatus()) {
             ConditionUtil.andCondition(criteria, "status in (0, 1)");
@@ -149,7 +158,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     private void checkDto(AppUserTransaction targetTransaction, TransactionBuyDTO dto) {
         Assert.isTrue(!targetTransaction.getTransactionType().equals(dto.getTransactionType()), MessageConstants.getMsg("TRANS_MSG_ERROR"));
-        Assert.isTrue(dto.getPrice().compareTo(targetTransaction.getPrice()) ==0, MessageConstants.getMsg("TRANS_MSG_ERROR"));
+        Assert.isTrue(dto.getPrice().compareTo(targetTransaction.getPrice()) == 0, MessageConstants.getMsg("TRANS_MSG_ERROR"));
     }
 
     public void saveAll(BigInteger userId, TransactionBuyDTO dto, AppUserTransaction targetTransaction, CommonPair pair) {
@@ -246,7 +255,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     }
 
     private void checkBalance(BigInteger userId, TransactionBuyDTO dto, CommonPair pair) {
-        if(dto.getTransactionType() == 1){
+        if (dto.getTransactionType() == 1) {
             //购买，需要校验基础货币余额
             BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId());
             Assert.isTrue(dto.getValue().multiply(dto.getPrice()).compareTo(balance) <= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
