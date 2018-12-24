@@ -240,6 +240,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
         appOrder.setStatus(2);
         appOrder.setOrderType(2);
+        appOrder.setOrderRemark("余额");
         save(appOrder);
         AppOrderDetail detail = new AppOrderDetail();
         detail.setCreatedAt(time);
