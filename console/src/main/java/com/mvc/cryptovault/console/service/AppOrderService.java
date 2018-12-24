@@ -227,7 +227,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     public void saveHzOrder(BigDecimal value, BigInteger userId) {
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
-        appOrder.setClassify(0);
+        appOrder.setClassify(3);
         appOrder.setCreatedAt(time);
         appOrder.setUpdatedAt(time);
         appOrder.setFromAddress("");
