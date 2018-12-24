@@ -98,13 +98,6 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     public List<MyOrderVO> getUserTransactions(BigInteger userId, MyTransactionDTO dto) {
         Condition condition = new Condition(AppUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
-        if (StringUtils.isNotBlank(dto.getProjectName())) {
-            String ids = appProjectService.findIdsByName(dto.getProjectName());
-            if (StringUtils.isBlank(ids)) {
-                return new ArrayList<>(0);
-            }
-            ConditionUtil.andCondition(criteria, String.format("project_id in (%s)", ids));
-        }
         ConditionUtil.andCondition(criteria, "pair_id = ", dto.getPairId());
         if (null == dto.getStatus()) {
             ConditionUtil.andCondition(criteria, "status in (0, 1)");
@@ -269,7 +262,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     private void checkPrice(TransactionBuyDTO dto, CommonPair pair, CommonTokenPrice tokenPrice) {
         //直接成交交易不校验浮动范围
-        if(dto.getId() == null || dto.getId().equals(BigInteger.ZERO)){
+        if (dto.getId() == null || dto.getId().equals(BigInteger.ZERO)) {
             return;
         }
         CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
