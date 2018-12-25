@@ -156,7 +156,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         }
     }
 
-    public void debit(BigInteger userId, BigDecimal value) {
+    public void debit(BigInteger userId, BigDecimal value, Integer orderType, Integer transferType) {
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
         appUserBalanceMapper.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE, value);
         AppUserBalance balance = new AppUserBalance();
@@ -164,7 +164,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         balance.setTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
         balance = findOneByEntity(balance);
         redisTemplate.boundHashOps(key).put(String.valueOf(balance.getTokenId()), balance.getVisible() + "#" + String.valueOf(balance.getBalance()));
-        appOrderService.saveHzOrder(value, userId);
+        appOrderService.saveHzOrder(value, userId, orderType, transferType);
     }
 
     public void setAssetVisible(AssertVisibleDTO visibleDTO, BigInteger userId) {

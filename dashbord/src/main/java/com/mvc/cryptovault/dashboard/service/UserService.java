@@ -2,6 +2,7 @@ package com.mvc.cryptovault.dashboard.service;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppUser;
+import com.mvc.cryptovault.common.bean.dto.DebitRechargeDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
@@ -51,5 +52,9 @@ public class UserService extends BaseService {
     public Boolean importAppUser(List<AppUser> list, String fileName) {
         remoteService.importAppUser(list, fileName);
         return true;
+    }
+
+    public void debitRecharge(DebitRechargeDTO rechargeDTO) {
+        remoteService.debit(rechargeDTO);
     }
 }

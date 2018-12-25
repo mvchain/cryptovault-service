@@ -3,6 +3,7 @@ package com.mvc.cryptovault.dashboard.controller;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppUser;
+import com.mvc.cryptovault.common.bean.dto.DebitRechargeDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
@@ -14,7 +15,6 @@ import com.mvc.cryptovault.common.permission.PermissionCheck;
 import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.Cleanup;
 import org.apache.commons.io.IOUtils;
@@ -114,4 +114,12 @@ public class UserController extends BaseController {
         Boolean result = userService.importAppUser(list, fileName);
         return new Result<>(result);
     }
+
+    @ApiOperation("导入余额（划账）")
+    @PutMapping
+    public Result<Boolean> debitRecharge(@RequestBody DebitRechargeDTO rechargeDTO) {
+        userService.debitRecharge(rechargeDTO);
+        return new Result<>(true);
+    }
+
 }

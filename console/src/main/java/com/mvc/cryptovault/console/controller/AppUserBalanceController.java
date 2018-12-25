@@ -3,6 +3,7 @@ package com.mvc.cryptovault.console.controller;
 import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.AssertVisibleDTO;
 import com.mvc.cryptovault.common.bean.dto.DebitDTO;
+import com.mvc.cryptovault.common.bean.dto.DebitRechargeDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
 import com.mvc.cryptovault.common.util.MessageConstants;
@@ -52,7 +53,6 @@ public class AppUserBalanceController extends BaseController {
         return new Result<>(sum);
     }
 
-
     @GetMapping("debit/{userId}")
     public Result<BigDecimal> debit(@PathVariable("userId") BigInteger userId) {
         BigDecimal result = appUserBalanceService.getBalanceByTokenId(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE);
@@ -63,9 +63,16 @@ public class AppUserBalanceController extends BaseController {
     public Result<Boolean> debit(@PathVariable("userId") BigInteger userId, @RequestBody DebitDTO debitDTO) {
         AppUser user = appUserService.findById(userId);
         Assert.isTrue(user.getTransactionPassword().equalsIgnoreCase(debitDTO.getPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
-        appUserBalanceService.debit(userId, BigDecimal.ZERO.subtract(debitDTO.getValue()));
+        appUserBalanceService.debit(userId, BigDecimal.ZERO.subtract(debitDTO.getValue()), 2, 0);
         return new Result<>(true);
     }
 
+    @PutMapping("debit")
+    public Result<Boolean> debitRecharge(@RequestBody DebitRechargeDTO debitDTO) {
+        AppUser user = appUserService.findOneBy("cellphone", debitDTO.getCellphone());
+        Assert.notNull(user, "用户不存在");
+        appUserBalanceService.debit(user.getId(), debitDTO.getValue(), 1, 1);
+        return new Result<>(true);
+    }
 
 }

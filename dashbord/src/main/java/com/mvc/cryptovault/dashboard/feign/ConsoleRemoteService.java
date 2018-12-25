@@ -2,9 +2,7 @@ package com.mvc.cryptovault.dashboard.feign;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
-import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
-import com.mvc.cryptovault.common.bean.dto.ImportPartake;
-import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.dto.*;
 import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
 import com.mvc.cryptovault.common.bean.vo.DPairVO;
 import com.mvc.cryptovault.common.bean.vo.ExportPartake;
@@ -167,4 +165,7 @@ public interface ConsoleRemoteService {
 
     @PostMapping("dashboard/appUser")
     Result<Boolean> importAppUser(@RequestBody List<AppUser> list, @RequestParam("fileName") String fileName);
+
+    @PutMapping("appUserBalance/debit")
+    Result<Boolean> debit(@RequestBody DebitRechargeDTO debitRechargeDTO);
 }

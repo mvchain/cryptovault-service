@@ -224,7 +224,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appMessageService.sendTrade(appOrder.getId(), appOrder.getUserId(), pair.getPairName(), appOrder.getOrderType(), appOrder.getValue(), pair.getTokenName());
     }
 
-    public void saveHzOrder(BigDecimal value, BigInteger userId) {
+    public void saveHzOrder(BigDecimal value, BigInteger userId, Integer orderType, Integer transferType) {
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(3);
@@ -239,7 +239,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setUserId(userId);
         appOrder.setTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
         appOrder.setStatus(2);
-        appOrder.setOrderType(2);
+        appOrder.setOrderType(orderType);
         appOrder.setOrderRemark("余额");
         save(appOrder);
         AppOrderDetail detail = new AppOrderDetail();
@@ -252,7 +252,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setOrderId(appOrder.getId());
         detail.setValue(value);
         appOrderDetailService.save(detail);
-        appMessageService.transferMsg(appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(BusinessConstant.BASE_TOKEN_ID_BALANCE), 0, 2);
+        appMessageService.transferMsg(appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(BusinessConstant.BASE_TOKEN_ID_BALANCE), transferType, 2);
     }
 
     public void saveOrderProject(AppProjectUserTransaction appProjectUserTransaction, AppProject appProject) {
