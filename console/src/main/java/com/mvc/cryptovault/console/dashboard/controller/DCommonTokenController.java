@@ -87,6 +87,8 @@ public class DCommonTokenController extends BaseController {
         CommonToken token = commonTokenService.findById(id);
         DTokenDTO vo = new DTokenDTO();
         BeanUtils.copyProperties(token, vo);
+        vo.setContractAddress(token.getTokenContractAddress());
+        vo.setDecimals(token.getTokenDecimal());
         vo.setTokenId(token.getId());
         return new Result<>(vo);
     }

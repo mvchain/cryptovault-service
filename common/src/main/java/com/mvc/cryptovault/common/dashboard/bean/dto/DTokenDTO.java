@@ -30,7 +30,7 @@ public class DTokenDTO implements Serializable {
     private String tokenCnName;
 
     @ApiModelProperty("小数位数")
-    private String decimals;
+    private Integer decimals;
 
     @ApiModelProperty("合约地址")
     private String contractAddress;
