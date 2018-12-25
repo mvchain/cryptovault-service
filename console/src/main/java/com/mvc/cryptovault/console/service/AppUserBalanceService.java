@@ -158,8 +158,9 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
 
     public void debit(BigInteger userId, BigDecimal value, Integer orderType, Integer transferType) {
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
-        appUserBalanceMapper.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE, value);
         AppUserBalance balance = getAppUserBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE);
+        appUserBalanceMapper.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE, value);
+        balance = getAppUserBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE);
         redisTemplate.boundHashOps(key).put(String.valueOf(balance.getTokenId()), balance.getVisible() + "#" + String.valueOf(balance.getBalance()));
         appOrderService.saveHzOrder(value, userId, orderType, transferType);
     }
