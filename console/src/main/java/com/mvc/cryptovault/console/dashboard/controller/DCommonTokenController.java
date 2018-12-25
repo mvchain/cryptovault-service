@@ -1,13 +1,11 @@
 package com.mvc.cryptovault.console.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
-import com.mvc.cryptovault.common.bean.BlockHeight;
 import com.mvc.cryptovault.common.bean.CommonPair;
 import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTokenDTO;
-import com.mvc.cryptovault.common.dashboard.bean.vo.DHoldVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenTransSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenVO;
@@ -43,7 +41,7 @@ public class DCommonTokenController extends BaseController {
     CommonTokenService commonTokenService;
 
     @GetMapping("")
-    public Result<List<DTokenVO>> findTokens(@RequestParam(value = "tokenName", required = false) String tokenName,@RequestParam(value = "isBlock", required = false) Integer blockType) {
+    public Result<List<DTokenVO>> findTokens(@RequestParam(value = "tokenName", required = false) String tokenName, @RequestParam(value = "isBlock", required = false) Integer blockType) {
         List<CommonToken> list = null;
         if (StringUtils.isNotBlank(tokenName)) {
             list = commonTokenService.findBy("tokenName", tokenName);
@@ -52,15 +50,15 @@ public class DCommonTokenController extends BaseController {
         }
         List<DTokenVO> result = new ArrayList<>();
         for (CommonToken token : list) {
-            if(null != blockType &&  BusinessConstant.CLASSIFY_BLOCK.equals(0) && StringUtils.isBlank(token.getTokenType())){
-               //只筛选区块链类型
+            if (null != blockType && BusinessConstant.CLASSIFY_BLOCK.equals(0) && StringUtils.isBlank(token.getTokenType())) {
+                //只筛选区块链类型
                 continue;
             }
             DTokenVO vo = new DTokenVO();
             vo.setTokenId(token.getId());
             List<CommonPair> pair = commonPairService.findBy("tokenId", token.getId());
-            if(null != pair){
-                pair = pair.stream().filter(obj->obj.getStatus() == 1).collect(Collectors.toList());
+            if (null != pair) {
+                pair = pair.stream().filter(obj -> obj.getStatus() == 1).collect(Collectors.toList());
             }
             BeanUtils.copyProperties(token, vo);
             Integer tokenInfo = pair.size() == 2 ? 3 : pair.size() == 0 ? 0 : pair.get(0).getBaseTokenId().equals(BigInteger.ONE) ? 1 : 2;
@@ -97,7 +95,9 @@ public class DCommonTokenController extends BaseController {
     public Result<Boolean> updateToken(@RequestBody DTokenDTO dTokenDTO) {
         CommonToken token = new CommonToken();
         BeanUtils.copyProperties(dTokenDTO, token);
-        token.setTokenType(null == dTokenDTO.getBlockType() ? "" : dTokenDTO.getBlockType());
+        if (!dTokenDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
+            token.setTokenType(null == dTokenDTO.getBlockType() ? "" : dTokenDTO.getBlockType());
+        }
         token.setId(dTokenDTO.getTokenId());
         commonTokenService.update(token);
         commonTokenService.updateAllCache();
