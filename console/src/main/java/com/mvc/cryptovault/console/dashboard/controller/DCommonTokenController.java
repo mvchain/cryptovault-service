@@ -97,6 +97,8 @@ public class DCommonTokenController extends BaseController {
         BeanUtils.copyProperties(dTokenDTO, token);
         if (!dTokenDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
             token.setTokenType(null == dTokenDTO.getBlockType() ? "" : dTokenDTO.getBlockType());
+        } else if (!dTokenDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT)) {
+            token.setTokenType("BTC");
         } else {
             token.setTokenType("ETH");
         }
