@@ -101,6 +101,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             balance.setTokenId(baseTokenId);
             balance.setUserId(userId);
             save(balance);
+            getAsset(userId, true);
         }
         return balance;
     }

@@ -105,6 +105,8 @@ public class DCommonTokenController extends BaseController {
             token.setTokenType(null == dTokenDTO.getBlockType() ? "" : dTokenDTO.getBlockType());
         }
         token.setId(dTokenDTO.getTokenId());
+        token.setTokenContractAddress(dTokenDTO.getContractAddress());
+        token.setTokenDecimal(dTokenDTO.getDecimals());
         commonTokenService.update(token);
         commonTokenService.updateAllCache();
         commonTokenService.updateCache(token.getId());
