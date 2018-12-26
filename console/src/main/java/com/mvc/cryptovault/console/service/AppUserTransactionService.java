@@ -262,7 +262,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
 
     private void checkPrice(TransactionBuyDTO dto, CommonPair pair, CommonTokenPrice tokenPrice) {
         //直接成交交易不校验浮动范围
-        if (dto.getId() != null || !dto.getId().equals(BigInteger.ZERO)) {
+        if (dto.getId() != null && !dto.getId().equals(BigInteger.ZERO)) {
             return;
         }
         CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
