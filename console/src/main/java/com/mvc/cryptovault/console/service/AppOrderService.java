@@ -147,7 +147,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveOrder(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
-        Long time = appProjectUserTransaction.getCreatedAt();
+        Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(2);
         appOrder.setCreatedAt(time);
@@ -256,9 +256,8 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveOrderProject(AppProjectUserTransaction appProjectUserTransaction, AppProject appProject) {
-        appProjectUserTransaction.setValue(appProjectUserTransaction.getSuccessValue());
-        appProjectUserTransaction.setPayed(appProjectUserTransaction.getSuccessPayed());
-        saveOrder(appProjectUserTransaction, appProject);
+        //预约成功没有单独的订单id
+        appMessageService.sendProject(appProjectUserTransaction.getUserId(), appProject.getId(), appProjectUserTransaction.getId(), appProjectUserTransaction.getResult(), appProject.getStatus(), appProject.getTokenName(), appProject.getProjectName(), appProjectUserTransaction.getSuccessValue());
     }
 
     public AppOrder saveOrder(AppProjectPartake appProjectPartake, AppProject appProject) {
@@ -320,5 +319,36 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
                 update(obj);
             });
         }
+    }
+
+    public void setOrderReturn(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
+        appProjectUserTransaction.setSuccessValue(appProjectUserTransaction.getValue().subtract(appProjectUserTransaction.getSuccessValue()));
+        Long time = System.currentTimeMillis();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(2);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(appProjectUserTransaction.getId());
+        appOrder.setOrderContentName(BusinessConstant.CONTENT_PROJECT);
+        appOrder.setOrderNumber(appProjectUserTransaction.getProjectOrderNumber());
+        appOrder.setValue(appProjectUserTransaction.getPayed().subtract(appProjectUserTransaction.getSuccessPayed()));
+        appOrder.setUserId(appProjectUserTransaction.getUserId());
+        appOrder.setTokenId(project.getBaseTokenId());
+        appOrder.setStatus(9);
+        appOrder.setOrderRemark(project.getProjectName());
+        appOrder.setOrderType(1);
+        save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(appProjectUserTransaction.getValue());
+        appOrderDetailService.save(detail);
     }
 }

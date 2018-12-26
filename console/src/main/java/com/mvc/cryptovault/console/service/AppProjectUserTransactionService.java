@@ -282,6 +282,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
     }
 
     public void updatePartake(ImportPartake partake, AppProject appProject) {
+        appProject.setStatus(2);
         AppProjectUserTransaction appProjectUserTransaction = new AppProjectUserTransaction();
         appProjectUserTransaction.setProjectId(partake.getProjectId());
         appProjectUserTransaction.setResult(0);
@@ -301,6 +302,8 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
                 if (transaction.getSuccessValue().compareTo(transaction.getValue()) != 0) {
                     //没有全额成功,退还剩余费用
                     appUserBalanceService.updateBalance(transaction.getUserId(), appProject.getBaseTokenId(), transaction.getPayed().subtract(transaction.getSuccessPayed()));
+                    appOrderService.saveOrderProject(transaction, appProject);
+                    appOrderService.setOrderReturn(transaction, appProject);
                 }
                 appOrderService.saveOrderProject(transaction, appProject);
                 break;
