@@ -137,6 +137,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         vo.setBalance(appUserBalanceService.getBalanceByTokenId(userId, pair.getBaseTokenId()));
         vo.setTokenBalance(appUserBalanceService.getBalanceByTokenId(userId, pair.getTokenId()));
         vo.setPrice(null == price ? BigDecimal.ZERO : price.getTokenPrice());
+        vo.setMinLimit(null == tokenControl ? BigDecimal.ZERO : tokenControl.getMinLimit());
         if (null != id && !BigInteger.ZERO.equals(id)) {
             AppUserTransaction trans = appUserTransactionService.findById(id);
             vo.setValue(trans.getValue().subtract(trans.getSuccessValue()));

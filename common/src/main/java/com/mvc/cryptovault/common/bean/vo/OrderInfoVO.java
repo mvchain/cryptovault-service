@@ -31,4 +31,7 @@ public class OrderInfoVO {
 
     @ApiModelProperty("剩余可购买数量(仅对指定挂单进行购买时,展示为该笔订单还剩多少未成交额)")
     private BigDecimal value;
+
+    @ApiModelProperty("最小挂单数量")
+    private BigDecimal minLimit;
 }

@@ -166,7 +166,7 @@ public class AppProjectUserTransaction implements Serializable {
 
     /**
      * 结果-等待 1成功 4取消 9失败
-     * @return result 结果-等待 1成功 4取消 9失败
+     * @return result 结果-0等待 1成功 4取消 9失败
      */
     public Integer getResult() {
         return result;
