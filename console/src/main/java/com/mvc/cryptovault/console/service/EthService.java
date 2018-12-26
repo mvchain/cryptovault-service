@@ -224,7 +224,7 @@ public class EthService extends BlockService {
                 CommonToken token = commonTokenService.findById(tokenId);
                 if (null != token) {
                     BigInteger balanceWei = contractService.balanceOf(token.getTokenContractAddress(), address);
-                    balance = new BigDecimal(balanceWei).divide(BigDecimal.TEN.pow(token.getTokenDecimal()), RoundingMode.HALF_DOWN);
+                    balance = new BigDecimal(balanceWei).divide(BigDecimal.TEN.pow(token.getTokenDecimal()));
                 }
             }
             return balance;
