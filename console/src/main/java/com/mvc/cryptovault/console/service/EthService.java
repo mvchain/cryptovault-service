@@ -345,10 +345,9 @@ public class EthService extends BlockService {
             }
             transaction.setFee(Convert.fromWei(new BigDecimal(gas), Convert.Unit.ETHER));
             transaction.setHeight(receipt.get().getBlockNumber());
-            Boolean success = !receipt.get().getStatus().equals("0x0");
-            transaction.setStatus(success?1:9);
-            transaction.setTransactionStatus(success?4:6);
-            if (receipt.get().getStatus().equals("0x0")) {
+            transaction.setStatus(1);
+            transaction.setTransactionStatus(4);
+            if (receipt.get().getStatus().equals("0x1") && receipt.get().getLogs().size() == 0) {
                 transaction.setErrorMsg("转账失败");
                 transaction.setErrorData("转账失败");
                 transaction.setStatus(9);
