@@ -304,8 +304,9 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
                     appUserBalanceService.updateBalance(transaction.getUserId(), appProject.getBaseTokenId(), transaction.getPayed().subtract(transaction.getSuccessPayed()));
                     appOrderService.saveOrderProject(transaction, appProject);
                     appOrderService.setOrderReturn(transaction, appProject);
+                } else {
+                    appOrderService.saveOrderProject(transaction, appProject);
                 }
-                appOrderService.saveOrderProject(transaction, appProject);
                 break;
             } else {
                 //单笔订单购买数量小于总购买数量,需要分多次处理
