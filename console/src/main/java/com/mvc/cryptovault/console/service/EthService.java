@@ -172,6 +172,7 @@ public class EthService extends BlockService {
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "status = ", 1);
         ConditionUtil.andCondition(criteria, "height <= ", height);
+        ConditionUtil.andCondition(criteria, "height != ", 0);
         ConditionUtil.andCondition(criteria, "token_type = ", "ETH");
         PageHelper.startPage(1, 10);
         List<BlockTransaction> blockTransaction = blockTransactionService.findByCondition(condition);
