@@ -343,7 +343,7 @@ public class UsdtService extends BlockService {
     }
 
     private void updateStatus(String lastNumber) {
-        BigInteger height = NumberUtils.createBigInteger(lastNumber).subtract(BigInteger.valueOf(6));
+        BigInteger height = NumberUtils.createBigInteger(lastNumber).subtract(BigInteger.valueOf(4));
         Condition condition = new Condition(BlockTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "status = ", 1);

@@ -102,7 +102,10 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
                 //地址存在且有对应用户， 则生成记录
                 blockTransaction.setUserId(address.getUserId());
                 blockTransaction.setOprType(blockTransaction.getOprType() == 1 ? 2 : 1);
-                blockTransaction.setValue(blockTransaction.getValue().subtract(blockTransaction.getFee()));
+                if(blockTransaction.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)){
+                    //只有ETH能够扣除手续费
+                    blockTransaction.setValue(blockTransaction.getValue().subtract(blockTransaction.getFee()));
+                }
                 saveOrder(blockTransaction);
             }
         }
@@ -148,6 +151,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         AppOrderDetail detail = appOrderDetailService.findById(obj.getId());
         detail.setHash(obj.getHash());
         detail.setFee(fee);
+        appOrderDetailService.update(detail);
         appMessageService.transferMsg(obj.getId(), obj.getUserId(), obj.getValue(), tokenService.getTokenName(obj.getTokenId()), obj.getOrderType(), obj.getStatus());
     }
 

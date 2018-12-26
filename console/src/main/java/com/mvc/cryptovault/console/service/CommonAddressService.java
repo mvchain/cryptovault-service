@@ -163,7 +163,6 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         BigInteger nonce = getNonce(nonceMap, cold.getAddress());
         BigDecimal value = transaction.getValue().multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
         BigInteger gasLimit = null;
-
         if (token.getId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
             //实际转账金额需要扣除手续费
             gasLimit = BigInteger.valueOf(21000);
@@ -171,10 +170,9 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             value = value.subtract(fee);
             orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         } else {
-            //erc20需要扣除预设的手续费(实际手续费+浮动手续费,实际手续费必须存在)
-            Float fee = null == token.getFee() ? token.getTransaferFee() : token.getTransaferFee() + token.getFee();
+            //erc20暂时无法扣除手续费
             gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value).multiply(BigInteger.valueOf(2));
-            value = value.subtract(BigDecimal.valueOf(fee).multiply(new BigDecimal(gasLimit)));
+            value = value.multiply(new BigDecimal(gasLimit));
             orders.setValue(value);
         }
         orders.setFromAddress(cold.getAddress());
