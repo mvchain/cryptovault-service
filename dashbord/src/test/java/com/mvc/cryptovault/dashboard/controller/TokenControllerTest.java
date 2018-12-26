@@ -39,7 +39,7 @@ public class TokenControllerTest extends BaseTest {
         DTokenDTO dTokenDTO = new DTokenDTO();
         dTokenDTO.setBlockType("ETH");
         dTokenDTO.setContractAddress("");
-        dTokenDTO.setDecimals("10");
+        dTokenDTO.setDecimals(10);
         dTokenDTO.setTokenCnName("小牛");
         dTokenDTO.setTokenEnName(("MVC" + Math.random()).substring(0, 15));
         dTokenDTO.setTokenName(dTokenDTO.getTokenEnName());
@@ -61,7 +61,7 @@ public class TokenControllerTest extends BaseTest {
         dTokenDTO.setTokenId(BigInteger.valueOf(5));
         dTokenDTO.setBlockType("ETH");
         dTokenDTO.setContractAddress("");
-        dTokenDTO.setDecimals("10");
+        dTokenDTO.setDecimals(10);
         dTokenDTO.setTokenCnName("小牛");
         dTokenDTO.setTokenEnName("MVC");
         dTokenDTO.setTokenName("MVC");
