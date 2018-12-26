@@ -100,6 +100,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
                 //地址存在且有对应用户， 则生成记录
                 blockTransaction.setUserId(address.getUserId());
                 blockTransaction.setOprType(blockTransaction.getOprType() == 1 ? 2 : 1);
+                blockTransaction.setValue(blockTransaction.getValue().subtract(blockTransaction.getFee()));
                 saveOrder(blockTransaction);
             }
         }
