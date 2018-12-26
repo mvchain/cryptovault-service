@@ -9,12 +9,14 @@ import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionBuyDTO;
 import com.mvc.cryptovault.common.bean.vo.MyOrderVO;
 import com.mvc.cryptovault.common.bean.vo.OrderVO;
+import com.mvc.cryptovault.common.constant.RocketMqConstant;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.OverTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.OverTransactionVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
+import com.mvc.cryptovault.common.util.RocketMqUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
@@ -146,6 +148,8 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             //校验可购买量是否足够
             checkValue(dto, targetTransaction);
         }
+        dto.setUserId(userId);
+        RocketMqUtil.addToMq(RocketMqConstant.APP_UER_TRANSACTION, RocketMqConstant.SAVE, dto);
         saveAll(userId, dto, targetTransaction, pair);
     }
 

@@ -13,7 +13,7 @@ import java.math.BigInteger;
  */
 @Data
 @ApiModel("挂单交易输入参数")
-public class TransactionBuyDTO {
+public class TransactionBuyDTO extends UserIdDTO{
 
     @ApiModelProperty("数量")
     private BigDecimal value;
