@@ -164,15 +164,16 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             gasLimit = BigInteger.valueOf(21000);
             BigDecimal fee = Convert.fromWei(new BigDecimal(gasLimit.multiply(gasPrice)), Convert.Unit.ETHER);
             value = value.subtract(fee);
+            orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         } else {
             //erc20需要扣除预设的手续费(实际手续费+浮动手续费,实际手续费必须存在)
             gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
             Float fee = null == token.getFee() ? token.getTransaferFee() : token.getTransaferFee() + token.getFee();
-            value = value.subtract(BigDecimal.valueOf(fee));
+            value = value.subtract(BigDecimal.valueOf(fee)).multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
+            orders.setValue(value);
         }
         orders.setFromAddress(cold.getAddress());
         orders.setTokenType(token.getTokenType());
-        orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         orders.setToAddress(transaction.getToAddress());
         orders.setGasLimit(new BigDecimal(gasLimit));
         orders.setGasPrice(new BigDecimal(gasPrice));
@@ -243,13 +244,13 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         BigInteger gasPrice = Convert.toWei(new BigDecimal(token.getTransaferFee()), Convert.Unit.GWEI).toBigInteger();
         //erc20地址需要先运行approve方法
         if (address.getApprove() == 0 && address.getTokenType().equalsIgnoreCase("ETH") && !address.getAddressType().equalsIgnoreCase("ETH")) {
-            nonce = getNonce(nonceMap, address.getAddress());
             BigInteger gasLimit = blockService.get("ETH").getEthEstimateApprove(token.getTokenContractAddress(), address.getAddress(), cold.getAddress());
             //预先发送手续费,该操作gasPrice暂时固定
             BigDecimal value = Convert.fromWei(new BigDecimal(gasLimit.multiply(gasPrice)), Convert.Unit.ETHER);
             if (web3j.ethGetBalance(address.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().compareTo(gasLimit.multiply(gasPrice)) < 0) {
                 blockService.get("ETH").send(hot, address.getAddress(), value);
             }
+            nonce = getNonce(nonceMap, address.getAddress());
             orders.setFromAddress(address.getAddress());
             orders.setTokenType(address.getTokenType());
             orders.setValue(address.getBalance());
