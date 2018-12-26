@@ -180,6 +180,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
      * @param obj
      */
     public void updateSuccess(BlockTransaction obj) {
+        Integer oprType = obj.getOprType();
         int num = blockTransactionMapper.updateSuccess(obj, System.currentTimeMillis());
         BigInteger userId = isInner(obj);
         //内部提现,目标用户添加余额
@@ -187,7 +188,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
             appUserBalanceService.updateBalance(userId, obj.getTokenId(), obj.getValue());
             orderService.saveOrderTarget(obj);
         }
-        if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && obj.getOprType() == 1) {
+        if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && oprType == 1) {
             //只有在更新成功的情况下修改余额,更新冲突时忽略,提现在申请时就已经扣款,因此只有充值需要更新余额
             appUserBalanceService.updateBalance(obj.getUserId(), obj.getTokenId(), obj.getValue());
         }
