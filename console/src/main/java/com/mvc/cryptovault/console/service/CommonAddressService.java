@@ -172,7 +172,6 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         } else {
             //erc20暂时无法扣除手续费
             gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value).multiply(BigInteger.valueOf(2));
-            value = value.multiply(new BigDecimal(gasLimit));
             orders.setValue(value);
         }
         orders.setFromAddress(cold.getAddress());

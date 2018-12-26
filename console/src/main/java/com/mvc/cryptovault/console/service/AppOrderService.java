@@ -153,6 +153,8 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setFee(fee);
         appOrderDetailService.update(detail);
         appMessageService.transferMsg(obj.getId(), obj.getUserId(), obj.getValue(), tokenService.getTokenName(obj.getTokenId()), obj.getOrderType(), obj.getStatus());
+        updateCache(obj.getId());
+        appOrderDetailService.updateCache(detail.getOrderId());
     }
 
     public void saveOrder(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
@@ -309,6 +311,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
             obj.setStatus(9);
             obj.setUpdatedAt(System.currentTimeMillis());
             update(obj);
+            updateCache(obj.getId());
         });
     }
 
@@ -326,6 +329,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
                 obj.setUpdatedAt(System.currentTimeMillis());
                 obj.setHash(oldTrans.getHash());
                 update(obj);
+                updateCache(obj.getId());
             });
         }
     }
