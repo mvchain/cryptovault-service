@@ -202,7 +202,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
 
     private BigInteger isInner(BlockTransaction obj) {
         BigInteger userId = null;
-        if (obj.getOprType() == 1) {
+        if (obj.getOprType() == 2) {
             CommonAddress address = commonAddressService.findOneBy("address", obj.getToAddress());
             if (null != address && !address.getUserId().equals(BigInteger.ZERO)) {
                 userId = address.getUserId();

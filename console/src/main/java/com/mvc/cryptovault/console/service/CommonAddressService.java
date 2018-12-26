@@ -102,6 +102,8 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             CommonToken token = tokenMap.get(transaction.getTokenId());
             BigDecimal fee = new BigDecimal(String.valueOf(token.getTransaferFee()));
             if (transaction.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT)) {
+                //已存在在排队列表中的直接忽略
+                BlockUsdtWithdrawQueue queue = blockUsdtWithdrawQueueService.findOneBy("orderId", transaction.getOrderNumber());
                 //USDT
                 if (usdtOrder.getFromAddress() == null) {
                     String address = btcdClient.getNewAddress();
@@ -127,16 +129,24 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
                     usdtOrder.setFeeAddress(BtcAction.propId.toString());
                     btcdClient.setAccount(address, address);
                 }
-                BlockUsdtWithdrawQueue blockUsdtWithdrawQueue = new BlockUsdtWithdrawQueue();
-                blockUsdtWithdrawQueue.setFee(fee);
-                blockUsdtWithdrawQueue.setFromAddress(blockHotAddress.getAddress());
-                blockUsdtWithdrawQueue.setToAddress(transaction.getToAddress());
-                blockUsdtWithdrawQueue.setOrderId(transaction.getOrderNumber());
-                blockUsdtWithdrawQueue.setValue(transaction.getValue().subtract(new BigDecimal(String.valueOf(token.getTransaferFee()))));
-                blockUsdtWithdrawQueue.setStatus(0);
-                blockUsdtWithdrawQueue.setStartedAt(0L);
-                blockUsdtWithdrawQueueService.save(blockUsdtWithdrawQueue);
-                usdtOrder.setValue(usdtOrder.getValue().add(blockUsdtWithdrawQueue.getValue()));
+                if (null != queue) {
+                    queue.setFee(fee);
+                    queue.setFromAddress(blockHotAddress.getAddress());
+                    queue.setValue(transaction.getValue().subtract(new BigDecimal(String.valueOf(token.getTransaferFee()))));
+                    blockUsdtWithdrawQueueService.update(queue);
+                    return;
+                } else {
+                    BlockUsdtWithdrawQueue blockUsdtWithdrawQueue = new BlockUsdtWithdrawQueue();
+                    blockUsdtWithdrawQueue.setFee(fee);
+                    blockUsdtWithdrawQueue.setFromAddress(blockHotAddress.getAddress());
+                    blockUsdtWithdrawQueue.setToAddress(transaction.getToAddress());
+                    blockUsdtWithdrawQueue.setOrderId(transaction.getOrderNumber());
+                    blockUsdtWithdrawQueue.setValue(transaction.getValue().subtract(new BigDecimal(String.valueOf(token.getTransaferFee()))));
+                    blockUsdtWithdrawQueue.setStatus(0);
+                    blockUsdtWithdrawQueue.setStartedAt(0L);
+                    blockUsdtWithdrawQueueService.save(blockUsdtWithdrawQueue);
+                    usdtOrder.setValue(usdtOrder.getValue().add(blockUsdtWithdrawQueue.getValue()));
+                }
             } else {
                 //btc need another wallet
             }
