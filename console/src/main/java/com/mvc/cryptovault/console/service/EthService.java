@@ -163,6 +163,9 @@ public class EthService extends BlockService {
         } else {
             String hash = result.getTransactionHash();
             blockTransactionService.updateHash(sign.getOrderId(), hash);
+            sign.setStatus(1);
+            sign.setHash(hash);
+            sign.setResult("");
         }
     }
 
