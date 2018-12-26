@@ -128,6 +128,9 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             vo.setTokenId(NumberUtils.parseNumber(String.valueOf(entry.getKey()), BigInteger.class));
             vo.setValue(balance);
             CommonToken token = commonTokenService.findById(vo.getTokenId());
+            if(null == token){
+                continue;
+            }
             CommonTokenPrice tokenPrice = commonTokenPriceService.findById(vo.getTokenId());
             vo.setRatio(null == tokenPrice ? BigDecimal.ZERO : tokenPrice.getTokenPrice());
             vo.setTokenName(token.getTokenName());
