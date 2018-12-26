@@ -102,11 +102,6 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             CommonToken token = tokenMap.get(transaction.getTokenId());
             BigDecimal fee = new BigDecimal(String.valueOf(token.getTransaferFee()));
             if (transaction.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT)) {
-                //已存在在排队列表中的直接忽略
-                BlockUsdtWithdrawQueue queue = blockUsdtWithdrawQueueService.findOneBy("orderId", transaction.getOrderNumber());
-                if (null != queue) {
-                    return;
-                }
                 //USDT
                 if (usdtOrder.getFromAddress() == null) {
                     String address = btcdClient.getNewAddress();
@@ -168,8 +163,8 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         } else {
             //erc20需要扣除预设的手续费(实际手续费+浮动手续费,实际手续费必须存在)
             Float fee = null == token.getFee() ? token.getTransaferFee() : token.getTransaferFee() + token.getFee();
-            value = value.subtract(BigDecimal.valueOf(fee)).multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
-            gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
+            gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value).multiply(BigInteger.valueOf(2));
+            value = value.subtract(BigDecimal.valueOf(fee).multiply(new BigDecimal(gasLimit)));
             orders.setValue(value);
         }
         orders.setFromAddress(cold.getAddress());

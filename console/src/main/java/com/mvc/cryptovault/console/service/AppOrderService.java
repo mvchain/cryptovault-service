@@ -93,7 +93,6 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveOrderTarget(BlockTransaction blockTransaction) {
-        Long time = System.currentTimeMillis();
         //如果操作类型为提现并且地址为内部地址,需要给对应目标用户生成一条订单信息
         if (blockTransaction.getOprType() == 2) {
             CommonAddress address = commonAddressService.findOneBy("address", blockTransaction.getToAddress());
@@ -351,4 +350,5 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setValue(appProjectUserTransaction.getValue());
         appOrderDetailService.save(detail);
     }
+
 }

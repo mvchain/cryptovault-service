@@ -181,6 +181,12 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
      */
     public void updateSuccess(BlockTransaction obj) {
         int num = blockTransactionMapper.updateSuccess(obj, System.currentTimeMillis());
+        BigInteger userId = isInner(obj);
+        //内部提现,目标用户添加余额
+        if (null != userId) {
+            appUserBalanceService.updateBalance(userId, obj.getTokenId(), obj.getValue());
+            orderService.saveOrderTarget(obj);
+        }
         if (num == 1 && !obj.getUserId().equals(BigInteger.ZERO) && obj.getOprType() == 1) {
             //只有在更新成功的情况下修改余额,更新冲突时忽略,提现在申请时就已经扣款,因此只有充值需要更新余额
             appUserBalanceService.updateBalance(obj.getUserId(), obj.getTokenId(), obj.getValue());
@@ -192,6 +198,17 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
                 orderService.updateOrder(order);
             });
         }
+    }
+
+    private BigInteger isInner(BlockTransaction obj) {
+        BigInteger userId = null;
+        if (obj.getOprType() == 1) {
+            CommonAddress address = commonAddressService.findOneBy("address", obj.getToAddress());
+            if (null != address && !address.getUserId().equals(BigInteger.ZERO)) {
+                userId = address.getUserId();
+            }
+        }
+        return userId;
     }
 
     public List<BlockTransaction> getSign() {
@@ -221,7 +238,6 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         //失败的记录不记录订单,除非拒绝,否则需要持续操作至成功方可
         if (!blockTransaction.getUserId().equals(BigInteger.ZERO) && blockTransaction.getStatus() != 9) {
             orderService.saveOrder(blockTransaction);
-            orderService.saveOrderTarget(blockTransaction);
         }
         return true;
     }

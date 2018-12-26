@@ -347,7 +347,7 @@ public class EthService extends BlockService {
             transaction.setHeight(receipt.get().getBlockNumber());
             transaction.setStatus(1);
             transaction.setTransactionStatus(4);
-            if (receipt.get().getStatus().equals("0x1") && receipt.get().getLogs().size() == 0) {
+            if (receipt.get().getStatus().equals("0x1") && receipt.get().getLogs().size() == 0 || receipt.get().getStatus().equals("0x0")) {
                 transaction.setErrorMsg("转账失败");
                 transaction.setErrorData("转账失败");
                 transaction.setStatus(9);
