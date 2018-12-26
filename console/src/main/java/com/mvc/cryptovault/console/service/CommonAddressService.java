@@ -167,9 +167,9 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         } else {
             //erc20需要扣除预设的手续费(实际手续费+浮动手续费,实际手续费必须存在)
-            gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
             Float fee = null == token.getFee() ? token.getTransaferFee() : token.getTransaferFee() + token.getFee();
             value = value.subtract(BigDecimal.valueOf(fee)).multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
+            gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
             orders.setValue(value);
         }
         orders.setFromAddress(cold.getAddress());
