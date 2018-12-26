@@ -13,6 +13,7 @@ import com.mvc.cryptovault.console.constant.BusinessConstant;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(rollbackFor = RuntimeException.class)
 public class AppOrderService extends AbstractService<AppOrder> implements BaseService<AppOrder> {
 
     @Autowired
@@ -138,11 +140,14 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrderDetailService.save(appOrderDetail);
     }
 
-    public void updateOrder(AppOrder obj) {
+    public void updateOrder(AppOrder obj, BigDecimal fee) {
         //修改订单列表,并发送通知
         obj.setStatus(2);
         obj.setUpdatedAt(System.currentTimeMillis());
         update(obj);
+        AppOrderDetail detail = appOrderDetailService.findById(obj.getId());
+        detail.setHash(obj.getHash());
+        detail.setFee(fee);
         appMessageService.transferMsg(obj.getId(), obj.getUserId(), obj.getValue(), tokenService.getTokenName(obj.getTokenId()), obj.getOrderType(), obj.getStatus());
     }
 

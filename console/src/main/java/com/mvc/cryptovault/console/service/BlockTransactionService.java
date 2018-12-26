@@ -184,7 +184,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         int num = blockTransactionMapper.updateSuccess(obj, System.currentTimeMillis());
         BigInteger userId = isInner(obj);
         //内部提现,目标用户添加余额
-        if (null != userId) {
+        if (num == 1 && null != userId) {
             appUserBalanceService.updateBalance(userId, obj.getTokenId(), obj.getValue());
             orderService.saveOrderTarget(obj);
         }
@@ -196,7 +196,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         if (!obj.getUserId().equals(BigInteger.ZERO) && num == 1) {
             List<AppOrder> orders = orderService.findBy("hash", obj.getHash());
             orders.forEach(order -> {
-                orderService.updateOrder(order);
+                orderService.updateOrder(order, obj.getFee());
             });
         }
     }
