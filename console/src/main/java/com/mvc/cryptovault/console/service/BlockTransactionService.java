@@ -56,6 +56,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
 
     public void doSendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Long now = System.currentTimeMillis();
+        String tokenName = tokenService.getTokenName(transactionDTO.getTokenId());
         BlockTransaction transaction = new BlockTransaction();
         transaction.setCreatedAt(now);
         transaction.setUpdatedAt(now);
@@ -76,10 +77,11 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         appOrder.setFromAddress("");
         appOrder.setHash("");
         appOrder.setOrderContentId(transaction.getId());
-        appOrder.setOrderContentName("BLOCK");
+        appOrder.setOrderContentName("CONTENT_BLOCK");
         appOrder.setOrderNumber(transaction.getOrderNumber());
         appOrder.setValue(transactionDTO.getValue());
         appOrder.setUserId(userId);
+        appOrder.setOrderRemark(tokenName);
         appOrder.setTokenId(transactionDTO.getTokenId());
         appOrder.setStatus(0);
         appOrder.setOrderType(2);
