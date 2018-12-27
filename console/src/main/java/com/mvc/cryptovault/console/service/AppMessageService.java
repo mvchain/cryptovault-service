@@ -63,7 +63,7 @@ public class AppMessageService {
         extra.put("projectId", projectId.toString());
         String statusStr = status == 9 ? "失败" : "成功";
         //项目状态0即将开始 1进行中 2已结束 3发币中 9取消
-        String projectStatusStr = projectStatus == 0 || projectStatus == 1 ? "预约" : "购买";
+        String projectStatusStr = projectStatus == 0 || projectStatus == 1 ? "预约" : "众筹";
         String valueStr = status == 9 ? "" : ":" + value.stripTrailingZeros().toPlainString() + " " + tokenName;
         String msg = String.format(MODEL_PROJECT, projectStatusStr, statusStr, tokenName, projectName, valueStr);
         Boolean result = jPushService.send(msg, orderId, String.valueOf(userId));

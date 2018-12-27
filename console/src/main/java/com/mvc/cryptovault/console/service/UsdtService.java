@@ -343,7 +343,7 @@ public class UsdtService extends BlockService {
     }
 
     private void updateStatus(String lastNumber) {
-        BigInteger height = NumberUtils.createBigInteger(lastNumber).subtract(BigInteger.valueOf(6));
+        BigInteger height = NumberUtils.createBigInteger(lastNumber).subtract(BigInteger.valueOf(4));
         Condition condition = new Condition(BlockTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "status = ", 1);
@@ -436,7 +436,7 @@ public class UsdtService extends BlockService {
             for (TetherBalance tetherBalance : list) {
                 //需要发送手续费的地址[非本系统地址、冷钱包地址、数额过小、临时钱包不需要发送手续费]
                 CommonAddress address = commonAddressService.findOneBy("address", tetherBalance.getAddress());
-                BlockHotAddress hotAddress = blockHotAddressService.findOneBy("address", address);
+                BlockHotAddress hotAddress = blockHotAddressService.findOneBy("address", tetherBalance.getAddress());
                 Boolean flag = tetherBalance.getBalance().compareTo(BigDecimal.ZERO) <= 0 ||
                         null == address ||
                         null != hotAddress ||

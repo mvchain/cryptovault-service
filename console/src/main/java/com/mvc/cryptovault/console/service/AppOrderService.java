@@ -13,6 +13,7 @@ import com.mvc.cryptovault.console.constant.BusinessConstant;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(rollbackFor = RuntimeException.class)
 public class AppOrderService extends AbstractService<AppOrder> implements BaseService<AppOrder> {
 
     @Autowired
@@ -54,6 +56,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         vo.setOrderRemark(order.getOrderRemark());
         vo.setTokenName(token.getTokenName());
         vo.setFromAddress(order.getFromAddress());
+        vo.setTransactionType(order.getOrderType());
         vo.setBlockHash(order.getHash());
         vo.setStatus(order.getStatus());
         vo.setToAddress(null == detail ? null : detail.getToAddress());
@@ -93,7 +96,6 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveOrderTarget(BlockTransaction blockTransaction) {
-        Long time = System.currentTimeMillis();
         //如果操作类型为提现并且地址为内部地址,需要给对应目标用户生成一条订单信息
         if (blockTransaction.getOprType() == 2) {
             CommonAddress address = commonAddressService.findOneBy("address", blockTransaction.getToAddress());
@@ -101,6 +103,10 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
                 //地址存在且有对应用户， 则生成记录
                 blockTransaction.setUserId(address.getUserId());
                 blockTransaction.setOprType(blockTransaction.getOprType() == 1 ? 2 : 1);
+                if(blockTransaction.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)){
+                    //只有ETH能够扣除手续费
+                    blockTransaction.setValue(blockTransaction.getValue().subtract(blockTransaction.getFee()));
+                }
                 saveOrder(blockTransaction);
             }
         }
@@ -138,16 +144,22 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrderDetailService.save(appOrderDetail);
     }
 
-    public void updateOrder(AppOrder obj) {
+    public void updateOrder(AppOrder obj, BigDecimal fee) {
         //修改订单列表,并发送通知
         obj.setStatus(2);
         obj.setUpdatedAt(System.currentTimeMillis());
         update(obj);
+        AppOrderDetail detail = appOrderDetailService.findById(obj.getId());
+        detail.setHash(obj.getHash());
+        detail.setFee(fee);
+        appOrderDetailService.update(detail);
         appMessageService.transferMsg(obj.getId(), obj.getUserId(), obj.getValue(), tokenService.getTokenName(obj.getTokenId()), obj.getOrderType(), obj.getStatus());
+        updateCache(obj.getId());
+        appOrderDetailService.updateCache(detail.getOrderId());
     }
 
     public void saveOrder(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
-        Long time = appProjectUserTransaction.getCreatedAt();
+        Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(2);
         appOrder.setCreatedAt(time);
@@ -256,9 +268,8 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveOrderProject(AppProjectUserTransaction appProjectUserTransaction, AppProject appProject) {
-        appProjectUserTransaction.setValue(appProjectUserTransaction.getSuccessValue());
-        appProjectUserTransaction.setPayed(appProjectUserTransaction.getSuccessPayed());
-        saveOrder(appProjectUserTransaction, appProject);
+        //预约成功没有单独的订单id
+        appMessageService.sendProject(appProjectUserTransaction.getUserId(), appProject.getId(), appProjectUserTransaction.getId(), appProjectUserTransaction.getResult(), appProject.getStatus(), appProject.getTokenName(), appProject.getProjectName(), appProjectUserTransaction.getSuccessValue());
     }
 
     public AppOrder saveOrder(AppProjectPartake appProjectPartake, AppProject appProject) {
@@ -301,6 +312,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
             obj.setStatus(9);
             obj.setUpdatedAt(System.currentTimeMillis());
             update(obj);
+            updateCache(obj.getId());
         });
     }
 
@@ -318,7 +330,40 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
                 obj.setUpdatedAt(System.currentTimeMillis());
                 obj.setHash(oldTrans.getHash());
                 update(obj);
+                updateCache(obj.getId());
             });
         }
     }
+
+    public void setOrderReturn(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
+        appProjectUserTransaction.setSuccessValue(appProjectUserTransaction.getValue().subtract(appProjectUserTransaction.getSuccessValue()));
+        Long time = System.currentTimeMillis();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(2);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(appProjectUserTransaction.getId());
+        appOrder.setOrderContentName(BusinessConstant.CONTENT_PROJECT);
+        appOrder.setOrderNumber(appProjectUserTransaction.getProjectOrderNumber());
+        appOrder.setValue(appProjectUserTransaction.getPayed().subtract(appProjectUserTransaction.getSuccessPayed()));
+        appOrder.setUserId(appProjectUserTransaction.getUserId());
+        appOrder.setTokenId(project.getBaseTokenId());
+        appOrder.setStatus(9);
+        appOrder.setOrderRemark(project.getProjectName());
+        appOrder.setOrderType(1);
+        save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(appProjectUserTransaction.getValue());
+        appOrderDetailService.save(detail);
+    }
+
 }

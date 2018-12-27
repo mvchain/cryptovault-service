@@ -53,4 +53,6 @@ public class TransactionDetailVO {
     @ApiModelProperty("备注字段,如众筹项目类型则为项目名称,交易则为交易对名称")
     private String orderRemark;
 
+    @ApiModelProperty("1转入 2转出")
+    private Integer transactionType;
 }

@@ -163,6 +163,9 @@ public class EthService extends BlockService {
         } else {
             String hash = result.getTransactionHash();
             blockTransactionService.updateHash(sign.getOrderId(), hash);
+            sign.setStatus(1);
+            sign.setHash(hash);
+            sign.setResult("");
         }
     }
 
@@ -172,6 +175,7 @@ public class EthService extends BlockService {
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "status = ", 1);
         ConditionUtil.andCondition(criteria, "height <= ", height);
+        ConditionUtil.andCondition(criteria, "height != ", 0);
         ConditionUtil.andCondition(criteria, "token_type = ", "ETH");
         PageHelper.startPage(1, 10);
         List<BlockTransaction> blockTransaction = blockTransactionService.findByCondition(condition);
@@ -223,7 +227,7 @@ public class EthService extends BlockService {
                 CommonToken token = commonTokenService.findById(tokenId);
                 if (null != token) {
                     BigInteger balanceWei = contractService.balanceOf(token.getTokenContractAddress(), address);
-                    balance = new BigDecimal(balanceWei).divide(BigDecimal.TEN.pow(token.getTokenDecimal()), RoundingMode.HALF_DOWN);
+                    balance = new BigDecimal(balanceWei).divide(BigDecimal.TEN.pow(token.getTokenDecimal()));
                 }
             }
             return balance;
@@ -347,7 +351,7 @@ public class EthService extends BlockService {
             transaction.setHeight(receipt.get().getBlockNumber());
             transaction.setStatus(1);
             transaction.setTransactionStatus(4);
-            if (receipt.get().getStatus().equals("0x0")) {
+            if (receipt.get().getStatus().equals("0x1") && receipt.get().getLogs().size() == 0 || receipt.get().getStatus().equals("0x0")) {
                 transaction.setErrorMsg("转账失败");
                 transaction.setErrorData("转账失败");
                 transaction.setStatus(9);

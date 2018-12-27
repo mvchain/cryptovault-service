@@ -104,9 +104,6 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
             if (transaction.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT)) {
                 //已存在在排队列表中的直接忽略
                 BlockUsdtWithdrawQueue queue = blockUsdtWithdrawQueueService.findOneBy("orderId", transaction.getOrderNumber());
-                if (null != queue) {
-                    return;
-                }
                 //USDT
                 if (usdtOrder.getFromAddress() == null) {
                     String address = btcdClient.getNewAddress();
@@ -132,16 +129,24 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
                     usdtOrder.setFeeAddress(BtcAction.propId.toString());
                     btcdClient.setAccount(address, address);
                 }
-                BlockUsdtWithdrawQueue blockUsdtWithdrawQueue = new BlockUsdtWithdrawQueue();
-                blockUsdtWithdrawQueue.setFee(fee);
-                blockUsdtWithdrawQueue.setFromAddress(blockHotAddress.getAddress());
-                blockUsdtWithdrawQueue.setToAddress(transaction.getToAddress());
-                blockUsdtWithdrawQueue.setOrderId(transaction.getOrderNumber());
-                blockUsdtWithdrawQueue.setValue(transaction.getValue().subtract(new BigDecimal(String.valueOf(token.getTransaferFee()))));
-                blockUsdtWithdrawQueue.setStatus(0);
-                blockUsdtWithdrawQueue.setStartedAt(0L);
-                blockUsdtWithdrawQueueService.save(blockUsdtWithdrawQueue);
-                usdtOrder.setValue(usdtOrder.getValue().add(blockUsdtWithdrawQueue.getValue()));
+                if (null != queue) {
+                    queue.setFee(fee);
+                    queue.setFromAddress(blockHotAddress.getAddress());
+                    queue.setValue(transaction.getValue().subtract(new BigDecimal(String.valueOf(token.getTransaferFee()))));
+                    blockUsdtWithdrawQueueService.update(queue);
+                    return;
+                } else {
+                    BlockUsdtWithdrawQueue blockUsdtWithdrawQueue = new BlockUsdtWithdrawQueue();
+                    blockUsdtWithdrawQueue.setFee(fee);
+                    blockUsdtWithdrawQueue.setFromAddress(blockHotAddress.getAddress());
+                    blockUsdtWithdrawQueue.setToAddress(transaction.getToAddress());
+                    blockUsdtWithdrawQueue.setOrderId(transaction.getOrderNumber());
+                    blockUsdtWithdrawQueue.setValue(transaction.getValue().subtract(new BigDecimal(String.valueOf(token.getTransaferFee()))));
+                    blockUsdtWithdrawQueue.setStatus(0);
+                    blockUsdtWithdrawQueue.setStartedAt(0L);
+                    blockUsdtWithdrawQueueService.save(blockUsdtWithdrawQueue);
+                    usdtOrder.setValue(usdtOrder.getValue().add(blockUsdtWithdrawQueue.getValue()));
+                }
             } else {
                 //btc need another wallet
             }
@@ -158,21 +163,19 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         BigInteger nonce = getNonce(nonceMap, cold.getAddress());
         BigDecimal value = transaction.getValue().multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
         BigInteger gasLimit = null;
-
         if (token.getId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
             //实际转账金额需要扣除手续费
             gasLimit = BigInteger.valueOf(21000);
             BigDecimal fee = Convert.fromWei(new BigDecimal(gasLimit.multiply(gasPrice)), Convert.Unit.ETHER);
             value = value.subtract(fee);
+            orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         } else {
-            //erc20需要扣除预设的手续费(实际手续费+浮动手续费,实际手续费必须存在)
-            gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value);
-            Float fee = null == token.getFee() ? token.getTransaferFee() : token.getTransaferFee() + token.getFee();
-            value = value.subtract(BigDecimal.valueOf(fee));
+            //erc20暂时无法扣除手续费
+            gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value).multiply(BigInteger.valueOf(2));
+            orders.setValue(value);
         }
         orders.setFromAddress(cold.getAddress());
         orders.setTokenType(token.getTokenType());
-        orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         orders.setToAddress(transaction.getToAddress());
         orders.setGasLimit(new BigDecimal(gasLimit));
         orders.setGasPrice(new BigDecimal(gasPrice));
@@ -243,13 +246,13 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         BigInteger gasPrice = Convert.toWei(new BigDecimal(token.getTransaferFee()), Convert.Unit.GWEI).toBigInteger();
         //erc20地址需要先运行approve方法
         if (address.getApprove() == 0 && address.getTokenType().equalsIgnoreCase("ETH") && !address.getAddressType().equalsIgnoreCase("ETH")) {
-            nonce = getNonce(nonceMap, address.getAddress());
             BigInteger gasLimit = blockService.get("ETH").getEthEstimateApprove(token.getTokenContractAddress(), address.getAddress(), cold.getAddress());
             //预先发送手续费,该操作gasPrice暂时固定
             BigDecimal value = Convert.fromWei(new BigDecimal(gasLimit.multiply(gasPrice)), Convert.Unit.ETHER);
             if (web3j.ethGetBalance(address.getAddress(), DefaultBlockParameterName.LATEST).send().getBalance().compareTo(gasLimit.multiply(gasPrice)) < 0) {
                 blockService.get("ETH").send(hot, address.getAddress(), value);
             }
+            nonce = getNonce(nonceMap, address.getAddress());
             orders.setFromAddress(address.getAddress());
             orders.setTokenType(address.getTokenType());
             orders.setValue(address.getBalance());
