@@ -113,7 +113,8 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
         String x = (String) redisTemplate.opsForHash().get(KLINE_HEADER + pair.getTokenId(), "X");
         String y = (String) redisTemplate.opsForHash().get(KLINE_HEADER + pair.getTokenId(), "Y");
         KLineVO vo = new KLineVO();
-        if (time < System.currentTimeMillis() || StringUtils.isBlank(x) || "[]".equals(x)) {
+//        if (time < System.currentTimeMillis() || StringUtils.isBlank(x) || "[]".equals(x)) {
+        if (true) {
             //数据已过期,需要重新获取
             Long[] timeX = new Long[strList.size()];
             BigDecimal[] valueY = new BigDecimal[strList.size()];
