@@ -13,6 +13,6 @@ public interface BlockUsdtWithdrawQueueMapper extends MyMapper<BlockUsdtWithdraw
     @Update("update block_usdt_withdraw_queue set status = 1 where status = 0 and from_address = #{fromAddress}")
     Integer start(@Param("fromAddress") String fromAddress);
 
-    @Select("select * from block_usdt_withdraw_queue where status = 1 and started_at <= #{currentTimeMillis} ")
+    @Select("select * from block_usdt_withdraw_queue where status in (0,1) and started_at <= #{currentTimeMillis} ")
     List<BlockUsdtWithdrawQueue> findStart(@Param("currentTimeMillis") Long startAt);
 }

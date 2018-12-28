@@ -76,7 +76,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
                 vo.setIncrease(0f);
             } else {
                 BigDecimal now = null == price ? BigDecimal.ONE : price.getTokenPrice();
-                Float increase = now.divide(lastBefore.get(token.getId()), RoundingMode.HALF_DOWN).setScale(10, RoundingMode.HALF_DOWN).floatValue() - 1;
+                Float increase = now.divide(lastBefore.get(token.getId()),10, RoundingMode.HALF_DOWN).setScale(10, RoundingMode.HALF_DOWN).floatValue() - 1;
                 vo.setIncrease(increase * 100);
             }
             result.add(vo);
