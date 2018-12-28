@@ -12,7 +12,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenTransSettingVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.CommonTokenHistoryMapper;
 import com.mvc.cryptovault.console.dao.CommonTokenMapper;
 import org.apache.commons.lang3.StringUtils;

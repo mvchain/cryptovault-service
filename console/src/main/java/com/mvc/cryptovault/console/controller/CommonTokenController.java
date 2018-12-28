@@ -6,7 +6,7 @@ import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TransactionTokenVO;
 import com.mvc.cryptovault.console.common.BaseController;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.service.AppUserBalanceService;
 import com.mvc.cryptovault.console.service.CommonTokenService;
 import org.apache.commons.lang3.StringUtils;

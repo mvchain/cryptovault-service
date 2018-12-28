@@ -10,7 +10,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenTransSettingVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTokenVO;
 import com.mvc.cryptovault.console.common.BaseController;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.service.BlockHeightService;
 import com.mvc.cryptovault.console.service.CommonPairService;
 import com.mvc.cryptovault.console.service.CommonTokenService;

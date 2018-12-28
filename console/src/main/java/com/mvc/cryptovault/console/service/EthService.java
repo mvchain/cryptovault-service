@@ -6,7 +6,7 @@ import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.util.BaseContextHandler;
 import com.mvc.cryptovault.common.util.ConditionUtil;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;

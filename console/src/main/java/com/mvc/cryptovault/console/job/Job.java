@@ -7,7 +7,7 @@ import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.vo.ExchangeRateVO;
 import com.mvc.cryptovault.common.bean.vo.ExchangeResponse;
 import com.mvc.cryptovault.common.constant.RedisConstant;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.service.*;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;

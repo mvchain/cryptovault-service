@@ -4,7 +4,7 @@ import com.mvc.cryptovault.common.bean.CommonPair;
 import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.CommonPairMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

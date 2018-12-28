@@ -1,16 +1,10 @@
 package com.mvc.cryptovault.console.service;
 
-import com.mvc.cryptovault.console.constant.BusinessConstant;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import org.springframework.data.redis.core.BoundListOperations;
-import org.springframework.data.redis.core.RedisConnectionUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.util.CollectionUtils;
 
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

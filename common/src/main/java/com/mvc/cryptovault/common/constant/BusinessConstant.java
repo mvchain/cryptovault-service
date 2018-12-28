@@ -1,4 +1,4 @@
-package com.mvc.cryptovault.console.constant;
+package com.mvc.cryptovault.common.constant;
 
 import java.math.BigInteger;
 
@@ -72,4 +72,7 @@ public interface BusinessConstant {
     Integer CLASSIFY_BLOCK = 0;
     String REDIS_QUEUE = "REDIS_QUEUE";
     String WITHDRAW_USDT_QUEUE = "WITHDRAW_USDT_QUEUE";
+    Integer TRANSACTION_SELF = 1;
+    Integer TRANSACTION_STATUS_CANCEL = 0;
+    Integer TRANSACTION_STATUS_COMPLETE = 1;
 }

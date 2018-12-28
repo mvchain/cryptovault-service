@@ -9,7 +9,7 @@ import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
 import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.AppUserBalanceMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

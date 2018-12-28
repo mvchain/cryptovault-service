@@ -8,7 +8,7 @@ import com.mvc.cryptovault.common.util.BaseContextHandler;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.bean.Balance;
 import com.mvc.cryptovault.console.bean.UsdtTransaction;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.util.btc.BtcAction;
 import com.mvc.cryptovault.console.util.btc.entity.TetherBalance;
 import com.neemre.btcdcli4j.core.BitcoindException;

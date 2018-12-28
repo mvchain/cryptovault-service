@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.CommonAddressMapper;
 import com.mvc.cryptovault.console.util.btc.BtcAction;
 import com.mvc.cryptovault.console.util.btc.entity.BtcOutput;

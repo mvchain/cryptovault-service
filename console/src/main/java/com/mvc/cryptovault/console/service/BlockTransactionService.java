@@ -15,7 +15,7 @@ import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.bean.bo.BlockTransactionBO;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.BlockTransactionMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;

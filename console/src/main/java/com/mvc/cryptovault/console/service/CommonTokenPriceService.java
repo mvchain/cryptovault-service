@@ -6,7 +6,7 @@ import com.mvc.cryptovault.common.bean.CommonTokenHistory;
 import com.mvc.cryptovault.common.bean.CommonTokenPrice;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.CommonTokenHistoryMapper;
 import com.mvc.cryptovault.console.dao.CommonTokenPriceMapper;
 import org.springframework.beans.factory.annotation.Autowired;

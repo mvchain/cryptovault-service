@@ -30,3 +30,10 @@ spring:
     nameServer: localhost:9876
 server:
   port: 10081
+
+
+mapper:
+  mappers:
+  - com.mvc.cryptovault.consumer.common.MyMapper
+  not-empty: false
+  identity: MYSQL

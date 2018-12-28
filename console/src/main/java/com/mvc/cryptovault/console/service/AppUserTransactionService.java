@@ -19,7 +19,7 @@ import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.common.util.RocketMqUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.AppUserTransactionMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -149,7 +149,10 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             checkValue(dto, targetTransaction);
         }
         dto.setUserId(userId);
+        //添加到订单列表
         RocketMqUtil.addToMq(RocketMqConstant.APP_UER_TRANSACTION, RocketMqConstant.SAVE, dto);
+
+
         saveAll(userId, dto, targetTransaction, pair);
     }
 

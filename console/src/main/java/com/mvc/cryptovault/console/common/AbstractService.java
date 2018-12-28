@@ -2,7 +2,7 @@ package com.mvc.cryptovault.console.common;
 
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.mapdb.HTreeMap;
 import org.springframework.beans.factory.annotation.Autowired;

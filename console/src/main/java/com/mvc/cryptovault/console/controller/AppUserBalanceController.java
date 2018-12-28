@@ -8,7 +8,7 @@ import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.BaseController;
-import com.mvc.cryptovault.console.constant.BusinessConstant;
+import com.mvc.cryptovault.common.constant.BusinessConstant;
 import com.mvc.cryptovault.console.service.AppUserBalanceService;
 import com.mvc.cryptovault.console.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
