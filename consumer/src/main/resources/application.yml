@@ -21,17 +21,19 @@ spring:
 #    password: mvc123$%^
   mvc:
     async:
-      request-timeout: 100ms
+      request-timeout: 1000ms
   application:
     name: CONSUMER
   rocketmq:
     producer:
       group: cryptovault-service
-    nameServer: localhost:9876
+    nameServer: 192.168.205.134:9876
 server:
   port: 10081
 
-
+mybatis:
+  basepackage: com.mvc.cryptovault.consumer.mapper
+  type-aliases-package: tk.mybatis.springboot.model
 mapper:
   mappers:
   - com.mvc.cryptovault.consumer.common.MyMapper

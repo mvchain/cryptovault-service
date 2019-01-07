@@ -61,7 +61,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         vo.setStatus(order.getStatus());
         vo.setToAddress(null == detail ? null : detail.getToAddress());
         vo.setUpdatedAt(order.getUpdatedAt());
-        vo.setValue(order.getValue());
+        vo.setValue(order.getValue().abs());
         return vo;
     }
 
@@ -133,6 +133,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         order.setClassify(BusinessConstant.CLASSIFY_BLOCK);
         save(order);
         AppOrderDetail appOrderDetail = new AppOrderDetail();
+        appOrderDetail.setUserId(order.getUserId());
         appOrderDetail.setValue(blockTransaction.getValue());
         appOrderDetail.setOrderId(order.getId());
         appOrderDetail.setToAddress(blockTransaction.getToAddress());
@@ -183,6 +184,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setFromAddress("");
         detail.setHash("");
         detail.setToAddress("");
+        detail.setUserId(appOrder.getUserId());
         detail.setOrderId(appOrder.getId());
         detail.setValue(appProjectUserTransaction.getValue());
         appOrderDetailService.save(detail);
@@ -223,6 +225,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         AppOrderDetail detail = new AppOrderDetail();
         detail.setCreatedAt(time);
         detail.setUpdatedAt(time);
+        detail.setUserId(appOrder.getUserId());
         detail.setFee(BigDecimal.ZERO);
         detail.setFromAddress("");
         detail.setHash("");
@@ -255,6 +258,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setOrderRemark("余额");
         save(appOrder);
         AppOrderDetail detail = new AppOrderDetail();
+        detail.setUserId(appOrder.getUserId());
         detail.setCreatedAt(time);
         detail.setUpdatedAt(time);
         detail.setFee(BigDecimal.ZERO);
@@ -291,6 +295,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setOrderRemark(null == appProject ? "" : appProject.getProjectName());
         save(appOrder);
         AppOrderDetail detail = new AppOrderDetail();
+        detail.setUserId(appOrder.getUserId());
         detail.setCreatedAt(time);
         detail.setUpdatedAt(time);
         detail.setFee(BigDecimal.ZERO);
@@ -355,6 +360,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setOrderType(1);
         save(appOrder);
         AppOrderDetail detail = new AppOrderDetail();
+        detail.setUserId(appOrder.getUserId());
         detail.setCreatedAt(time);
         detail.setUpdatedAt(time);
         detail.setFee(BigDecimal.ZERO);

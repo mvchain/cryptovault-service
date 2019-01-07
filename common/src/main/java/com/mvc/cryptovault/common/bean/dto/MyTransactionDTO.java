@@ -20,7 +20,7 @@ public class MyTransactionDTO {
     @ApiModelProperty("订单状态0进行中 1完成")
     private Integer status;
 
-    @ApiModelProperty("订单类型 0买单 1卖单")
+    @ApiModelProperty("订单类型 1买单 2卖单")
     private Integer transactionType;
 
     @ApiModelProperty("上一条记录id,如果为0或不存在则重头拉取,否则从目标位置记录增量拉取")
