@@ -34,7 +34,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class AppProjectUserTransactionService extends AbstractService<AppProjectUserTransaction> implements BaseService<AppProjectUserTransaction> {
@@ -147,7 +146,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
             transList = getAppProjectUserTransactionsCache(userId, reservationDTO);
             if (transList == null) return null;
         }
-        for (int i = transList.size() - 1; i >= 0; i--) {
+        for (int i = 0; i < transList.size(); i++) {
             PurchaseVO vo = new PurchaseVO();
             AppProjectUserTransaction appProjectUserTransaction = transList.get(i);
             AppProject project = appProjectService.findById(appProjectUserTransaction.getProjectId());
@@ -184,28 +183,14 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
 
     @Nullable
     private List<AppProjectUserTransaction> getAppProjectUserTransactionsCache(BigInteger userId, ReservationDTO reservationDTO) {
-        List<AppProjectUserTransaction> transList;
-        String listKey = "AppProjectUserTransaction".toUpperCase() + "_USER_" + userId;
-        putAll(userId, false);
-        List<String> list = null;
-        if (reservationDTO.getId() == null || reservationDTO.getId().equals(BigInteger.ZERO)) {
-            list = redisTemplate.boundListOps(listKey).range(0, reservationDTO.getPageSize());
-        } else {
-            Integer index = getIndex(reservationDTO.getId(), userId);
-            if (null == index) {
-                list = null;
-            } else if (reservationDTO.getType().equals(BusinessConstant.SEARCH_DIRECTION_UP)) {
-                //上拉则最新数据
-                list = redisTemplate.boundListOps(listKey).range(index + 1, index + reservationDTO.getPageSize());
-            } else {
-                list = redisTemplate.boundListOps(listKey).range(index - reservationDTO.getPageSize(), index - 1);
-            }
+        PageHelper.startPage(1, reservationDTO.getPageSize(), "id desc");
+        Condition condition = new Condition(AppProjectUserTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "user_id = ", userId);
+        if(null != reservationDTO.getId() && !reservationDTO.getId().equals(BigInteger.ZERO)){
+            ConditionUtil.andCondition(criteria, "id < ", reservationDTO.getId());
         }
-        if (null == list) {
-            return null;
-        }
-        transList = list.stream().map(obj -> JSON.parseObject(obj, AppProjectUserTransaction.class)).collect(Collectors.toList());
-        return transList;
+        return findByCondition(condition);
     }
 
     private Integer getIndex(BigInteger id, BigInteger userId) {
