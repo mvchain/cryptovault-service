@@ -40,7 +40,7 @@ public class UserController extends BaseController {
     public Result<TokenVO> login(HttpServletResponse response, @RequestBody @Valid UserDTO userDTO) {
         String key = RedisConstant.SMS_VALI_PRE + userDTO.getUsername();
         Boolean result = smsService.checkSmsValiCode(userDTO.getUsername(), userDTO.getValidCode());
-        Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
+//        Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
         TokenVO vo = userService.login(userDTO);
         redisTemplate.delete(key);
         return new Result(vo);
@@ -75,7 +75,7 @@ public class UserController extends BaseController {
         Boolean exist = userService.getUserByCellphone(cellphone);
         if (exist) {
             //只有存在的账户才发送
-            smsService.getSmsValiCode(cellphone);
+//            smsService.getSmsValiCode(cellphone);
         }
         return new Result<>(true);
     }

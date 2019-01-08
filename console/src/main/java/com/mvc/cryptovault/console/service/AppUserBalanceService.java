@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.console.service;
 
+import com.github.pagehelper.PageHelper;
 import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.AppUserBalance;
 import com.mvc.cryptovault.common.bean.CommonToken;
@@ -93,6 +94,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         AppUserBalance appUserBalance = new AppUserBalance();
         appUserBalance.setTokenId(baseTokenId);
         appUserBalance.setUserId(userId);
+        PageHelper.clearPage();
         AppUserBalance balance = appUserBalanceMapper.selectOne(appUserBalance);
         if (null == balance) {
             balance = new AppUserBalance();

@@ -72,18 +72,19 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         }
         ExportOrders usdtOrder = new ExportOrders();
         BlockHotAddress blockHotAddress = new BlockHotAddress();
+        Integer btcNumber = 0;
         for (BlockTransaction transaction : list) {
             if (transaction.getTokenType().equalsIgnoreCase("ETH")) {
                 addEthWithdrawOrder(result, nonceMap, tokenMap, hot, cold, transaction);
             } else if (transaction.getTokenType().equalsIgnoreCase("BTC")) {
-                addBtcWithdrawOrder(result, tokenMap, btcCold, transaction, usdtOrder, blockHotAddress);
+                addBtcWithdrawOrder(result, tokenMap, btcCold, transaction, usdtOrder, blockHotAddress, btcNumber);
             }
         }
         if (null != usdtOrder.getFromAddress()) {
             //send fee
             CommonToken token = tokenMap.get(BusinessConstant.BASE_TOKEN_ID_USDT);
             BigDecimal fee = NumberUtils.parseNumber(String.valueOf(token.getTransaferFee()), BigDecimal.class);
-            BtcAction.sendToAddressWithRaw(btcHot.getAddress(), fee, fee.add(USDT_LIMIT_FEE), Arrays.asList(new String[]{usdtOrder.getToAddress()}));
+            BtcAction.sendToAddressWithRaw(btcHot.getAddress(), fee, fee.add(USDT_LIMIT_FEE).multiply(BigDecimal.valueOf(btcNumber)), Arrays.asList(new String[]{usdtOrder.getToAddress()}));
             result.add(usdtOrder);
         }
         return result;
@@ -97,7 +98,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
      * @param btcCold
      * @param transaction
      */
-    private void addBtcWithdrawOrder(List<ExportOrders> result, Map<BigInteger, CommonToken> tokenMap, AdminWallet btcCold, BlockTransaction transaction, ExportOrders usdtOrder, BlockHotAddress blockHotAddress) {
+    private void addBtcWithdrawOrder(List<ExportOrders> result, Map<BigInteger, CommonToken> tokenMap, AdminWallet btcCold, BlockTransaction transaction, ExportOrders usdtOrder, BlockHotAddress blockHotAddress, Integer btcNumber) {
         try {
             CommonToken token = tokenMap.get(transaction.getTokenId());
             BigDecimal fee = new BigDecimal(String.valueOf(token.getTransaferFee()));
@@ -129,10 +130,11 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
                     usdtOrder.setFeeAddress(BtcAction.propId.toString());
                     btcdClient.setAccount(address, address);
                 }
+                btcNumber = btcNumber + 1;
                 if (null != queue) {
                     queue.setFee(fee);
                     queue.setFromAddress(blockHotAddress.getAddress());
-                    queue.setValue(transaction.getValue().subtract(new BigDecimal(String.valueOf(token.getTransaferFee()))));
+                    queue.setValue(transaction.getValue());
                     blockUsdtWithdrawQueueService.update(queue);
                     return;
                 } else {
@@ -141,7 +143,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
                     blockUsdtWithdrawQueue.setFromAddress(blockHotAddress.getAddress());
                     blockUsdtWithdrawQueue.setToAddress(transaction.getToAddress());
                     blockUsdtWithdrawQueue.setOrderId(transaction.getOrderNumber());
-                    blockUsdtWithdrawQueue.setValue(transaction.getValue().subtract(new BigDecimal(String.valueOf(token.getTransaferFee()))));
+                    blockUsdtWithdrawQueue.setValue(transaction.getValue());
                     blockUsdtWithdrawQueue.setStatus(0);
                     blockUsdtWithdrawQueue.setStartedAt(0L);
                     blockUsdtWithdrawQueueService.save(blockUsdtWithdrawQueue);

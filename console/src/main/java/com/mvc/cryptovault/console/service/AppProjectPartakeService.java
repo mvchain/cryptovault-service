@@ -51,7 +51,7 @@ public class AppProjectPartakeService extends AbstractService<AppProjectPartake>
             appProjectPartake.setValue(partake.getValue());
             appProjectPartake.setPublishTime(appProject.getPublishAt());
             appProjectPartake.setTimes(new Float(100f / appProject.getReleaseValue()).intValue());
-            appProjectPartake.setReverseValue(appProjectPartake.getValue().divide(BigDecimal.valueOf(appProjectPartake.getTimes()), RoundingMode.HALF_DOWN));
+            appProjectPartake.setReverseValue(appProjectPartake.getValue().divide(BigDecimal.valueOf(appProjectPartake.getTimes())));
             save(appProjectPartake);
         }
     }

@@ -9,7 +9,7 @@ import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
-import com.mvc.cryptovault.common.constant.BusinessConstant;
+import com.mvc.cryptovault.console.constant.BusinessConstant;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         vo.setStatus(order.getStatus());
         vo.setToAddress(null == detail ? null : detail.getToAddress());
         vo.setUpdatedAt(order.getUpdatedAt());
-        vo.setValue(order.getValue().abs());
+        vo.setValue(null == order.getValue()?null:order.getValue().abs());
         return vo;
     }
 
@@ -105,7 +105,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
                 blockTransaction.setOprType(blockTransaction.getOprType() == 1 ? 2 : 1);
                 if(blockTransaction.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)){
                     //只有ETH能够扣除手续费
-                    blockTransaction.setValue(blockTransaction.getValue().subtract(blockTransaction.getFee()));
+//                    blockTransaction.setValue(blockTransaction.getValue().subtract(blockTransaction.getFee()));
                 }
                 saveOrder(blockTransaction);
             }
