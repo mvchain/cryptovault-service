@@ -69,7 +69,7 @@ public class JPushService {
         return PushPayload.newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(Audience.alias(userId))
-                .setNotification(Notification.newBuilder().addPlatformNotification(IosNotification.newBuilder().setAlert(msg).addExtras(extra).build()).build())
+                .setNotification(Notification.newBuilder().addPlatformNotification( IosNotification.newBuilder().setAlert(msg).addExtras(extra).build()).build())
                 .setMessage(Message.newBuilder().setMsgContent(msg).addExtras(extra).build())
                 .build();
     }

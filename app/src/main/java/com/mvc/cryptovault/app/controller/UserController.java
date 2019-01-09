@@ -8,11 +8,10 @@ import com.mvc.cryptovault.common.bean.vo.UserSimpleVO;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
-import com.mvc.cryptovault.common.util.MessageConstants;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;
@@ -79,5 +78,56 @@ public class UserController extends BaseController {
         }
         return new Result<>(true);
     }
+
+    @ApiOperation("用户签到")
+    @PutMapping("sign")
+    public Result<Boolean> sign() {
+
+    }
+
+    @ApiOperation("获取用户是否已签到")
+    @GetMapping("sign")
+    public Result<Boolean> getSign() {
+
+
+    }
+
+
+    @ApiOperation("用户注册")
+    @NotLogin
+    @PostMapping("regist")
+
+
+    @ApiOperation("获取邀请码")
+    @GetMapping("invitation")
+
+
+    @ApiOperation("忘记密码")
+    @NotLogin
+    @PutMapping("forget")
+
+
+    @ApiOperation("登录密码修改")
+    @PutMapping("password")
+
+
+    @ApiOperation("支付密码修改")
+    @PutMapping("transactionPassword")
+
+
+    @ApiOperation("修改绑定邮箱")
+    @PutMapping("email")
+
+
+    @ApiOperation("获取邮箱验证码")
+    @NotLogin
+    @GetMapping("email")
+
+    @ApiOperation("获取私钥和助记词")
+    @GetMapping("private")
+
+    @ApiOperation("获取推荐人列表,分页加载")
+    @GetMapping("recommend")
+
 
 }
