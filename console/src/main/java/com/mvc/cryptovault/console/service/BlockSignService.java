@@ -47,28 +47,5 @@ public class BlockSignService extends AbstractService<BlockSign> implements Base
 
     @Async
     public void importAppUser(List<AppUser> list, String fileName) {
-        Long time = System.currentTimeMillis();
-        for (AppUser user : list) {
-            try {
-                AppUser temp = appUserService.findOneBy("vpUserId", user.getVpUserId());
-                if (null == temp) {
-                    user.setCreatedAt(time);
-                    user.setUpdatedAt(time);
-                    user.setId(null);
-                    appUserService.save(user);
-                    appUserService.updateCache(user.getId());
-                } else {
-                    BigInteger userId = temp.getId();
-                    BeanUtils.copyProperties(user, temp);
-                    temp.setUpdatedAt(time);
-                    temp.setId(userId);
-                    appUserService.update(temp);
-                    appUserService.updateCache(user.getId());
-                }
-            } catch (Exception e) {
-                continue;
-            }
-        }
-        redisTemplate.delete(RedisConstant.USER_IMPORT + fileName);
     }
 }

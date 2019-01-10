@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.app.config;
 
 import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.util.PvkeyException;
 import com.mvc.cryptovault.common.util.TokenErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,6 +29,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Result tokenErrorExceptionException() {
         return new Result(HttpStatus.FORBIDDEN.value(), "token error", null);
+    }
+
+    @ExceptionHandler(PvkeyException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public Result pvkeyExceptionException(PvkeyException e) {
+        return new Result(HttpStatus.NOT_ACCEPTABLE.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(IllegalAccessException.class)

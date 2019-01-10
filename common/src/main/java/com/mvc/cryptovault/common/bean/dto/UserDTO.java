@@ -15,9 +15,8 @@ import javax.validation.constraints.Pattern;
 @ApiModel("用户登录参数")
 public class UserDTO {
 
-    @ApiModelProperty("用户登录账户,目前仅有手机号登录")
-    @Pattern(regexp = "^1[0-9]{10}$", message = "{CELLPHONE_WRONG}")
-    @NotNull(message = "{CELLPHONE_WRONG}")
+    @ApiModelProperty("用户登录账户")
+    @NotNull
     private String username;
 
     @ApiModelProperty("用户密码")

@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.app.job;
 
+import com.mvc.cryptovault.app.service.MailService;
 import com.mvc.cryptovault.app.service.SmsService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SmsJob implements CommandLineRunner {
     @Autowired
-    SmsService smsService;
+    MailService mailService;
 
     @Override
     @Async
@@ -22,11 +23,11 @@ public class SmsJob implements CommandLineRunner {
         while (true) {
             try {
                 Thread.sleep(20);
-                String cellphone = SmsService.queue.poll();
+                String cellphone = MailService.queue.poll();
                 if (StringUtils.isNotBlank(cellphone)) {
-                    Boolean result = smsService.sendSms(cellphone);
+                    Boolean result = mailService.sendSms(cellphone);
                     if (!result) {
-                        SmsService.queue.add(cellphone);
+                        MailService.queue.add(cellphone);
                     }
                 }
             } catch (InterruptedException e) {

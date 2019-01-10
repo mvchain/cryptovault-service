@@ -107,4 +107,23 @@ public interface ConsoleRemoteService {
 
     @GetMapping("user/{id}/tag")
     Result<String> getTag(@PathVariable("id") BigInteger userId);
+
+    @PostMapping("user")
+    Result<AppUserRetVO> register(@RequestBody AppUserDTO appUserDTO);
+
+    @PostMapping("user/mnemonics")
+    Result<Boolean> mnemonicsActive(@RequestParam("email") String email);
+
+    @PostMapping("user/password")
+    Result<Boolean> forget(@RequestParam("userId") BigInteger userId, @RequestParam("password") String password);
+
+    @GetMapping("user/pvKey")
+    Result<AppUser> getUserByPvKey(@RequestParam("value") String value);
+
+    @PutMapping("user")
+    Result<Boolean> updateUser(@RequestBody AppUser user);
+
+    @GetMapping("user/recommend")
+    Result<List<RecommendVO>> getRecommend(@RequestBody RecommendDTO userId);
+
 }

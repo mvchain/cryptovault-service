@@ -41,6 +41,18 @@ public class JwtHelper {
         return createJWT(username, userId, refresh, "refresh");
     }
 
+    public static String createForget(String username, BigInteger userId) {
+        return createJWT(username, userId, refresh, "forget");
+    }
+
+    public static String createReg(String username, BigInteger userId) {
+        return createJWT(username, userId, refresh, "reg");
+    }
+
+    public static String create(String username, BigInteger userId, String str) {
+        return createJWT(username, userId, refresh, str);
+    }
+
     private static String createJWT(String username, BigInteger userId, Long expire, String type) {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         //生成签名密钥
@@ -77,4 +89,6 @@ public class JwtHelper {
             throw new TokenErrorException(MessageConstants.getMsg("TOKEN_EXPIRE"));
         }
     }
+
+
 }

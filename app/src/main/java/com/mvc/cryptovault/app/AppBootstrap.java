@@ -17,7 +17,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
  * @author qiyichen
  * @create 2018/11/5 16:10
  */
-//@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableSwagger2
 @EnableAsync

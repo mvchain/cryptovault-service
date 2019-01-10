@@ -126,8 +126,8 @@ public class Job {
      */
     @Scheduled(cron = "${scheduled.usdt}")
     private void updateUsdtPrice() {
-        String usdtUrl = "http://query.yahooapis.com/v1/public/yql?q=select data.price from json where url=\"https://data.block.cc/api/v1/price?symbol=USDT\"&format=json";
-        String ethUrl = "http://query.yahooapis.com/v1/public/yql?q=select data.price from json where url=\"https://data.block.cc/api/v1/price?symbol=ETH\"&format=json";
+        String usdtUrl = "https://data.block.cc/api/v1/price?symbol=USDT";
+        String ethUrl = "https://data.block.cc/api/v1/price?symbol=ETH";
         JSONObject usdtResult = restTemplate.getForObject(usdtUrl, JSONObject.class);
         JSONObject ethResult = restTemplate.getForObject(ethUrl, JSONObject.class);
         BigDecimal usdtPrice = parseValue(usdtResult);
@@ -145,7 +145,7 @@ public class Job {
         try {
             ExchangeRateVO usdRate = getRate();
             if (null != usdRate) {
-                Object data = ((LinkedHashMap) ((LinkedHashMap) ((LinkedHashMap) ((LinkedHashMap) obj.get("query")).get("results")).get("json")).get("data")).get("price");
+                Object data = ((ArrayList<LinkedHashMap>) obj.get("data")).get(0).get("price");
                 BigDecimal number = NumberUtils.parseNumber(String.valueOf(data), BigDecimal.class);
                 return number.multiply(BigDecimal.valueOf(usdRate.getValue()));
             }

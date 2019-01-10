@@ -77,3 +77,6 @@ DEFAULT CHARACTER SET=utf8mb4 COLLATE=utf8mb4_general_ci
 ROW_FORMAT=COMPACT
 ;
 
+ALTER TABLE `app_user`
+ADD UNIQUE INDEX `index_app_user_email` (`email`) ;
+

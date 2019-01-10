@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author qyc
  */
-@Service
+//@Service
 public class SmsService {
 
     @Autowired

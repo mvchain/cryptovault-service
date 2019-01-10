@@ -2,13 +2,10 @@ package com.mvc.cryptovault.app.service;
 
 import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
 import com.mvc.cryptovault.common.bean.AppUser;
-import com.mvc.cryptovault.common.bean.dto.UserDTO;
-import com.mvc.cryptovault.common.bean.vo.Result;
-import com.mvc.cryptovault.common.bean.vo.TokenVO;
-import com.mvc.cryptovault.common.bean.vo.UserSimpleVO;
-import com.mvc.cryptovault.common.util.BaseContextHandler;
-import com.mvc.cryptovault.common.util.JwtHelper;
-import com.mvc.cryptovault.common.util.MessageConstants;
+import com.mvc.cryptovault.common.bean.dto.*;
+import com.mvc.cryptovault.common.bean.vo.*;
+import com.mvc.cryptovault.common.util.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -16,6 +13,9 @@ import org.springframework.util.Assert;
 
 import javax.security.auth.login.LoginException;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -24,15 +24,17 @@ public class UserService {
     ConsoleRemoteService userRemoteService;
     @Autowired
     StringRedisTemplate redisTemplate;
+    @Autowired
+    MailService mailService;
 
     public UserSimpleVO getUserById(BigInteger userId) {
         UserSimpleVO vo = new UserSimpleVO();
         Result<AppUser> userResult = userRemoteService.getUserById(userId);
         AppUser user = userResult.getData();
         vo.setHeadImage(user.getHeadImage());
+        vo.setUserId(user.getId());
         vo.setNickname(user.getNickname());
-        String username = user.getCellphone().substring(0, 3) + "****" + user.getCellphone().substring(7);
-        vo.setUsername(username);
+        vo.setUsername(mailService.getMail(user.getEmail()));
         return vo;
     }
 
@@ -41,9 +43,14 @@ public class UserService {
         Result<AppUser> userResult = userRemoteService.getUserByUsername(userDTO.getUsername());
         AppUser user = userResult.getData();
         Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
-        Assert.isTrue(user.getStatus() == 1, MessageConstants.getMsg("ACCOUNT_LOCK"));
+        Assert.isTrue(user.getStatus() == 1 || user.getStatus() == 4, MessageConstants.getMsg("ACCOUNT_LOCK"));
         Boolean passwordCheck = user.getPassword().equals(userDTO.getPassword());
         Assert.isTrue(passwordCheck, MessageConstants.getMsg("USER_PASS_WRONG"));
+        if (user.getStatus() == 4) {
+            List<String> list = MnemonicUtil.getWordsList(user.getPvKey());
+            Collections.shuffle(list);
+            throw new PvkeyException(StringUtils.join(list, ","));
+        }
         String token = JwtHelper.createToken(userDTO.getUsername(), user.getId());
         String refreshToken = JwtHelper.createRefresh(userDTO.getUsername(), user.getId());
         vo.setRefreshToken(refreshToken);
@@ -68,8 +75,69 @@ public class UserService {
         return result.getData();
     }
 
-    public Boolean getUserByCellphone(String cellphone) {
+    public AppUser getUserByUsername(String cellphone) {
         Result<AppUser> userResult = userRemoteService.getUserByUsername(cellphone);
-        return null != userResult.getData();
+        return userResult.getData();
+    }
+
+    public AppUserRetVO register(AppUserDTO appUserDTO) {
+        Result<AppUserRetVO> userResult = userRemoteService.register(appUserDTO);
+        return userResult.getData();
+    }
+
+    public void mnemonicsActive(String email) {
+        userRemoteService.mnemonicsActive(email);
+    }
+
+    public void forget(BigInteger userId, String password) {
+        userRemoteService.forget(userId, password);
+    }
+
+    public AppUser reset(AppUserResetDTO appUserResetDTO) {
+        AppUser user = null;
+        if (appUserResetDTO.getResetType() == 0) {
+            Boolean result = mailService.checkSmsValiCode(appUserResetDTO.getEmail(), appUserResetDTO.getValue());
+            Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
+            user = userRemoteService.getUserByUsername(appUserResetDTO.getEmail()).getData();
+        } else if (appUserResetDTO.getResetType() == 1) {
+            user = userRemoteService.getUserByPvKey(appUserResetDTO.getValue()).getData();
+        } else if (appUserResetDTO.getResetType() == 2) {
+            String pvKey = MnemonicUtil.getPvKey(Arrays.asList(appUserResetDTO.getValue().split(",")));
+            user = userRemoteService.getUserByPvKey(pvKey).getData();
+        }
+        Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
+        return user;
+    }
+
+    public void updatePwd(BigInteger userId, AppUserPwdDTO appUserPwdDTO) {
+        AppUser user = userRemoteService.getUserById(userId).getData();
+        Assert.isTrue(user.getPassword().equals(appUserPwdDTO.getPassword()), MessageConstants.getMsg("USER_PASS_WRONG"));
+        user = new AppUser();
+        user.setId(userId);
+        user.setPassword(appUserPwdDTO.getNewPassword());
+        userRemoteService.updateUser(user);
+    }
+
+    public void updateTransPwd(BigInteger userId, AppUserPwdDTO appUserPwdDTO) {
+        AppUser user = userRemoteService.getUserById(userId).getData();
+        Assert.isTrue(user.getTransactionPassword().equals(appUserPwdDTO.getPassword()), MessageConstants.getMsg("USER_PASS_WRONG"));
+        user = new AppUser();
+        user.setId(userId);
+        user.setTransactionPassword(appUserPwdDTO.getNewPassword());
+        userRemoteService.updateUser(user);
+    }
+
+    public void updateEmail(BigInteger userId, String email) {
+        AppUser user = new AppUser();
+        user.setId(userId);
+        user.setEmail(email);
+        userRemoteService.updateUser(user);
+    }
+
+    public List<RecommendVO> getRecommend(RecommendDTO dto) {
+        if (dto.getInviteUserId() == null || dto.getInviteUserId().equals(BigInteger.ZERO)) {
+            dto.setInviteUserId(BigInteger.valueOf(Integer.MAX_VALUE));
+        }
+        return userRemoteService.getRecommend(dto).getData();
     }
 }

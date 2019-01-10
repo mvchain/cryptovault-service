@@ -2,6 +2,7 @@ package com.mvc.cryptovault.common.bean;
 
 import lombok.Data;
 
+import javax.persistence.Id;
 import java.math.BigInteger;
 
 /**
@@ -11,9 +12,10 @@ import java.math.BigInteger;
 @Data
 public class AppUserInvite {
 
+    @Id
     private BigInteger userId;
     private BigInteger inviteUserId;
-    private BigInteger createdAt;
-    private BigInteger updatedAt;
+    private Long createdAt;
+    private Long updatedAt;
 
 }

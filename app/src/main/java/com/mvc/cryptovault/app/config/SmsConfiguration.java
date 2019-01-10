@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * @author qyc
  */
-@Configuration()
+//@Configuration()
 public class SmsConfiguration {
 
     @Value("${yunpian.api.key}")

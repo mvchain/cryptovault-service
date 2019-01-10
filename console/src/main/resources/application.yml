@@ -1,7 +1,7 @@
 spring:
   datasource:
     name: test
-    url: jdbc:mysql://192.168.15.31:3306/vpay_test?useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC
+    url: jdbc:mysql://192.168.15.31:3306/vpay_mycat_bak?useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC
     username: root
     password: 123456
     # 使用druid数据源

@@ -3,9 +3,6 @@ package com.mvc.cryptovault.common.bean;
 import lombok.Data;
 
 import javax.persistence.Column;
-import lombok.Data;
-import lombok.Generated;
-
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -67,13 +64,17 @@ public class AppUser implements Serializable {
     @Column(name = "updated_at")
     private Long updatedAt;
 
+    private Integer inviteLevel;
     /**
-     * 账号状态
+     * 账号状态, 0冻结 1有效 4未验证私钥
      */
     @Column(name = "status")
     private Integer status;
 
-    private BigInteger vpUserId;
+    private String email;
+
+    private String pvKey;
+
     /**
      * app_user
      */
