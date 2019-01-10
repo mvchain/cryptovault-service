@@ -31,8 +31,6 @@ public class UserService {
         UserSimpleVO vo = new UserSimpleVO();
         Result<AppUser> userResult = userRemoteService.getUserById(userId);
         AppUser user = userResult.getData();
-        vo.setHeadImage(user.getHeadImage());
-        vo.setUserId(user.getId());
         vo.setNickname(user.getNickname());
         vo.setUsername(mailService.getMail(user.getEmail()));
         return vo;
