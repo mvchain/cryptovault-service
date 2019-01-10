@@ -21,6 +21,7 @@ spring:
       request-timeout: 10ms
   application:
     name: APP
+
 logging:
   level:
     org: info
