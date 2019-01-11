@@ -76,11 +76,13 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         if (dto.getType() == 0 && null != dto.getId()) {
             ConditionUtil.andCondition(criteria, "id > ", dto.getId());
         } else if (dto.getType() == 1 && null != dto.getId()) {
-            AppUserTransaction trans = findById(dto.getId());
-            if (2 == dto.getTransactionType()) {
-                ConditionUtil.andCondition(criteria, String.format("CONCAT(price, id) > '%s'", trans.getPrice() + "" + trans.getId()));
-            } else {
-                ConditionUtil.andCondition(criteria, String.format("CONCAT(price, id) < '%s'", trans.getPrice() + "" + trans.getId()));
+            AppUserTransaction trans = appUserTransactionMapper.selectByPrimaryKey(dto.getId());
+            if(null != trans){
+                if (2 == dto.getTransactionType()) {
+                    ConditionUtil.andCondition(criteria, String.format("CONCAT(price, id) > '%s'", trans.getPrice() + "" + String.format("%012d", trans.getId())));
+                } else {
+                    ConditionUtil.andCondition(criteria, String.format("CONCAT(price, id) < '%s'", trans.getPrice() + "" + String.format("%012d", trans.getId())));
+                }
             }
         }
         List<AppUserTransaction> list = findByCondition(condition);
