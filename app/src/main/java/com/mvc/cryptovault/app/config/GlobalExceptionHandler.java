@@ -22,13 +22,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(LoginException.class)
     @ResponseStatus(HttpStatus.OK)
     public Result loginExceptionException() {
-        return new Result(HttpStatus.UNAUTHORIZED.value(), "token error", null);
+        return new Result(HttpStatus.FORBIDDEN.value(), "token error", null);
     }
 
     @ExceptionHandler(TokenErrorException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Result tokenErrorExceptionException() {
-        return new Result(HttpStatus.FORBIDDEN.value(), "token error", null);
+        return new Result(HttpStatus.UNAUTHORIZED.value(), "token error", null);
     }
 
     @ExceptionHandler(PvkeyException.class)
