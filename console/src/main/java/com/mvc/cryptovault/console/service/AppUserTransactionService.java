@@ -69,14 +69,19 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         ConditionUtil.andCondition(criteria, "pair_id =", dto.getPairId());
         PageHelper.startPage(1, dto.getPageSize());
         if (2 == dto.getTransactionType()) {
-            PageHelper.orderBy("price asc,id desc");
+            PageHelper.orderBy("price asc,id asc");
         } else {
             PageHelper.orderBy("price desc,id desc");
         }
         if (dto.getType() == 0 && null != dto.getId()) {
             ConditionUtil.andCondition(criteria, "id > ", dto.getId());
         } else if (dto.getType() == 1 && null != dto.getId()) {
-            ConditionUtil.andCondition(criteria, "id < ", dto.getId());
+            AppUserTransaction trans = findById(dto.getId());
+            if (2 == dto.getTransactionType()) {
+                ConditionUtil.andCondition(criteria, String.format("CONCAT(price, id) > '%s'", trans.getPrice() + "" + trans.getId()));
+            } else {
+                ConditionUtil.andCondition(criteria, String.format("CONCAT(price, id) < '%s'", trans.getPrice() + "" + trans.getId()));
+            }
         }
         List<AppUserTransaction> list = findByCondition(condition);
         List<OrderVO> result = new ArrayList<>(list.size());
@@ -266,7 +271,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             return;
         }
         CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
-        Float floatValue = dto.getPrice().subtract(tokenPrice.getTokenPrice()).divide(tokenPrice.getTokenPrice(),10, RoundingMode.HALF_DOWN).floatValue();
+        Float floatValue = dto.getPrice().subtract(tokenPrice.getTokenPrice()).divide(tokenPrice.getTokenPrice(), 10, RoundingMode.HALF_DOWN).floatValue();
         if (null != tokenControl.getMinLimit() && !tokenControl.getMinLimit().equals(BigDecimal.ZERO)) {
             //如果设置了最小购买数量,需要校验
             Assert.isTrue(dto.getValue().compareTo(tokenControl.getMinLimit()) >= 0, MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
