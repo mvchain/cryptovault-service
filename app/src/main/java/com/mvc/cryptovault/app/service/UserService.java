@@ -62,6 +62,9 @@ public class UserService {
         String username = (String) BaseContextHandler.get("username");
         Result<AppUser> userResult = userRemoteService.getUserByUsername(username);
         AppUser user = userResult.getData();
+        if(null == user){
+            return null;
+        }
         if (user.getStatus() == 0) {
             throw new LoginException();
         }
