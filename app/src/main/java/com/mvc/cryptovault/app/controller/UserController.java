@@ -217,7 +217,7 @@ public class UserController extends BaseController {
     @ApiOperation("校验邮箱状态(修改密码时第一步校验)")
     @PostMapping("email")
     public Result<String> checkEmail(@RequestBody AppUserEmailDTO appUserEmailDTO) {
-        String email = (String) BaseContextHandler.get("username");
+        String email = userService.getUserById(getUserId()).getUsername();
         Boolean result = mailService.checkSmsValiCode(email, appUserEmailDTO.getValiCode());
         Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
         String token = JwtHelper.create(email, getUserId(), "email");
@@ -227,7 +227,7 @@ public class UserController extends BaseController {
     @ApiOperation("发送验证码(不输入邮箱地址,直接取当前用户注册邮箱)")
     @GetMapping(value = "email", headers = "Authorization")
     public Result<Boolean> getEmail() {
-        String email = (String) BaseContextHandler.get("username");
+        String email = userService.getUserById(getUserId()).getUsername();
         mailService.send(email);
         return new Result<>(true);
     }
