@@ -71,7 +71,7 @@ public class UserController extends BaseController {
     }
 
     @ApiOperation("获取邮箱验证码, 5分钟内有效, 以最后一次为准")
-    @GetMapping("email")
+    @GetMapping("email/logout")
     @NotLogin
     public Result<Boolean> getSms(@RequestParam String email) {
         mailService.send(email);
