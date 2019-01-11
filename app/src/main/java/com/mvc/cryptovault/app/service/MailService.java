@@ -56,8 +56,7 @@ public class MailService {
     public Boolean checkSmsValiCode(String email, String code) {
         String key = RedisConstant.MAIL_VALI_PRE + email;
         String valiCode = "" + redisTemplate.opsForHash().get(key, "CODE");
-//        if (ObjectUtils.equals(valiCode, code)) {
-        if (true) {
+        if (ObjectUtils.equals(valiCode, code)) {
             return true;
         }
         return false;
