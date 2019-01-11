@@ -34,7 +34,7 @@ public class UserController extends BaseController {
     AppUserInviteService appUserInviteService;
 
     @GetMapping("recommend")
-    public Result<List<RecommendVO>> getRecommend(@RequestBody RecommendDTO dto){
+    public Result<List<RecommendVO>> getRecommend(@ModelAttribute RecommendDTO dto){
         List<RecommendVO> result = appUserInviteService.getRecommend(dto);
         return new Result<>(result);
     }

@@ -20,7 +20,7 @@ import javax.security.auth.login.LoginException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(LoginException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.OK)
     public Result loginExceptionException() {
         return new Result(HttpStatus.UNAUTHORIZED.value(), "token error", null);
     }

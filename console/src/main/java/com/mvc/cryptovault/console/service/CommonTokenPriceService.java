@@ -50,6 +50,13 @@ public class CommonTokenPriceService extends AbstractService<CommonTokenPrice> i
     public void updatePrice(BigInteger tokenId, BigDecimal nextPrice) {
         Long time = System.currentTimeMillis();
         CommonTokenPrice price = findById(tokenId);
+        if(null == price){
+            price = new CommonTokenPrice();
+            price.setTokenPrice(nextPrice);
+            price.setTokenId(tokenId);
+            price.setTokenName(commonTokenService.getTokenName(tokenId));
+            save(price);
+        }
         price.setTokenPrice(nextPrice);
         update(price);
         CommonTokenHistory commonTokenHistory = new CommonTokenHistory();

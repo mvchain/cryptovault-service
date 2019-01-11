@@ -113,7 +113,8 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         Long id = InviteUtil.codeToId(appUserDTO.getInviteCode());
         appUserMapper.updateInvite(BigInteger.valueOf(id));
         //添加邀请记录
-        appUserInviteService.insert(appUser.getId(), BigInteger.valueOf(id));
+        appUserInviteService.insert(BigInteger.valueOf(id), appUser.getId());
+        updateCache(appUser.getId());
         return vo;
     }
 

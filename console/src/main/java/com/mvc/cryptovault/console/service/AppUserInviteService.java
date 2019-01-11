@@ -33,7 +33,7 @@ public class AppUserInviteService extends AbstractService<AppUserInvite> impleme
         }
         Condition condition = new Condition(AppUser.class);
         Example.Criteria criteria = condition.createCriteria();
-        ConditionUtil.andCondition(criteria, "user_id in (" + ids + ")");
+        ConditionUtil.andCondition(criteria, "id in (" + ids + ")");
         List<AppUser> list = appUserService.findByCondition(condition);
         List<RecommendVO> result = list.stream().map(obj -> {
             RecommendVO vo = new RecommendVO();
@@ -50,7 +50,7 @@ public class AppUserInviteService extends AbstractService<AppUserInvite> impleme
         invite.setUserId(userId);
         invite.setInviteUserId(inviteUserId);
         AppUserInvite temp = findOneByEntity(invite);
-        if (null != temp) {
+        if (null == temp) {
             Long time = System.currentTimeMillis();
             invite.setCreatedAt(time);
             invite.setUpdatedAt(time);

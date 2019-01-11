@@ -131,6 +131,7 @@ public class UserController extends BaseController {
         }
         Long id = InviteUtil.codeToId(appUserDTO.getInviteCode());
         Boolean checkResult = userId.longValue() == id && appUserDTO.getEmail().equals(username);
+        Assert.isTrue(id != 0L, MessageConstants.getMsg("INVITE_ERROR"));
         Assert.isTrue(checkResult, MessageConstants.getMsg("REGISTER_WRONG"));
         AppUserRetVO vo = userService.register(appUserDTO);
         return new Result<>(vo);
@@ -234,7 +235,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("获取推荐人列表,分页加载")
     @GetMapping("recommend")
-    public Result<List<RecommendVO>> getRecommend(@RequestBody RecommendDTO recommendDTO) {
+    public Result<List<RecommendVO>> getRecommend(@ModelAttribute RecommendDTO recommendDTO) {
         recommendDTO.setUserId(getUserId());
         List<RecommendVO> result = userService.getRecommend(recommendDTO);
         return new Result<>(result);

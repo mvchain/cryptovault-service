@@ -19,6 +19,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.NumberUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
@@ -128,13 +129,19 @@ public class Job {
     private void updateUsdtPrice() {
         String usdtUrl = "https://data.block.cc/api/v1/price?symbol=USDT";
         String ethUrl = "https://data.block.cc/api/v1/price?symbol=ETH";
-        JSONObject usdtResult = restTemplate.getForObject(usdtUrl, JSONObject.class);
-        JSONObject ethResult = restTemplate.getForObject(ethUrl, JSONObject.class);
+        JSONObject usdtResult = null;
+        JSONObject ethResult = null;
+        try {
+            usdtResult = restTemplate.getForObject(usdtUrl, JSONObject.class);
+            ethResult = restTemplate.getForObject(ethUrl, JSONObject.class);
+        } catch (RestClientException e) {
+            log.warn(e.getMessage());
+           return;
+        }
         BigDecimal usdtPrice = parseValue(usdtResult);
         BigDecimal ethPrice = parseValue(ethResult);
         appKlineService.saveHistory(BusinessConstant.BASE_TOKEN_ID_USDT, usdtPrice);
         appKlineService.saveHistory(BusinessConstant.BASE_TOKEN_ID_ETH, ethPrice);
-
     }
 
     /**

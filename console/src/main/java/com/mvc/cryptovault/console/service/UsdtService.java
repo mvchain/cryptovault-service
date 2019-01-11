@@ -18,6 +18,8 @@ import com.neemre.btcdcli4j.core.domain.Block;
 import com.neemre.btcdcli4j.core.domain.Output;
 import com.neemre.btcdcli4j.core.domain.OutputOverview;
 import com.neemre.btcdcli4j.core.domain.SignatureResult;
+import com.neemre.btcdcli4j.core.http.HttpLayerException;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
  */
 @Service("UsdtService")
 @Transactional(rollbackFor = RuntimeException.class)
+@Log4j
 public class UsdtService extends BlockService {
 
     @Autowired
@@ -262,6 +265,8 @@ public class UsdtService extends BlockService {
                 lastNumber = block.getNextBlockHash();
                 redisTemplate.opsForValue().set(RedisConstant.USDT_LAST_HEIGHT, lastNumber);
                 updateStatus(block.getHeight().toString());
+            } catch (HttpLayerException e1) {
+                log.warn(e1.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
