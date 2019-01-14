@@ -7,7 +7,10 @@ import com.mvc.cryptovault.common.bean.vo.*;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
-import com.mvc.cryptovault.common.util.*;
+import com.mvc.cryptovault.common.util.InviteUtil;
+import com.mvc.cryptovault.common.util.JwtHelper;
+import com.mvc.cryptovault.common.util.MessageConstants;
+import com.mvc.cryptovault.common.util.MnemonicUtil;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -147,6 +150,7 @@ public class UserController extends BaseController {
 
     @ApiOperation("获取助记词(打乱)")
     @GetMapping("mnemonics")
+    @NotLogin
     public Result<List<String>> getInvitation(@RequestParam String email) {
         AppUser appUser = userService.getUserByUsername(email);
         return new Result<>(MnemonicUtil.getWordsList(appUser.getPvKey()));
@@ -241,18 +245,16 @@ public class UserController extends BaseController {
         return new Result<>(result);
     }
 
-//
-//
-//    @ApiOperation("用户签到")
-//    @PutMapping("sign")
-//    public Result<Boolean> sign() {
-//
-//    }
-//
-//    @ApiOperation("获取用户是否已签到")
-//    @GetMapping("sign")
-//    public Result<Boolean> getSign() {
-//
-//
-//    }
+    @ApiOperation("用户签到")
+    @PutMapping("sign")
+    public Result<Boolean> sign() {
+        return new Result<>(userService.sign(getUserId()));
+    }
+
+    @ApiOperation("获取用户是否已签到")
+    @GetMapping("sign")
+    public Result<Boolean> getSign() {
+        return new Result<>(userService.getSign(getUserId()));
+    }
+
 }
