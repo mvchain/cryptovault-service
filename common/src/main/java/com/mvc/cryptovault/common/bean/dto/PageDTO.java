@@ -3,7 +3,6 @@ package com.mvc.cryptovault.common.bean.dto;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 
 /**
  * @author qiyichen

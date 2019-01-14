@@ -6,7 +6,6 @@ import com.mvc.cryptovault.common.bean.dto.DebitDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionSearchDTO;
 import com.mvc.cryptovault.common.bean.vo.*;
-import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

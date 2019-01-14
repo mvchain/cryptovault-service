@@ -1,13 +1,12 @@
 package com.mvc.cryptovault.common.bean;
 
-import java.io.Serializable;
-import java.math.BigInteger;
-import javax.persistence.Column;
 import lombok.Data;
+
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import lombok.Data;
-import lombok.Generated;
+import java.io.Serializable;
+import java.math.BigInteger;
 
 /**
  * app_user_opr_log

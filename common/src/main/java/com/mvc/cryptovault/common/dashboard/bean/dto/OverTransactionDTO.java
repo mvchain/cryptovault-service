@@ -1,7 +1,6 @@
 package com.mvc.cryptovault.common.dashboard.bean.dto;
 
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

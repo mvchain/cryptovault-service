@@ -8,11 +8,9 @@ import com.mvc.cryptovault.common.bean.vo.UserSimpleVO;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
-import com.mvc.cryptovault.common.util.MessageConstants;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
 import javax.security.auth.login.LoginException;

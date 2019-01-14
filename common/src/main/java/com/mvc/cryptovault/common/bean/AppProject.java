@@ -1,12 +1,8 @@
 package com.mvc.cryptovault.common.bean;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.Column;
-import lombok.Data;
-import lombok.Generated;
-
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;

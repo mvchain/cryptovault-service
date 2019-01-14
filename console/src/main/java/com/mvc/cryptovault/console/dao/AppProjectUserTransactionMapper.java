@@ -5,7 +5,6 @@ import com.mvc.cryptovault.console.common.MyMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.web3j.protocol.core.methods.response.Log;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
