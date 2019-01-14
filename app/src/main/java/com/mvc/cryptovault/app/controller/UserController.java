@@ -22,6 +22,7 @@ import javax.security.auth.login.LoginException;
 import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -86,6 +87,7 @@ public class UserController extends BaseController {
     @NotLogin
     public Result<TokenVO> mnemonicsCheck(@RequestBody MnemonicsDTO mnemonicsDTO) {
         AppUser user = userService.getUserByUsername(mnemonicsDTO.getEmail());
+        Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
         Boolean result = MnemonicUtil.equals(user.getPvKey(), Arrays.asList(mnemonicsDTO.getMnemonics().split(",")));
         Assert.isTrue(result, MessageConstants.getMsg("MNEMONICS_ERROR"));
         userService.mnemonicsActive(mnemonicsDTO.getEmail());
@@ -153,7 +155,9 @@ public class UserController extends BaseController {
     @NotLogin
     public Result<List<String>> getInvitation(@RequestParam String email) {
         AppUser appUser = userService.getUserByUsername(email);
-        return new Result<>(MnemonicUtil.getWordsList(appUser.getPvKey()));
+        List<String> list = MnemonicUtil.getWordsList(appUser.getPvKey());
+        Collections.shuffle(list);
+        return new Result<>(list);
     }
 
     @ApiOperation("重置密码,返回一次性token")
