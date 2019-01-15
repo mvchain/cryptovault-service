@@ -1,7 +1,8 @@
-package com.mvc.cryptovault.common;
+package com.mvc.cryptovault.common.bean;
 
 import lombok.Data;
 
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -11,13 +12,15 @@ import java.math.BigInteger;
  */
 @Data
 public class AppUserFinancialIncome {
-
+    @Id
+    private BigInteger id;
     private BigInteger userId;
     private BigInteger financialId;
-    private BigInteger createdAt;
-    private BigInteger updatedAt;
+    private Long createdAt;
+    private Long updatedAt;
     private BigInteger tokenId;
     private String tokenName;
     private BigDecimal value;
+    private BigInteger partakeId;
 
 }

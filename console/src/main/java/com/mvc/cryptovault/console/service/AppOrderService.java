@@ -135,6 +135,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         AppOrderDetail appOrderDetail = new AppOrderDetail();
         appOrderDetail.setValue(blockTransaction.getValue());
         appOrderDetail.setOrderId(order.getId());
+        appOrderDetail.setUserId(order.getUserId());
         appOrderDetail.setToAddress(blockTransaction.getToAddress());
         appOrderDetail.setHash(blockTransaction.getHash());
         appOrderDetail.setFromAddress(blockTransaction.getFromAddress());
@@ -179,6 +180,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         AppOrderDetail detail = new AppOrderDetail();
         detail.setCreatedAt(time);
         detail.setUpdatedAt(time);
+        detail.setUserId(appOrder.getUserId());
         detail.setFee(BigDecimal.ZERO);
         detail.setFromAddress("");
         detail.setHash("");
@@ -228,6 +230,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setHash("");
         detail.setToAddress("");
         detail.setOrderId(appOrder.getId());
+        detail.setUserId(appOrder.getUserId());
         detail.setValue(transaction.getValue());
         appOrderDetailService.save(detail);
         detail.setOrderId(baseOrder.getId());
@@ -260,6 +263,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setFee(BigDecimal.ZERO);
         detail.setFromAddress("");
         detail.setHash("");
+        detail.setUserId(appOrder.getUserId());
         detail.setToAddress("");
         detail.setOrderId(appOrder.getId());
         detail.setValue(value);
@@ -295,6 +299,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setUpdatedAt(time);
         detail.setFee(BigDecimal.ZERO);
         detail.setFromAddress("");
+        detail.setUserId(appOrder.getUserId());
         detail.setHash("");
         detail.setToAddress("");
         detail.setOrderId(appOrder.getId());
@@ -358,6 +363,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         detail.setCreatedAt(time);
         detail.setUpdatedAt(time);
         detail.setFee(BigDecimal.ZERO);
+        detail.setUserId(appOrder.getUserId());
         detail.setFromAddress("");
         detail.setHash("");
         detail.setToAddress("");
@@ -366,4 +372,72 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrderDetailService.save(detail);
     }
 
+    public void saveOrder(AppUserFinancialPartake partake, AppFinancial financial) {
+        saveOrder(partake, partake.getValue(), financial.getBaseTokenId(), "理财");
+        saveOrder(partake, partake.getIncome(), financial.getTokenId(), "理财");
+    }
+
+    private void saveOrder(AppUserFinancialPartake partake, BigDecimal value, BigInteger tokenId, String remark){
+        Long time = System.currentTimeMillis();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(4);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(partake.getId());
+        appOrder.setOrderContentName(BusinessConstant.CONTENT_FINANCIAL);
+        appOrder.setOrderNumber(getOrderNumber());
+        appOrder.setValue(value);
+        appOrder.setUserId(partake.getUserId());
+        appOrder.setTokenId(tokenId);
+        appOrder.setStatus(2);
+        appOrder.setOrderType(1);
+        appOrder.setOrderRemark(remark);
+        save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUserId(appOrder.getUserId());
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(value);
+        appOrderDetailService.save(detail);
+        appMessageService.transferFinancialMsg(appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(tokenId));
+    }
+
+    public void saveFinancialOrder(AppUserFinancialPartake partake, AppFinancial  appFinancial) {
+        Long time = System.currentTimeMillis();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(4);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(partake.getId());
+        appOrder.setOrderContentName(BusinessConstant.CONTENT_FINANCIAL);
+        appOrder.setOrderNumber(partake.getOrderNumber());
+        appOrder.setValue(partake.getValue());
+        appOrder.setUserId(partake.getUserId());
+        appOrder.setTokenId(appFinancial.getBaseTokenId());
+        appOrder.setStatus(2);
+        appOrder.setOrderType(2);
+        appOrder.setOrderRemark(appFinancial.getName());
+        save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setUserId(appOrder.getUserId());
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(partake.getValue());
+        appOrderDetailService.save(detail);
+        appMessageService.transferFinancialMsg(appOrder.getId(), appOrder.getUserId(), partake.getValue(), tokenService.getTokenName(appFinancial.getBaseTokenId()));
+    }
 }

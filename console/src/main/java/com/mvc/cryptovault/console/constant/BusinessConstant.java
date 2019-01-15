@@ -65,6 +65,7 @@ public interface BusinessConstant {
     String CONTENT_PROJECT = "CONTENT_PROJECT";
     String CONTENT_TRANSACTION = "CONTENT_TRANSACTION";
     String CONTENT_EMIT = "CONTENT_EMIT";
+    String CONTENT_FINANCIAL = "CONTENT_FINANCIAL";
 
     /**
      * 区跨链类型

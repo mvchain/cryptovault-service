@@ -29,6 +29,8 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.mvc.cryptovault.common.constant.RedisConstant.APP_USER_USERNAME;
+
 @Service
 public class AppUserService extends AbstractService<AppUser> implements BaseService<AppUser> {
 
@@ -115,6 +117,8 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         //添加邀请记录
         appUserInviteService.insert(BigInteger.valueOf(id), appUser.getId());
         updateCache(appUser.getId());
+        String key = APP_USER_USERNAME + appUserDTO.getEmail();
+        redisTemplate.opsForHash().put(key, key, String.valueOf(appUser.getId()));
         return vo;
     }
 

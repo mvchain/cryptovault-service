@@ -40,6 +40,7 @@ public class AppUserInviteService extends AbstractService<AppUserInvite> impleme
             vo.setUserId(obj.getId());
             vo.setEmail(obj.getEmail());
             vo.setNickname(obj.getNickname());
+            vo.setCreatedAt(obj.getCreatedAt());
             return vo;
         }).collect(Collectors.toList());
         return result;

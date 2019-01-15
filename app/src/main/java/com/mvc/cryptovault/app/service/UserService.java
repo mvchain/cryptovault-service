@@ -141,4 +141,12 @@ public class UserService {
         }
         return userRemoteService.getRecommend(dto).getData();
     }
+
+    public Boolean sign(BigInteger userId) {
+        return  userRemoteService.sign(userId).getData();
+    }
+
+    public Boolean getSign(BigInteger userId) {
+        return  userRemoteService.getSign(userId).getData();
+    }
 }

@@ -1,7 +1,6 @@
 package com.mvc.cryptovault.console.controller;
 
 import com.mvc.cryptovault.common.bean.AppUser;
-import com.mvc.cryptovault.common.bean.AppUserInvite;
 import com.mvc.cryptovault.common.bean.dto.AppUserDTO;
 import com.mvc.cryptovault.common.bean.dto.RecommendDTO;
 import com.mvc.cryptovault.common.bean.vo.AppUserRetVO;
@@ -15,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,15 +35,19 @@ public class UserController extends BaseController {
     AppUserInviteService appUserInviteService;
 
     @GetMapping("recommend")
-    public Result<List<RecommendVO>> getRecommend(@ModelAttribute RecommendDTO dto){
+    public Result<List<RecommendVO>> getRecommend(@ModelAttribute RecommendDTO dto) {
         List<RecommendVO> result = appUserInviteService.getRecommend(dto);
         return new Result<>(result);
     }
 
     @PutMapping()
-    public Result<Boolean> updateUser(@RequestBody AppUser user){
+    public Result<Boolean> updateUser(@RequestBody AppUser user) {
         user.setUpdatedAt(System.currentTimeMillis());
         appUserService.update(user);
+        user = appUserService.findById(user.getId());
+        String key = APP_USER_USERNAME + user.getEmail();
+        redisTemplate.opsForHash().put(key, key, String.valueOf(user.getId()));
+        appUserService.updateCache(user.getId());
         return new Result<>(true);
     }
 
@@ -106,4 +111,29 @@ public class UserController extends BaseController {
         String result = appUserService.getTag(userId);
         return new Result<>(result);
     }
+
+    @PutMapping("sign")
+    Result<Boolean> sign(@RequestParam("userId") BigInteger userId) {
+        AppUser user = appUserService.findById(userId);
+        String key = APP_USER_USERNAME + user.getEmail();
+        redisTemplate.opsForHash().delete(key, "SIGN_DATE");
+        Boolean result = redisTemplate.opsForHash().putIfAbsent(key, "SIGN_DATE", getNowDate());
+        return new Result<>(result);
+    }
+
+    @GetMapping("sign")
+    Result<Boolean> getSign(@RequestParam("userId") BigInteger userId) {
+        AppUser user = appUserService.findById(userId);
+        String key = APP_USER_USERNAME + user.getEmail();
+        String result = (String) redisTemplate.opsForHash().get(key, "SIGN_DATE");
+        return new Result<>(null != result && result.equals(getNowDate()));
+    }
+
+    private String getNowDate() {
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String str = sdf.format(calendar.getTime());
+        return str;
+    }
+
 }

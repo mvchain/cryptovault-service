@@ -60,6 +60,8 @@ public class JPushService {
             log.info("HTTP Status: " + e.getStatus());
             log.info("Error Code: " + e.getErrorCode());
             log.info("Error Message: " + e.getErrorMessage());
+        } catch (Exception e){
+            log.info("HTTP Status: " + e.getMessage());
         }
         //失败则添加到队列并重发
         return false;

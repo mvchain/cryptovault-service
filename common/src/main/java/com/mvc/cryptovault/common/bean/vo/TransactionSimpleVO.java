@@ -31,7 +31,7 @@ public class TransactionSimpleVO {
     private BigDecimal ratio;
     @ApiModelProperty("转账状态[0待打包 1确认中 2打包成功 9打包失败]")
     private Integer status;
-    @ApiModelProperty("交易分类[0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账]")
+    @ApiModelProperty("交易分类[0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账 4理财]")
     private Integer classify;
     @ApiModelProperty("id")
     private BigInteger id;

@@ -19,6 +19,17 @@ spring:
   mvc:
     async:
       request-timeout: 10ms
+  mail:
+    host: smtp.qq.com
+    username: 416350144@qq.com
+    password: zczvgqonpvfcbghb
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
   application:
     name: APP
 
@@ -37,7 +48,7 @@ server:
 
 service:
   name: app
-  expire: 6048000
+  expire: 604800000
   refresh: 604800000
   base64Secret: MDk4ZjZ1iY2Q0NjIxZDM6M2hZGU0ZTgzMjYyN2I0ZjY=
 

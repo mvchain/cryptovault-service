@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.app.feign;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.app.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.*;
 import com.mvc.cryptovault.common.bean.vo.*;
@@ -125,5 +126,35 @@ public interface ConsoleRemoteService {
 
     @GetMapping("user/recommend")
     Result<List<RecommendVO>> getRecommend(@RequestBody RecommendDTO userId);
+
+    @GetMapping("financial")
+    Result<List<FinancialSimpleVO>> getFinancialList(@RequestBody PageDTO pageDTO, @RequestParam("id") BigInteger id);
+
+    @GetMapping("financial/partake")
+    Result<List<FinancialUserPartakeVO>> getFinancialPartakeList(@RequestBody FinancialPartakeDTO financialPartakeDTO, @RequestParam("userId") BigInteger userId);
+
+    @GetMapping("financial/balance")
+    Result<FinancialBalanceVO> getFinancialBalance(@RequestParam("userId") BigInteger userId);
+
+    @GetMapping("financial/{id}")
+    Result<FinancialDetailVO> getFinancialDetail(@PathVariable("id") BigInteger id, @RequestParam("userId") BigInteger userId);
+
+    @GetMapping("financial/partake/{id}")
+    Result<FinancialPartakeDetailVO> getPartakeDetail(@PathVariable("id") BigInteger id, @RequestParam("userId") BigInteger userId);
+
+    @GetMapping("financial/partake/{financialId}/detail")
+    Result<List<FinancialPartakeListVO>> getPartakeList(@PathVariable("financialId") BigInteger financialId, @RequestBody FinancialPartakeListDTO dto, @RequestParam("userId") BigInteger userId);
+
+    @PostMapping("financial/{id}")
+    Result<Boolean> buyFinancial(@PathVariable("id") BigInteger id, @RequestBody FinancialBuyDTO financialBuyDTO, @RequestParam("userId") BigInteger userId);
+
+    @PostMapping("financial/partake/{id}")
+    Result<Boolean> unlockPartake(@PathVariable("id") BigInteger id, @RequestParam("userId") BigInteger userId);
+
+    @PutMapping("user/sign")
+    Result<Boolean> sign(@RequestParam("userId") BigInteger userId);
+
+    @GetMapping("user/sign")
+    Result<Boolean> getSign(@RequestParam("userId") BigInteger userId);
 
 }

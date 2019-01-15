@@ -42,6 +42,7 @@ CREATE TABLE `app_financial` (
 `limit`  decimal(40,20) NULL DEFAULT NULL ,
 `user_limit`  decimal(40,20) NULL DEFAULT NULL ,
 `times`  int(11) NULL DEFAULT NULL ,
+`min_value`  decimal(40,20) NULL DEFAULT NULL ,
 PRIMARY KEY (`id`)
 )
 ENGINE=InnoDB

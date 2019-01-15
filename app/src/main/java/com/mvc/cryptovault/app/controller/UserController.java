@@ -88,6 +88,7 @@ public class UserController extends BaseController {
     public Result<TokenVO> mnemonicsCheck(@RequestBody MnemonicsDTO mnemonicsDTO) {
         AppUser user = userService.getUserByUsername(mnemonicsDTO.getEmail());
         Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
+        Assert.isTrue(user.getStatus() == 4, MessageConstants.getMsg("USER_ACTIVE"));
         Boolean result = MnemonicUtil.equals(user.getPvKey(), Arrays.asList(mnemonicsDTO.getMnemonics().split(",")));
         Assert.isTrue(result, MessageConstants.getMsg("MNEMONICS_ERROR"));
         userService.mnemonicsActive(mnemonicsDTO.getEmail());
@@ -155,6 +156,7 @@ public class UserController extends BaseController {
     @NotLogin
     public Result<List<String>> getInvitation(@RequestParam String email) {
         AppUser appUser = userService.getUserByUsername(email);
+        Assert.notNull(appUser, MessageConstants.getMsg("USER_PASS_WRONG"));
         List<String> list = MnemonicUtil.getWordsList(appUser.getPvKey());
         Collections.shuffle(list);
         return new Result<>(list);

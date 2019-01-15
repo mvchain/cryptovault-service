@@ -65,6 +65,7 @@ public class AppOrderDetail implements Serializable {
     @Column(name = "from_address")
     private String fromAddress;
 
+    private BigInteger userId;
     /**
      * app_order_detail
      */

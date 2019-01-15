@@ -20,5 +20,6 @@ public class RecommendVO {
     private String nickname;
     @ApiModelProperty("邮箱")
     private String email;
-
+    @ApiModelProperty("用户创建时间")
+    private Long createdAt;
 }

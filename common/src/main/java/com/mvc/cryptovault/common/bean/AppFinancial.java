@@ -2,6 +2,7 @@ package com.mvc.cryptovault.common.bean;
 
 import lombok.Data;
 
+import javax.persistence.Id;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
@@ -11,7 +12,7 @@ import java.math.BigInteger;
  */
 @Data
 public class AppFinancial {
-
+    @Id
     private BigInteger id;
     private String name;
     private BigInteger baseTokenId;
@@ -22,10 +23,15 @@ public class AppFinancial {
     private Integer depth;
     private Float incomeMin;
     private Float incomeMax;
-    private BigInteger startAt;
-    private BigInteger stopAt;
-    private BigDecimal limit;
+    private Long startAt;
+    private Long stopAt;
+    private Long createdAt;
+    private Long updatedAt;
+    private BigDecimal limitValue;
     private BigDecimal userLimit;
-    private BigInteger times;
+    private Integer times;
+    private BigDecimal minValue;
+    private Integer status;
+    private BigDecimal sold;
 
 }

@@ -10,15 +10,15 @@ import java.util.List;
  */
 public class MnemonicUtil {
 
-    private final static Words DEFAULT_WORDS_LEN = Words.FIFTEEN;
+    private final static Words DEFAULT_WORDS_LEN = Words.TWELVE;
     private final static MnemonicCode mnemonicCode = new MnemonicCode();
 
     public static void main(String[] args) throws MnemonicException.MnemonicLengthException, MnemonicException.MnemonicChecksumException, MnemonicException.MnemonicWordException {
-        String key = getRandomCode();
+        String key = "20c5d5ab49a752d5e59565bfafb1f1c50b294226";
         System.out.println(key);
         List<String> value = getWordsList(key);
         System.out.println(value);
-        System.out.println(equals(key, value));
+        System.out.println(equals("cactus,they,emerge,foot,strike,fatal,tell,typical,twist,misery,mandate,volume,essence,include,focus", value));
     }
 
     public static String getRandomCode() {

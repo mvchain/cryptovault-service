@@ -49,6 +49,12 @@ public class AppMessageService {
     }
 
     @Async
+    public void transferFinancialMsg(BigInteger id, BigInteger userId, BigDecimal value, String tokenName) {
+        String msg = String.format(MODEL_TRANSFER, value.stripTrailingZeros().toPlainString(), tokenName, "理财", "成功");
+        Boolean result = jPushService.send(msg, id, String.valueOf(userId));
+        saveMsg(userId, result, id, msg);
+    }
+    @Async
     public void transferMsg(BigInteger orderId, BigInteger userId, BigDecimal value, String tokenName, Integer transferType, Integer status) {
         String transferTypeStr = transferType == 1 ? "收款" : transferType == 2 ? "提现" : "划账";
         String statusStr = status == 2 ? "成功" : "失败";
@@ -117,4 +123,5 @@ public class AppMessageService {
     public List<AppMessage> findByCondition(Condition condition) {
         return appMessageMapper.selectByCondition(condition);
     }
+
 }
