@@ -18,5 +18,9 @@ public class FinancialDetailVO extends FinancialSimplePartakeVO {
     private BigDecimal balance;
     @ApiModelProperty("已购买数量")
     private BigDecimal purchased;
+    @ApiModelProperty("产品内容介绍")
+    private String content;
+    @ApiModelProperty("产品规则介绍")
+    private String rule;
 
 }

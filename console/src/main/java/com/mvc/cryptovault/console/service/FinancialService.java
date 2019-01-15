@@ -1,10 +1,7 @@
 package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
-import com.mvc.cryptovault.common.bean.AppFinancial;
-import com.mvc.cryptovault.common.bean.AppUser;
-import com.mvc.cryptovault.common.bean.AppUserFinancialIncome;
-import com.mvc.cryptovault.common.bean.AppUserFinancialPartake;
+import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.FinancialBuyDTO;
 import com.mvc.cryptovault.common.bean.dto.FinancialPartakeDTO;
 import com.mvc.cryptovault.common.bean.dto.FinancialPartakeListDTO;
@@ -37,6 +34,8 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
     @Autowired
     AppUserBalanceService appUserBalanceService;
     @Autowired
+    AppFinancialContentService appFinancialContentService;
+    @Autowired
     AppUserFinancialPartakeService appUserFinancialPartakeService;
     @Autowired
     AppUserFinancialIncomeService appUserFinancialIncomeService;
@@ -68,11 +67,11 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
             return false;
         }
         Assert.isTrue(financialBuyDTO.getTransactionPassword().equals(user.getTransactionPassword()));
-        Assert.isTrue(financialBuyDTO.getValue().compareTo(financial.getMinValue()) >0 , MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
-        Assert.isTrue(financialBuyDTO.getValue().compareTo(financial.getMinValue()) >0 , MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
+        Assert.isTrue(financialBuyDTO.getValue().compareTo(financial.getMinValue()) > 0, MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
+        Assert.isTrue(financialBuyDTO.getValue().compareTo(financial.getMinValue()) > 0, MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
         BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, financial.getBaseTokenId());
-       Integer num = financialMapper.updateSold(financial.getId(), financialBuyDTO.getValue());
-       Assert.isTrue(num == 1, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
+        Integer num = financialMapper.updateSold(financial.getId(), financialBuyDTO.getValue());
+        Assert.isTrue(num == 1, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         Assert.isTrue(balance.compareTo(financialBuyDTO.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
         appUserFinancialPartakeService.buy(financial, financialBuyDTO, userId);
         return true;
@@ -80,19 +79,19 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
 
     public List<FinancialPartakeListVO> getPartakeList(BigInteger partakeId, FinancialPartakeListDTO dto, BigInteger userId) {
         AppUserFinancialPartake partake = appUserFinancialPartakeService.findById(partakeId);
-        if(null == partake)return null;
+        if (null == partake) return null;
         AppFinancial financial = findById(partake.getFinancialId());
-        if(null == financial)return null;
+        if (null == financial) return null;
         PageHelper.startPage(1, dto.getPageSize(), "id desc");
         Condition condition = new Condition(AppUserFinancialPartake.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "partake_id = ", partakeId);
         ConditionUtil.andCondition(criteria, "user_id = ", userId);
-        if(dto.getId() != null && !dto.getId().equals(BigInteger.ZERO)){
-            ConditionUtil.andCondition(criteria,"id < ", dto.getId());
+        if (dto.getId() != null && !dto.getId().equals(BigInteger.ZERO)) {
+            ConditionUtil.andCondition(criteria, "id < ", dto.getId());
         }
         List<AppUserFinancialIncome> list = appUserFinancialIncomeService.findByCondition(condition);
-        return list.stream().map(obj->{
+        return list.stream().map(obj -> {
             FinancialPartakeListVO vo = new FinancialPartakeListVO();
             vo.setIncome(obj.getValue());
             vo.setId(obj.getId());
@@ -129,7 +128,10 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         BeanUtils.copyProperties(appFinancial, vo);
         vo.setBalance(appUserBalanceService.getBalanceByTokenId(userId, appFinancial.getBaseTokenId()));
         BigDecimal partake = appUserFinancialPartakeService.getPartake(userId, id);
+        AppFinancialContent content = appFinancialContentService.findById(id);
         vo.setPurchased(partake);
+        vo.setContent(content.getContent());
+        vo.setRule(content.getRule());
         return vo;
     }
 
