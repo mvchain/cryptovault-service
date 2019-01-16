@@ -28,8 +28,7 @@ public class AppProjectController extends BaseController {
     @GetMapping()
     Result<PageInfo<AppProject>> getProject(@RequestParam Integer projectType, @RequestParam(required = false) BigInteger id, @RequestParam Integer type, @RequestParam Integer pageSize) {
         final BigInteger projectId = id == null ? BigInteger.ZERO : id;
-        PageHelper.orderBy("id desc");
-        List<AppProject> list = appProjectService.findAll();
+        List<AppProject> list = appProjectService.findAll("id desc");
         list = list.stream().filter(obj -> obj.getVisiable() == 1).collect(Collectors.toList());
         if (null != type && type.equals(BusinessConstant.SEARCH_DIRECTION_UP)) {
             list = list.stream().filter(obj -> obj.getId().compareTo(projectId) > 0).collect(Collectors.toList());
@@ -48,4 +47,5 @@ public class AppProjectController extends BaseController {
         AppProject result = appProjectService.findById(id);
         return new Result<>(result);
     }
+
 }
