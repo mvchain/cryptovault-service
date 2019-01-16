@@ -31,6 +31,7 @@ public class UserService {
         UserSimpleVO vo = new UserSimpleVO();
         Result<AppUser> userResult = userRemoteService.getUserById(userId);
         AppUser user = userResult.getData();
+        Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
         vo.setNickname(user.getNickname());
         vo.setUsername(mailService.getMail(user.getEmail()));
         return vo;
