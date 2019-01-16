@@ -440,4 +440,49 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrderDetailService.save(detail);
         appMessageService.transferFinancialMsg(appOrder.getId(), appOrder.getUserId(), partake.getValue(), tokenService.getTokenName(appFinancial.getBaseTokenId()));
     }
+
+    /**
+     * @param classify 0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账 4理財
+     * @param orderContentId 关联数据id
+     * @param orderContentName 关联类型
+     * @param orderNumber 订单号
+     * @param value 数量
+     * @param userId
+     * @param tokenId
+     * @param status 状态0打包中 1确认中 2确认
+     * @param orderType 1转入 2转出
+     * @param remark
+     * @param message
+     */
+    public void saveOrder(Integer classify, BigInteger orderContentId, String orderContentName, String orderNumber, BigDecimal value, BigInteger userId, BigInteger tokenId, Integer status , Integer orderType, String remark, String message, Boolean sendMsg) {
+        Long time = System.currentTimeMillis();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(4);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress("");
+        appOrder.setHash("");
+        appOrder.setOrderContentId(orderContentId);
+        appOrder.setOrderContentName(orderContentName);
+        appOrder.setOrderNumber(orderNumber);
+        appOrder.setValue(value);
+        appOrder.setUserId(userId);
+        appOrder.setTokenId(tokenId);
+        appOrder.setStatus(status);
+        appOrder.setOrderType(orderType);
+        appOrder.setOrderRemark(remark);
+        save(appOrder);
+        AppOrderDetail detail = new AppOrderDetail();
+        detail.setCreatedAt(time);
+        detail.setUpdatedAt(time);
+        detail.setFee(BigDecimal.ZERO);
+        detail.setFromAddress("");
+        detail.setHash("");
+        detail.setUserId(appOrder.getUserId());
+        detail.setToAddress("");
+        detail.setOrderId(appOrder.getId());
+        detail.setValue(value);
+        appOrderDetailService.save(detail);
+        appMessageService.transferMsg(appOrder.getId(), appOrder.getUserId(), message, sendMsg);
+    }
 }

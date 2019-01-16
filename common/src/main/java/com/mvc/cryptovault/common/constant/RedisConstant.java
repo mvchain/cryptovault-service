@@ -20,4 +20,5 @@ public interface RedisConstant {
     String USER_IMPORT = "USER_IMPORT";
     String SMS_VALI_PRE = "SMS_VALI_PRE_";
     String MAIL_VALI_PRE = "MAIL_VALI_PRE";
+    String APPFINANCIAL_RATIO = "APPFINANCIAL_RATIO";
 }

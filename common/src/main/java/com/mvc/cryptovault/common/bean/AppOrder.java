@@ -150,7 +150,7 @@ public class AppOrder implements Serializable {
 
     /**
      * 订单种类[0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账]
-     * @param classify 订单种类[0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账]
+     * @param classify 订单种类[0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账 4理財]
      */
     public void setClassify(Integer classify) {
         this.classify = classify;

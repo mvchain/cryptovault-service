@@ -287,4 +287,12 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         return result;
     }
 
+    public void updateStatus() {
+        Long currentTimeMillis = System.currentTimeMillis();
+        Integer result1 = financialMapper.updateProjectStartStatus(currentTimeMillis);
+        Integer result2 = financialMapper.updateProjectStopStatus(currentTimeMillis);
+        if (result1 > 0 || result2 > 0) {
+            updateAllCache("id desc");
+        }
+    }
 }

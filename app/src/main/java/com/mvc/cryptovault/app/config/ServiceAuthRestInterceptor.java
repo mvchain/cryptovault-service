@@ -6,6 +6,7 @@ import com.mvc.cryptovault.common.util.JwtHelper;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.common.util.TokenErrorException;
 import io.jsonwebtoken.Claims;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -17,6 +18,7 @@ import java.math.BigInteger;
 /**
  * @author qyc
  */
+@Log4j2
 public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
 
     @Override

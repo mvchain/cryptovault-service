@@ -114,10 +114,16 @@ public class UserController extends BaseController {
 
     @PutMapping("sign")
     Result<Boolean> sign(@RequestParam("userId") BigInteger userId) {
+        if(getSign(userId).getData()){
+            return  new Result<>(true);
+        }
         AppUser user = appUserService.findById(userId);
         String key = APP_USER_USERNAME + user.getEmail();
         redisTemplate.opsForHash().delete(key, "SIGN_DATE");
         Boolean result = redisTemplate.opsForHash().putIfAbsent(key, "SIGN_DATE", getNowDate());
+        if(result){
+            appUserService.sign(userId);
+        }
         return new Result<>(result);
     }
 

@@ -56,7 +56,7 @@ feign.hystrix.enabled: true
 
 hystrix.command.default.execution:
   isolation:
-    thread.timeoutInMilliseconds: 500
+    thread.timeoutInMilliseconds: 5000
   timeout.enabled: true
 
 eureka:

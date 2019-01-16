@@ -2,8 +2,7 @@ package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.mvc.cryptovault.common.bean.AppMessage;
-import com.mvc.cryptovault.common.bean.AppUser;
+import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.AppUserDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.AppUserRetVO;
@@ -16,6 +15,7 @@ import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.common.util.MnemonicUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
+import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.AppUserMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,9 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.mvc.cryptovault.common.constant.RedisConstant.APP_USER_USERNAME;
@@ -46,6 +48,18 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
     AppUserInviteService appUserInviteService;
     @Autowired
     FinancialService financialService;
+    @Autowired
+    AppFinancialDetailService appFinancialDetailService;
+    @Autowired
+    AppUserFinancialPartakeService appUserFinancialPartakeService;
+    @Autowired
+    AppOrderService appOrderService;
+    @Autowired
+    CommonTokenService commonTokenService;
+    @Autowired
+    AppUserFinancialIncomeService appUserFinancialIncomeService;
+
+    private static final Long ONE_DAY = 3600 * 1000 * 24L;
 
     public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone, Integer status) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), "id desc");
@@ -145,5 +159,45 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         appUser.setUpdatedAt(System.currentTimeMillis());
         update(appUser);
         updateCache(appUser.getId());
+    }
+
+    public void sign(BigInteger userId) {
+        //签到时自己的理财解锁,影子积分入账,上级添加奖励积分
+        List<AppUserFinancialPartake> list = appUserFinancialPartakeService.findBy("userId", userId);
+        for (AppUserFinancialPartake partake : list) {
+            AppFinancial appFinancial = financialService.findById(partake.getFinancialId());
+            BigDecimal value = (partake.getCreatedAt() + ONE_DAY) < System.currentTimeMillis() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
+            BigDecimal shadow = partake.getShadowValue();
+            BigDecimal income = value.add(shadow);
+            if (income.compareTo(BigDecimal.ZERO) == 0) {
+                continue;
+            }
+            List<AppFinancialDetail> detail = appFinancialDetailService.findDetails(partake.getFinancialId());
+            Collections.reverse(detail);
+            if (shadow.compareTo(BigDecimal.ZERO) > 0) {
+                partake.setShadowValue(BigDecimal.ZERO);
+                partake.setUpdatedAt(System.currentTimeMillis());
+                String messageIncome = shadow.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 奖励已发放";
+                appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), shadow, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageIncome, false);
+                appUserFinancialIncomeService.insert(partake, appFinancial, shadow);
+            }
+            if (partake.getTimes() < appFinancial.getTimes()) {
+                partake.setUpdatedAt(System.currentTimeMillis());
+                partake.setTimes(partake.getTimes() + 1);
+                String messageLock = value.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 收益已发放";
+                appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), value, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageLock, false);
+            }
+            appUserBalanceService.updateBalance(userId, partake.getTokenId(), income);
+            appUserFinancialPartakeService.update(partake);
+            for (int i = 0; i < appFinancial.getDepth(); i++) {
+                BigDecimal incomeParent = income.divide(BigDecimal.valueOf(100)).multiply(new BigDecimal(detail.get(i).getRatio()));
+                AppUserInvite user = appUserInviteService.findOneBy("inviteUserId", userId);
+                if (null == user) {
+                    break;
+                }
+                appUserFinancialPartakeService.addShadow(user.getUserId(), incomeParent, appFinancial.getId());
+            }
+        }
+
     }
 }

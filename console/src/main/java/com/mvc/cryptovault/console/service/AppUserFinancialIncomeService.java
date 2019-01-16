@@ -1,6 +1,8 @@
 package com.mvc.cryptovault.console.service;
 
+import com.mvc.cryptovault.common.bean.AppFinancial;
 import com.mvc.cryptovault.common.bean.AppUserFinancialIncome;
+import com.mvc.cryptovault.common.bean.AppUserFinancialPartake;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.dao.AppUserFinancialIncomeMapper;
@@ -50,4 +52,17 @@ public class AppUserFinancialIncomeService extends AbstractService<AppUserFinanc
         return balance;
     }
 
+    public void insert(AppUserFinancialPartake partake, AppFinancial appFinancial, BigDecimal value) {
+        Long time = System.currentTimeMillis();
+        AppUserFinancialIncome income = new AppUserFinancialIncome();
+        income.setCreatedAt(time);
+        income.setUpdatedAt(time);
+        income.setFinancialId(partake.getFinancialId());
+        income.setPartakeId(partake.getId());
+        income.setTokenId(appFinancial.getTokenId());
+        income.setTokenName(appFinancial.getTokenName());
+        income.setUserId(partake.getUserId());
+        income.setValue(value);
+        save(income);
+    }
 }

@@ -54,6 +54,7 @@ public class AppMessageService {
         Boolean result = jPushService.send(msg, id, String.valueOf(userId));
         saveMsg(userId, result, id, msg);
     }
+
     @Async
     public void transferMsg(BigInteger orderId, BigInteger userId, BigDecimal value, String tokenName, Integer transferType, Integer status) {
         String transferTypeStr = transferType == 1 ? "收款" : transferType == 2 ? "提现" : "划账";
@@ -122,6 +123,15 @@ public class AppMessageService {
 
     public List<AppMessage> findByCondition(Condition condition) {
         return appMessageMapper.selectByCondition(condition);
+    }
+
+    public void transferMsg(BigInteger id, BigInteger userId, String message, Boolean send) {
+        if (send) {
+            Boolean result = jPushService.send(message, id, String.valueOf(userId));
+            saveMsg(userId, result, id, message);
+        } else {
+            saveMsg(userId, false, id, message);
+        }
     }
 
 }

@@ -54,6 +54,8 @@ public class Job {
     CommonTokenService commonTokenService;
     @Autowired
     UsdtService usdtService;
+    @Autowired
+    FinancialService financialService;
 
     RestTemplate restTemplate = new RestTemplate();
 
@@ -69,6 +71,7 @@ public class Job {
             return;
         }
         appProjectService.updateProjectStatus();
+        financialService.updateStatus();
         redisTemplate.delete(key);
     }
 
@@ -136,7 +139,7 @@ public class Job {
             ethResult = restTemplate.getForObject(ethUrl, JSONObject.class);
         } catch (RestClientException e) {
             log.warn(e.getMessage());
-           return;
+            return;
         }
         BigDecimal usdtPrice = parseValue(usdtResult);
         BigDecimal ethPrice = parseValue(ethResult);

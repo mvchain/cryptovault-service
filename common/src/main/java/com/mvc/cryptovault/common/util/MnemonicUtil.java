@@ -14,7 +14,7 @@ public class MnemonicUtil {
     private final static MnemonicCode mnemonicCode = new MnemonicCode();
 
     public static void main(String[] args) throws MnemonicException.MnemonicLengthException, MnemonicException.MnemonicChecksumException, MnemonicException.MnemonicWordException {
-        String key = "20c5d5ab49a752d5e59565bfafb1f1c50b294226";
+        String key = "770d38a17c11a3a06f99ae35abf712da";
         System.out.println(key);
         List<String> value = getWordsList(key);
         System.out.println(value);
