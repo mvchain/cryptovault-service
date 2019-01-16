@@ -104,6 +104,7 @@ public class UserService {
             user = userRemoteService.getUserByPvKey(appUserResetDTO.getValue()).getData();
         } else if (appUserResetDTO.getResetType() == 2) {
             String pvKey = MnemonicUtil.getPvKey(Arrays.asList(appUserResetDTO.getValue().split(",")));
+            Assert.notNull(pvKey, MessageConstants.getMsg("USER_PASS_WRONG"));
             user = userRemoteService.getUserByPvKey(pvKey).getData();
         }
         Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));

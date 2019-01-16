@@ -23,4 +23,6 @@ public class DUserBalanceVO implements Serializable {
     private BigDecimal value;
     @ApiModelProperty("估算价值")
     private BigDecimal balance;
+    @ApiModelProperty("地址")
+    private String address;
 }

@@ -11,6 +11,7 @@ import com.mvc.cryptovault.common.dashboard.bean.vo.DUSerDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserBalanceVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppUserAddressService;
 import com.mvc.cryptovault.console.service.AppUserBalanceService;
 import com.mvc.cryptovault.console.service.AppUserService;
 import com.mvc.cryptovault.console.service.BlockSignService;
@@ -37,6 +38,8 @@ public class DAppUserController extends BaseController {
     AppUserBalanceService appUserBalanceService;
     @Autowired
     BlockSignService blockSignService;
+    @Autowired
+    AppUserAddressService appUserAddressService;
 
     @GetMapping("")
     public Result<PageInfo<DUSerVO>> findUser(@ModelAttribute PageDTO pageDTO, @RequestParam(value = "cellphone", required = false) String cellphone, @RequestParam(value = "status", required = false) Integer status) {
@@ -60,6 +63,7 @@ public class DAppUserController extends BaseController {
             DUserBalanceVO dUserBalanceVO = new DUserBalanceVO();
             BeanUtils.copyProperties(vo, dUserBalanceVO);
             dUserBalanceVO.setBalance(vo.getValue().multiply(vo.getRatio()));
+            dUserBalanceVO.setAddress(appUserAddressService.getAddress(id, vo.getTokenId()));
             result.add(dUserBalanceVO);
         }
         return new Result<>(result);
