@@ -16,6 +16,7 @@ import com.mvc.cryptovault.console.common.BaseController;
 import com.mvc.cryptovault.console.service.AppProjectService;
 import com.mvc.cryptovault.console.service.AppProjectUserTransactionService;
 import com.mvc.cryptovault.console.service.CommonPairService;
+import com.mvc.cryptovault.console.service.CommonTokenService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -38,7 +39,8 @@ public class DAppProjectController extends BaseController {
     AppProjectUserTransactionService appProjectUserTransactionService;
     @Autowired
     CommonPairService commonPairService;
-
+@Autowired
+private CommonTokenService commonTokenService;
     @DeleteMapping("{id}")
     public Result<Boolean> deleteProject(@PathVariable("id") BigInteger id) {
         var appProject = appProjectService.findById(id);
@@ -60,10 +62,9 @@ public class DAppProjectController extends BaseController {
     public Result<Boolean> updateProject(@RequestBody DProjectDTO dProjectDTO) {
         AppProject appProject = new AppProject();
         BeanUtils.copyProperties(dProjectDTO, appProject);
-        CommonPair pair = commonPairService.findByTokenId(dProjectDTO.getBaseTokenId(), dProjectDTO.getTokenId());
-        appProject.setPairId(null == pair ? BigInteger.ZERO : pair.getId());
-        appProject.setTokenName(null == pair ? "" : pair.getTokenName());
-        appProject.setBaseTokenName(null == pair ? "" : pair.getBaseTokenName());
+        appProject.setPairId(BigInteger.ZERO );
+        appProject.setTokenName(commonTokenService.getTokenName(dProjectDTO.getTokenId()));
+        appProject.setBaseTokenName(commonTokenService.getTokenName(dProjectDTO.getBaseTokenId()));
         appProject.setUpdatedAt(System.currentTimeMillis());
         appProjectService.update(appProject);
         appProject = appProjectService.findById(dProjectDTO.getId());

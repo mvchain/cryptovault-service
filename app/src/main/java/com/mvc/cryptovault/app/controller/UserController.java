@@ -167,7 +167,7 @@ public class UserController extends BaseController {
     @NotLogin
     public Result<String> reset(@RequestBody AppUserResetDTO appUserResetDTO) {
         AppUser user = userService.reset(appUserResetDTO);
-        Assert.notNull(user, MessageConstants.getMsg("验证码错误"));
+        Assert.notNull(user, MessageConstants.getMsg("SMS_ERROR"));
         String tempToken = JwtHelper.createForget(user.getEmail(), user.getId());
         return new Result<>(tempToken);
     }

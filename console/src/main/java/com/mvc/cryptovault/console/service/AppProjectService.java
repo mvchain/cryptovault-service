@@ -34,6 +34,8 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
     @Autowired
     AppProjectUserTransactionService appProjectUserTransactionService;
     @Autowired
+    CommonTokenService commonTokenService;
+    @Autowired
     AppUserService appUserService;
     @Autowired
     AppProjectPartakeService appProjectPartakeService;
@@ -44,10 +46,9 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
         AppProject appProject = new AppProject();
         BeanUtils.copyProperties(dProjectDTO, appProject);
         appProject.setStatus(0);
-        CommonPair pair = commonPairService.findByTokenId(dProjectDTO.getBaseTokenId(), dProjectDTO.getTokenId());
-        appProject.setPairId(null == pair ? BigInteger.ZERO : pair.getId());
-        appProject.setTokenName(null == pair ? "" : pair.getTokenName());
-        appProject.setBaseTokenName(null == pair ? "" : pair.getBaseTokenName());
+        appProject.setPairId(BigInteger.ZERO );
+        appProject.setTokenName(commonTokenService.getTokenName(dProjectDTO.getTokenId()));
+        appProject.setBaseTokenName(commonTokenService.getTokenName(dProjectDTO.getBaseTokenId()));
         appProject.setCreatedAt(System.currentTimeMillis());
         appProject.setUpdatedAt(System.currentTimeMillis());
         save(appProject);
