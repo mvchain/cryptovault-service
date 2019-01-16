@@ -9,7 +9,7 @@ import java.math.BigInteger;
 
 public interface AppUserMapper extends MyMapper<AppUser> {
 
-    @Update("update app_user set invite_level = invite_level + 1 where id = #{id} and invite_level < 20")
+    @Update("update app_user set invite_level = if(invite_level < 20,invite_level + 1,20), invite_num = invite_num + 1 where id = #{id}")
     Integer updateInvite(@Param("id") BigInteger id);
 
 }

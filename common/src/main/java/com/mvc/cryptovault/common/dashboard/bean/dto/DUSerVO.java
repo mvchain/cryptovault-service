@@ -25,5 +25,9 @@ public class DUSerVO implements Serializable {
     private BigInteger id;
     @ApiModelProperty("用户状态0禁用 1启用")
     private Integer status;
+    @ApiModelProperty("邀请人数")
+    private Integer inviteNum;
+    @ApiModelProperty("理财资产(CNY)")
+    private BigDecimal financialBalance;
 
 }

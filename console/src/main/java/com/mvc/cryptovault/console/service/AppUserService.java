@@ -44,6 +44,8 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
     AppUserMapper appUserMapper;
     @Autowired
     AppUserInviteService appUserInviteService;
+    @Autowired
+    FinancialService financialService;
 
     public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone, Integer status) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), "id desc");
@@ -61,6 +63,8 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
             List<TokenBalanceVO> data = appUserBalanceService.getAsset(appUser.getId(), true);
             BigDecimal sum = data.stream().map(obj -> obj.getRatio().multiply(obj.getValue())).reduce(BigDecimal.ZERO, BigDecimal::add);
             vo.setBalance(sum);
+            vo.setInviteNum(appUser.getInviteNum());
+            vo.setFinancialBalance(financialService.getFinancialBalanceSum(appUser.getId()));
             vos.add(vo);
         }
         PageInfo result = new PageInfo(list);
@@ -101,6 +105,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         appUser.setUpdatedAt(time);
         appUser.setCreatedAt(time);
         appUser.setNickname(appUserDTO.getNickname());
+        appUser.setInviteNum(0);
         appUser.setEmail(appUserDTO.getEmail());
         appUser.setPassword(appUserDTO.getPassword());
         appUser.setInviteLevel(0);

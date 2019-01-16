@@ -22,11 +22,6 @@ public class AppUserFinancialIncomeService extends AbstractService<AppUserFinanc
     @Autowired
     private CommonTokenPriceService commonTokenPriceService;
 
-    public BigDecimal getIncome(BigInteger userId, BigInteger id) {
-        BigDecimal value = appUserFinancialIncomeMapper.getIncome(userId, id);
-        return value;
-    }
-
     public BigDecimal getLastDay(BigInteger userId, BigInteger id) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());

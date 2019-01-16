@@ -33,5 +33,6 @@ public class AppFinancial {
     private BigDecimal minValue;
     private Integer status;
     private BigDecimal sold;
+    private Integer visible;
 
 }

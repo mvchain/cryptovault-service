@@ -18,7 +18,6 @@ public class AppUser implements Serializable {
      * 用户id
      */
     @Id
-
     @Column(name = "id")
     private BigInteger id;
 
@@ -72,8 +71,9 @@ public class AppUser implements Serializable {
     private Integer status;
 
     private String email;
-
+    private Integer inviteNum;
     private String pvKey;
+
 
     /**
      * app_user

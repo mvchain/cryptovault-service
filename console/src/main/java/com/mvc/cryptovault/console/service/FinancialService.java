@@ -1,17 +1,16 @@
 package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
-import com.mvc.cryptovault.common.bean.dto.FinancialBuyDTO;
-import com.mvc.cryptovault.common.bean.dto.FinancialPartakeDTO;
-import com.mvc.cryptovault.common.bean.dto.FinancialPartakeListDTO;
-import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.dto.*;
 import com.mvc.cryptovault.common.bean.vo.*;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.dao.FinancialMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,9 +39,16 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
     @Autowired
     AppUserFinancialIncomeService appUserFinancialIncomeService;
     @Autowired
+    AppFinancialDetailService appFinancialDetailService;
+    @Autowired
     AppOrderService appOrderService;
     @Autowired
     AppUserService appUserService;
+    @Autowired
+    CommonTokenPriceService commonTokenPriceService;
+
+    private final static String RULE_EMAIL = "^\\w+((-\\w+)|(\\.\\w+))*\\@[A-Za-z0-9]+((\\.|-)[A-Za-z0-9]+)*\\.[A-Za-z0-9]+$";
+    private final static String RULE_ORDER = "^[P]{1}[0-9]{9}$";
 
     public Boolean unlockPartake(BigInteger id, BigInteger userId) {
         AppUserFinancialPartake partake = appUserFinancialPartakeService.findById(id);
@@ -135,12 +141,16 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         return vo;
     }
 
+    public BigDecimal getFinancialBalanceSum(BigInteger userId) {
+        BigDecimal balance = appUserFinancialPartakeService.getBalance(userId);
+        return balance;
+    }
+
     public FinancialBalanceVO getFinancialBalance(BigInteger userId) {
         FinancialBalanceVO vo = new FinancialBalanceVO();
-        BigDecimal balance = appUserFinancialPartakeService.getBalance(userId);
         BigDecimal income = appUserFinancialPartakeService.getIncome(userId);
         BigDecimal lastIncome = appUserFinancialIncomeService.getLast(userId);
-        vo.setBalance(balance);
+        vo.setBalance(getFinancialBalanceSum(userId));
         vo.setIncome(income);
         vo.setLastIncome(lastIncome);
         return vo;
@@ -180,6 +190,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         Condition condition = new Condition(AppFinancial.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "status = ", 1);
+        ConditionUtil.andCondition(criteria, "visible = ", 1);
         PageHelper.startPage(1, pageDTO.getPageSize(), "id desc");
         if (null != id && !id.equals(BigInteger.ZERO)) {
             ConditionUtil.andCondition(criteria, "id < ", id);
@@ -190,6 +201,90 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
             BeanUtils.copyProperties(obj, vo);
             return vo;
         }).collect(Collectors.toList());
+    }
+
+    public List<AppFinancial> getDFinancialList(PageDTO pageDTO, String financialName) {
+        Condition condition = new Condition(AppFinancial.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "name = ", financialName);
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), pageDTO.getOrderBy());
+        return findByCondition(condition);
+    }
+
+    public AppFinancialDetailVO getDFinancialDetail(BigInteger id) {
+        AppFinancial financial = findById(id);
+        AppFinancialDetailVO vo = new AppFinancialDetailVO();
+        if (null == financial) {
+            return null;
+        }
+        BeanUtils.copyProperties(financial, vo);
+        vo.setContent(appFinancialContentService.findById(id));
+        vo.setDetails(appFinancialDetailService.findDetails(id));
+        return vo;
+    }
+
+    public void saveAppFinancial(AppFinancialDTO appFinancialDTO) {
+        Long time = System.currentTimeMillis();
+        AppFinancial appFinancial = new AppFinancial();
+        BeanUtils.copyProperties(appFinancialDTO, appFinancial);
+        appFinancial.setUpdatedAt(time);
+        appFinancial.setCreatedAt(time);
+        appFinancial.setStatus(0);
+        appFinancial.setSold(BigDecimal.ZERO);
+        save(appFinancial);
+        updateCache(appFinancial.getId());
+        appFinancialDTO.getContent().setFinancialId(appFinancial.getId());
+        appFinancialContentService.save(appFinancialDTO.getContent());
+        appFinancialContentService.updateCache(appFinancial.getId());
+        appFinancialDetailService.updateDetail(appFinancial.getId(), appFinancialDTO.getDetails());
+    }
+
+    public void updateAppFinancial(AppFinancialDTO appFinancialDTO) {
+        AppFinancial appFinancial = new AppFinancial();
+        BeanUtils.copyProperties(appFinancialDTO, appFinancial);
+        appFinancial.setUpdatedAt(System.currentTimeMillis());
+        update(appFinancial);
+        updateCache(appFinancialDTO.getId());
+        appFinancialDTO.getContent().setFinancialId(appFinancialDTO.getId());
+        appFinancialContentService.update(appFinancialDTO.getContent());
+        appFinancialContentService.updateCache(appFinancialDTO.getId());
+        appFinancialDetailService.updateDetail(appFinancialDTO.getId(), appFinancialDTO.getDetails());
+    }
+
+    public PageInfo<AppFinancialOrderVO> getFinancialOrderList(BigInteger id, PageDTO pageDTO, String searchKey, Integer status) {
+        Condition condition = new Condition(AppUserFinancialPartake.class);
+        Example.Criteria criteria = condition.createCriteria();
+        PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), pageDTO.getOrderBy());
+        ConditionUtil.andCondition(criteria, "status = ", status);
+        if (StringUtils.isNotBlank(searchKey)) {
+            if (searchKey.matches(RULE_EMAIL)) {
+                AppUser user = appUserService.findOneBy("email", searchKey);
+                ConditionUtil.andCondition(criteria, "user_id = ", user.getId());
+            } else if (searchKey.matches(RULE_ORDER)) {
+                ConditionUtil.andCondition(criteria, "order_number = ", searchKey);
+            } else {
+                AppUser user = appUserService.findOneBy("nickname", searchKey);
+                ConditionUtil.andCondition(criteria, "user_id = ", user.getId());
+            }
+        }
+        List<AppUserFinancialPartake> list = appUserFinancialPartakeService.findByCondition(condition);
+        PageInfo result = new PageInfo(list);
+        List<AppFinancialOrderVO> vos = list.stream().map(obj -> {
+            AppFinancialOrderVO vo = new AppFinancialOrderVO();
+            AppUser user = appUserService.findById(obj.getUserId());
+            AppFinancial financial = findById(obj.getFinancialId());
+            CommonTokenPrice basePrice = commonTokenPriceService.findById(obj.getBaseTokenId());
+            CommonTokenPrice tokenPrice = commonTokenPriceService.findById(obj.getTokenId());
+            BeanUtils.copyProperties(obj, vo);
+            vo.setEmail(user.getEmail());
+            vo.setFinancialName(financial.getName());
+            vo.setNickname(user.getNickname());
+            BigDecimal price = obj.getIncome().multiply(tokenPrice.getTokenPrice()).add(obj.getValue().multiply(basePrice.getTokenPrice()));
+            vo.setPrice(price);
+            return vo;
+        }).collect(Collectors.toList());
+        result.setList(vos);
+        return result;
     }
 
 }

@@ -3,10 +3,7 @@ package com.mvc.cryptovault.dashboard.feign;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.*;
-import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
-import com.mvc.cryptovault.common.bean.vo.DPairVO;
-import com.mvc.cryptovault.common.bean.vo.ExportPartake;
-import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.*;
 import com.mvc.cryptovault.common.dashboard.bean.dto.*;
 import com.mvc.cryptovault.common.dashboard.bean.vo.*;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -168,4 +165,20 @@ public interface ConsoleRemoteService {
 
     @PutMapping("appUserBalance/debit")
     Result<Boolean> debit(@RequestBody DebitRechargeDTO debitRechargeDTO);
+
+    @GetMapping("dashboard/financial")
+    Result<PageInfo<AppFinancial>> getFinancialList(@RequestBody PageDTO pageDTO, @RequestParam(value = "financialName", required = false) String financialName);
+
+    @GetMapping("dashboard/financial/{id}")
+    Result<AppFinancialDetailVO> getFinancialDetail(@PathVariable("id") BigInteger id);
+
+    @PostMapping("dashboard/financial")
+    Result<Boolean> saveAppFinancial(@RequestBody AppFinancialDTO appFinancialDTO);
+
+    @PutMapping("dashboard/financial")
+    Result<Boolean> updateAppFinancial(@RequestBody AppFinancialDTO appFinancialDTO);
+
+    @GetMapping("dashboard/financial/{id}/order")
+    Result<PageInfo<AppFinancialOrderVO>> getFinancialOrderList(@PathVariable("id") BigInteger id, @RequestBody PageDTO pageDTO, @RequestParam(value = "searchKey", required = false) String searchKey, @RequestParam(value = "status", required = false) Integer status);
+
 }
