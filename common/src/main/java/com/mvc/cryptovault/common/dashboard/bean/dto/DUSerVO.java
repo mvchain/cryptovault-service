@@ -29,5 +29,7 @@ public class DUSerVO implements Serializable {
     private Integer inviteNum;
     @ApiModelProperty("理财资产(CNY)")
     private BigDecimal financialBalance;
+    @ApiModelProperty("邮箱地址")
+    private String email;
 
 }
