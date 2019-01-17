@@ -63,7 +63,7 @@ public class UserService {
         String username = (String) BaseContextHandler.get("username");
         Result<AppUser> userResult = userRemoteService.getUserByUsername(username);
         AppUser user = userResult.getData();
-        if(null == user){
+        if (null == user) {
             return null;
         }
         if (user.getStatus() == 0) {
@@ -145,10 +145,16 @@ public class UserService {
     }
 
     public Boolean sign(BigInteger userId) {
-        return  userRemoteService.sign(userId).getData();
+        return userRemoteService.sign(userId).getData();
     }
 
     public Boolean getSign(BigInteger userId) {
-        return  userRemoteService.getSign(userId).getData();
+        return userRemoteService.getSign(userId).getData();
+    }
+
+    public String getEmail(BigInteger userId) {
+        Result<AppUser> userResult = userRemoteService.getUserById(userId);
+        AppUser user = userResult.getData();
+        return user.getEmail();
     }
 }

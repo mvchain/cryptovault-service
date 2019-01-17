@@ -238,7 +238,7 @@ public class UserController extends BaseController {
     @ApiOperation("发送验证码(不输入邮箱地址,直接取当前用户注册邮箱)")
     @GetMapping(value = "email", headers = "Authorization")
     public Result<Boolean> getEmail() {
-        String email = userService.getUserById(getUserId()).getUsername();
+        String email = userService.getEmail(getUserId());
         mailService.send(email);
         return new Result<>(true);
     }

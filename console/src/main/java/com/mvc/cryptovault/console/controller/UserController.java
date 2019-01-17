@@ -42,6 +42,8 @@ public class UserController extends BaseController {
 
     @PutMapping()
     public Result<Boolean> updateUser(@RequestBody AppUser user) {
+        AppUser userTemp = appUserService.findById(user.getId());
+        redisTemplate.opsForHash().delete(APP_USER_USERNAME + userTemp.getEmail(), APP_USER_USERNAME + userTemp.getEmail());
         user.setUpdatedAt(System.currentTimeMillis());
         appUserService.update(user);
         user = appUserService.findById(user.getId());
@@ -114,14 +116,14 @@ public class UserController extends BaseController {
 
     @PutMapping("sign")
     Result<Boolean> sign(@RequestParam("userId") BigInteger userId) {
-        if(getSign(userId).getData()){
-            return  new Result<>(true);
+        if (getSign(userId).getData()) {
+            return new Result<>(true);
         }
         AppUser user = appUserService.findById(userId);
         String key = APP_USER_USERNAME + user.getEmail();
         redisTemplate.opsForHash().delete(key, "SIGN_DATE");
         Boolean result = redisTemplate.opsForHash().putIfAbsent(key, "SIGN_DATE", getNowDate());
-        if(result){
+        if (result) {
             appUserService.sign(userId);
         }
         return new Result<>(result);
