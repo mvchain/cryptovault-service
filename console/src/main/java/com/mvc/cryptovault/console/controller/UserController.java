@@ -97,8 +97,12 @@ public class UserController extends BaseController {
                 redisTemplate.opsForHash().put(key, key, String.valueOf(user.getId()));
             }
         } else if (!"".equals(result)) {
-            //如果存在值且不为空,则用户存在,直接获取
             user = appUserService.findById(NumberUtils.createBigInteger(result));
+            //如果存在值且不为空,则用户存在,直接获取
+            if (!username.equals(user.getEmail())) {
+                redisTemplate.delete(key);
+                return new Result<>();
+            }
         }
         return new Result<>(user);
     }
