@@ -81,7 +81,7 @@ public class AppFinancialController extends BaseController {
     @GetMapping("{id}/order/excel")
     @NotLogin
     public void getFinancialOrderListExport(HttpServletResponse response, @RequestParam String sign, @PathVariable BigInteger id, @ModelAttribute @Valid PageDTO pageDTO, @RequestParam(required = false) String searchKey, @RequestParam(value = "status", required = false) Integer status) throws IOException, ExcelException {
-//        getUserIdBySign(sign);
+        getUserIdBySign(sign);
         PageInfo<AppFinancialOrderVO> result = appFinancialService.getFinancialOrderList(id, pageDTO, searchKey, status);
         response.setContentType("application/octet-stream;charset=ISO8859-1");
         response.addHeader("Content-Disposition", "attachment; filename=" + String.format("financial_order_%s.xls", System.currentTimeMillis()));
