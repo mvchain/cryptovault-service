@@ -228,7 +228,7 @@ public class UserController extends BaseController {
     @ApiOperation("校验邮箱状态(修改密码时第一步校验)")
     @PostMapping("email")
     public Result<String> checkEmail(@RequestBody AppUserEmailDTO appUserEmailDTO) {
-        String email = userService.getUserById(getUserId()).getUsername();
+        String email = userService.getEmail(getUserId());
         Boolean result = mailService.checkSmsValiCode(email, appUserEmailDTO.getValiCode());
         Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
         String token = JwtHelper.create(email, getUserId(), "email");
