@@ -63,6 +63,7 @@ public class DCommonTokenController extends BaseController {
             BeanUtils.copyProperties(token, vo);
             Integer tokenInfo = pair.size() == 2 ? 3 : pair.size() == 0 ? 0 : pair.get(0).getBaseTokenId().equals(BigInteger.ONE) ? 1 : 2;
             vo.setPairInfo(tokenInfo);
+            vo.setContractAddress(token.getTokenContractAddress());
             result.add(vo);
         }
         return new Result<>(result);

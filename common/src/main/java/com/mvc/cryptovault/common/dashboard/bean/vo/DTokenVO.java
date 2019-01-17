@@ -39,4 +39,7 @@ public class DTokenVO implements Serializable {
     private Float transaferFee;
     @ApiModelProperty("保留金额")
     private Float hold;
+    @ApiModelProperty("合约地址")
+    private String contractAddress;
+
 }
