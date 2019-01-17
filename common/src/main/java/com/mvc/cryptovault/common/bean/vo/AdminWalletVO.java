@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * @author qiyichen
@@ -13,17 +14,19 @@ import java.io.Serializable;
 public class AdminWalletVO implements Serializable {
     private static final long serialVersionUID = 2282037268059375770L;
 
-    @ApiModelProperty("比特系冷钱包中心账户地址")
-    private String usdtCold;
-    @ApiModelProperty("以太系冷钱包地址")
-    private String ethCold;
-    @ApiModelProperty("以太系热钱包地址")
-    private String ethHot;
-    @ApiModelProperty("比特系热钱包中心账户")
-    private String usdtHot;
-    @ApiModelProperty("比特系可用地址库存")
-    private Integer usdtAddressCount;
-    @ApiModelProperty("以太系可用地址库存")
-    private Integer ethAddressCount;
+    @ApiModelProperty("待汇总金额")
+    private BigDecimal waitBalance;
+    @ApiModelProperty("地址库存")
+    private Integer count;
+    @ApiModelProperty("冷钱包地址余额")
+    private BigDecimal coldBalance;
+    @ApiModelProperty("冷钱包地址")
+    private String coldAddress;
+    @ApiModelProperty("热钱包地址余额")
+    private BigDecimal hotBalance;
+    @ApiModelProperty("热钱包地址")
+    private String hotAddress;
+    @ApiModelProperty("币种名称")
+    private String tokenName;
 
 }

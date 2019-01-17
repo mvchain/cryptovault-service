@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.controller;
 
 import com.mvc.cryptovault.common.bean.vo.KLineVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.TickerVO;
 import com.mvc.cryptovault.console.common.BaseController;
 import com.mvc.cryptovault.console.service.AppKlineService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,12 @@ public class AppKlineController extends BaseController {
     @GetMapping()
     public Result<KLineVO> getTransactions(@RequestParam("pairId") BigInteger pairId) {
         KLineVO vo = appKlineService.getKLine(pairId);
+        return new Result<>(vo);
+    }
+
+    @GetMapping("tickers")
+    public Result<TickerVO> getTickers(@RequestParam("pairId") BigInteger pairId) {
+        TickerVO vo = appKlineService.getTickers(pairId);
         return new Result<>(vo);
     }
 

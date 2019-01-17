@@ -7,6 +7,7 @@ import com.mvc.cryptovault.common.bean.dto.AppUserDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.AppUserRetVO;
 import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
+import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
@@ -58,8 +59,6 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
     CommonTokenService commonTokenService;
     @Autowired
     AppUserFinancialIncomeService appUserFinancialIncomeService;
-
-    private static final Long ONE_DAY = 3600 * 1000 * 24L;
 
     public PageInfo<DUSerVO> findUser(PageDTO pageDTO, String cellphone, Integer status) {
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), "id desc");
@@ -166,7 +165,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         List<AppUserFinancialPartake> list = appUserFinancialPartakeService.findBy("userId", userId);
         for (AppUserFinancialPartake partake : list) {
             AppFinancial appFinancial = financialService.findById(partake.getFinancialId());
-            BigDecimal value = (partake.getCreatedAt() + ONE_DAY) < System.currentTimeMillis() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
+            BigDecimal value = (partake.getCreatedAt() + RedisConstant.ONE_DAY) < System.currentTimeMillis() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
             BigDecimal shadow = partake.getShadowValue();
             BigDecimal income = value.add(shadow);
             if (income.compareTo(BigDecimal.ZERO) == 0) {

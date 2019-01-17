@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.dao;
 
 import com.mvc.cryptovault.common.bean.AppKline;
 import com.mvc.cryptovault.common.bean.CommonTokenHistory;
+import com.mvc.cryptovault.common.bean.vo.TickerVO;
 import com.mvc.cryptovault.console.common.MyMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -22,4 +23,7 @@ public interface CommonTokenHistoryMapper extends MyMapper<CommonTokenHistory> {
 
     @Select("select * from common_token_history where token_id = #{tokenId} order by id desc limit 1")
     CommonTokenHistory findByLast(@Param("tokenId") BigInteger tokenId);
+
+    @Select("SELECT IFNULL(min(price),0) low, IFNULL(MAX(price),0) high FROM common_token_history WHERE created_at > #{time} AND token_id = #{tokenId}")
+    TickerVO findTicker(@Param("tokenId") BigInteger tokenId, @Param("time") Long now);
 }

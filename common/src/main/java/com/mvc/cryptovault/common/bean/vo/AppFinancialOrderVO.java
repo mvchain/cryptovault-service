@@ -26,7 +26,7 @@ public class AppFinancialOrderVO {
     @ApiModelProperty("里拆产品名称")
     private String financialName;
     @ApiModelProperty("创建时间")
-    private String createdAt;
+    private Long createdAt;
     @ApiModelProperty("购买金额")
     private BigDecimal value;
     @ApiModelProperty("收益")
@@ -44,4 +44,31 @@ public class AppFinancialOrderVO {
     @ApiModelProperty("状态 1计息中 2待提取 3已提取")
     private Integer status;
 
+    public String getStatusStr() {
+        String str = "";
+        switch (status) {
+            case 1:
+                str = "计息中";
+                break;
+            case 2:
+                str = "待提取";
+                break;
+            case 3:
+                str = "已提取";
+                break;
+        }
+        return str;
+    }
+
+    public String getValueStr() {
+        return value.stripTrailingZeros().toPlainString() + " " + baseTokenName;
+    }
+
+    public String getIncomeStr() {
+        return income.stripTrailingZeros().toPlainString()+ " " + tokenName;
+    }
+
+    public String getPriceStr() {
+        return "￥" + price.stripTrailingZeros().toPlainString();
+    }
 }

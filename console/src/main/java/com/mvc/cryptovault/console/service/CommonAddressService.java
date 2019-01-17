@@ -333,4 +333,9 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
     public BigDecimal getBalance(String tokenName) {
         return blockService.get("ETH").getBalance(tokenName);
     }
+
+    public BigDecimal getWait(String tokenName) {
+        BigDecimal value = commonAddressMapper.getWait(tokenName);
+        return value;
+    }
 }

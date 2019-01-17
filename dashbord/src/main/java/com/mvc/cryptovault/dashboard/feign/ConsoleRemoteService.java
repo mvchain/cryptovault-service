@@ -154,8 +154,8 @@ public interface ConsoleRemoteService {
     @PostMapping("dashboard/appProject/{id}/partake")
     Result<Boolean> importPartake(@PathVariable("id") BigInteger id, @RequestBody List<ImportPartake> list, @RequestParam("fileName") String fileName);
 
-    @GetMapping("dashboard/adminUser/wallet")
-    Result<AdminWalletVO> getAdminWallet();
+    @GetMapping("dashboard/adminUser/wallet/{tokenId}")
+    Result<AdminWalletVO> getAdminWallet(@PathVariable("tokenId") BigInteger tokenId);
 
     @PostMapping("dashboard/blockTransaction")
     Result<Boolean> buy(@RequestBody AdminTransactionDTO dto);

@@ -17,6 +17,17 @@ public class AdminWalletService extends AbstractService<AdminWallet> implements 
     @Autowired
     BtcdClient btcdClient;
 
+    public String getAddress(Integer blockType, Integer isHot){
+        AdminWallet adminWallet = new AdminWallet();
+        adminWallet.setIsHot(isHot);
+        adminWallet.setBlockType(blockType);
+        AdminWallet wallet = mapper.selectOne(adminWallet);
+        if(null == wallet){
+            return null;
+        }
+        return wallet.getAddress();
+    }
+
     public AdminWallet getEthHot() {
         AdminWallet adminWallet = new AdminWallet();
         adminWallet.setIsHot(1);

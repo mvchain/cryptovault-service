@@ -2,7 +2,6 @@ package com.mvc.cryptovault.console.dashboard.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AdminUser;
-import com.mvc.cryptovault.common.bean.AdminWallet;
 import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
@@ -12,13 +11,18 @@ import com.mvc.cryptovault.common.dashboard.bean.dto.AdminPasswordDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminDetailVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.AdminVO;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.service.*;
 import com.mvc.cryptovault.console.util.PageUtil;
+import com.mvc.cryptovault.console.util.btc.BtcAction;
+import com.neemre.btcdcli4j.core.BitcoindException;
+import com.neemre.btcdcli4j.core.CommunicationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -43,6 +47,10 @@ public class DAdminUserController extends BaseController {
     AdminWalletService adminWalletService;
     @Autowired
     BlockHeightService blockHeightService;
+    @Autowired
+    EthService ethService;
+    @Autowired
+    UsdtService usdtService;
 
     @GetMapping()
     public Result<PageInfo<AdminVO>> getAdmins(@RequestParam BigInteger userId, @ModelAttribute PageDTO dto) {
@@ -131,31 +139,38 @@ public class DAdminUserController extends BaseController {
         return new Result<>(result);
     }
 
-    @GetMapping("wallet")
-    public Result<AdminWalletVO> getAdminWallet() {
-        AdminWalletVO adminWalletVO = new AdminWalletVO();
-        AdminWallet ethHot = adminWalletService.getEthHot();
-        AdminWallet ethCold = adminWalletService.getEthCold();
-        AdminWallet btcCold = adminWalletService.getBtcCold();
-        AdminWallet btcHot = adminWalletService.getBtcHot();
-        if (null != ethHot) {
-            adminWalletVO.setEthHot(ethHot.getAddress());
+    @GetMapping("wallet/{tokenId}")
+    public Result<AdminWalletVO> getAdminWallet(@PathVariable BigInteger tokenId) throws BitcoindException, IOException, CommunicationException {
+        AdminWalletVO vo = new AdminWalletVO();
+        Integer count = 0;
+        String addressHot = null;
+        String addressCold = null;
+        BigDecimal balanceHot = null;
+        BigDecimal balanceCold = null;
+        BigDecimal waitBalance = null;
+        CommonToken token = commonTokenService.findById(tokenId);
+        if (tokenId.equals(BusinessConstant.BASE_TOKEN_ID_USDT)) {
+            count = blockHeightService.accountCount("BTC");
+            addressCold = adminWalletService.getAddress(2, 0);
+            addressHot = adminWalletService.getAddress(2, 1);
+            balanceHot = BtcAction.getTetherBalance(addressHot).getBalance();
+            balanceCold = BtcAction.getTetherBalance(addressCold).getBalance();
+        } else {
+            count = blockHeightService.accountCount("ETH");
+            addressCold = adminWalletService.getAddress(1, 0);
+            addressHot = adminWalletService.getAddress(1, 1);
+            balanceHot = ethService.getAddressBalance(addressHot, token.getTokenName());
+            balanceCold = ethService.getAddressBalance(addressCold, token.getTokenName());
         }
-        if (null != ethCold) {
-            adminWalletVO.setEthCold(ethCold.getAddress());
-        }
-        if (null != btcCold) {
-            adminWalletVO.setUsdtCold(btcCold.getAddress());
-        }
-        if (null != btcHot) {
-            adminWalletVO.setUsdtHot(btcHot.getAddress());
-        }
-        Integer btcCount = blockHeightService.accountCount("BTC");
-        Integer ethCount = blockHeightService.accountCount("ETH");
-        adminWalletVO.setUsdtAddressCount(btcCount);
-        adminWalletVO.setEthAddressCount(ethCount);
-        return new Result<>(adminWalletVO);
+        waitBalance = commonAddressService.getWait(token.getTokenName());
+        vo.setTokenName(token.getTokenName());
+        vo.setColdAddress(addressCold);
+        vo.setColdBalance(balanceCold);
+        vo.setCount(count);
+        vo.setHotAddress(addressHot);
+        vo.setHotBalance(balanceHot);
+        vo.setWaitBalance(waitBalance);
+        return new Result<>(vo);
     }
-
 
 }

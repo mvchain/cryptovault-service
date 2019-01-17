@@ -52,4 +52,9 @@ public class TransactionService {
         Result<Boolean> result = transactionRemoteService.cancel(userId, id);
         return result.getData();
     }
+
+    public TickerVO getTickers(BigInteger userId, BigInteger pairId) {
+        Result<TickerVO> result = transactionRemoteService.getTickers(pairId);
+        return result.getData();
+    }
 }

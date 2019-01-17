@@ -28,6 +28,9 @@ public class AppFinancialDetailService extends AbstractService<AppFinancialDetai
         AppFinancialDetail detail = new AppFinancialDetail();
         detail.setFinancialId(id);
         appFinancialDetailMapper.delete(detail);
-        details.forEach(obj->{obj.setFinancialId(id);save(obj);});
+        details.forEach(obj -> {
+            obj.setFinancialId(id);
+            save(obj);
+        });
     }
 }

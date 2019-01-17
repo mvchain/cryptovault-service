@@ -259,11 +259,17 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         if (StringUtils.isNotBlank(searchKey)) {
             if (searchKey.matches(RULE_EMAIL)) {
                 AppUser user = appUserService.findOneBy("email", searchKey);
+                if (null == user) {
+                    return null;
+                }
                 ConditionUtil.andCondition(criteria, "user_id = ", user.getId());
             } else if (searchKey.matches(RULE_ORDER)) {
                 ConditionUtil.andCondition(criteria, "order_number = ", searchKey);
             } else {
                 AppUser user = appUserService.findOneBy("nickname", searchKey);
+                if (null == user) {
+                    return null;
+                }
                 ConditionUtil.andCondition(criteria, "user_id = ", user.getId());
             }
         }
@@ -278,6 +284,8 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
             BeanUtils.copyProperties(obj, vo);
             vo.setEmail(user.getEmail());
             vo.setFinancialName(financial.getName());
+            vo.setTokenName(financial.getTokenName());
+            vo.setBaseTokenName(financial.getBaseTokenName());
             vo.setNickname(user.getNickname());
             BigDecimal price = obj.getIncome().multiply(tokenPrice.getTokenPrice()).add(obj.getValue().multiply(basePrice.getTokenPrice()));
             vo.setPrice(price);

@@ -3,6 +3,7 @@ package com.mvc.cryptovault.console.service;
 import com.mvc.cryptovault.common.bean.AppFinancial;
 import com.mvc.cryptovault.common.bean.AppUserFinancialIncome;
 import com.mvc.cryptovault.common.bean.AppUserFinancialPartake;
+import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.dao.AppUserFinancialIncomeMapper;
@@ -32,7 +33,7 @@ public class AppUserFinancialIncomeService extends AbstractService<AppUserFinanc
         calendar.set(Calendar.MILLISECOND, 0);
         calendar.set(Calendar.SECOND, 0);
         Long stopAt = calendar.getTime().getTime();
-        Long startAt = stopAt - (1000 * 3600 * 24);
+        Long startAt = stopAt - RedisConstant.ONE_DAY;
         List<AppUserFinancialIncome> list = appUserFinancialIncomeMapper.getLastDay(userId, id, startAt, stopAt);
         BigDecimal balance = list.stream().map(obj -> obj.getTokenId() == null ? BigDecimal.ZERO : obj.getValue().multiply(commonTokenPriceService.findById(obj.getTokenId()).getTokenPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
         return balance;
@@ -46,7 +47,7 @@ public class AppUserFinancialIncomeService extends AbstractService<AppUserFinanc
         calendar.set(Calendar.MILLISECOND, 0);
         calendar.set(Calendar.SECOND, 0);
         Long stopAt = calendar.getTime().getTime();
-        Long startAt = stopAt - (1000 * 3600 * 24);
+        Long startAt = stopAt - RedisConstant.ONE_DAY;
         List<AppUserFinancialIncome> list = appUserFinancialIncomeMapper.getLast(userId, startAt, stopAt);
         BigDecimal balance = list.stream().map(obj -> obj.getValue().multiply(commonTokenPriceService.findById(obj.getTokenId()).getTokenPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
         return balance;

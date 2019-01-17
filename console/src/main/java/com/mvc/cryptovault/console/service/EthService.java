@@ -515,6 +515,14 @@ public class EthService extends BlockService {
         EthSendTransaction result = web3j.ethSendRawTransaction(hexValue).send();
     }
 
+    public BigDecimal getAddressBalance(String address, String tokenName){
+        CommonToken token = commonTokenService.findOneBy("tokenName", tokenName);
+        if (null == token) {
+            return BigDecimal.ZERO;
+        }
+        return getBalance(address, token.getTokenContractAddress());
+    }
+
     @Override
     public BigDecimal getBalance(String tokenName) {
         AdminWallet cold = adminWalletService.getEthCold();

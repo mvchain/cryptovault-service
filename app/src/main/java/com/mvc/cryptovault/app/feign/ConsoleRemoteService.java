@@ -88,6 +88,9 @@ public interface ConsoleRemoteService {
     @GetMapping("appKline")
     Result<KLineVO> getTransactions(@RequestParam("pairId") BigInteger pairId);
 
+    @GetMapping("appKline/tickers")
+    Result<TickerVO> getTickers(@RequestParam("pairId") BigInteger pairId);
+
     @GetMapping("appUserTransaction/userId/{userId}")
     Result<List<MyOrderVO>> getUserTransactions(@PathVariable("userId") BigInteger userId, @RequestBody MyTransactionDTO myTransactionDTO);
 

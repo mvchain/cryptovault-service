@@ -171,9 +171,9 @@ public class BlockController extends BaseController {
     }
 
     @ApiOperation("中心钱包信息查看")
-    @GetMapping("wallet")
-    public Result<AdminWalletVO> getAdminWallet() {
-        AdminWalletVO result = blockService.getAdminWallet();
+    @GetMapping("wallet/{tokenId}")
+    public Result<AdminWalletVO> getAdminWallet(@PathVariable BigInteger tokenId) {
+        AdminWalletVO result = blockService.getAdminWallet(tokenId);
         return new Result<>(result);
     }
 

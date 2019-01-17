@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.mvc.cryptovault.common.bean.AppKline;
 import com.mvc.cryptovault.common.bean.CommonPair;
 import com.mvc.cryptovault.common.bean.CommonTokenHistory;
+import com.mvc.cryptovault.common.bean.CommonTokenPrice;
 import com.mvc.cryptovault.common.bean.vo.KLineVO;
+import com.mvc.cryptovault.common.bean.vo.TickerVO;
+import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.dao.CommonTokenHistoryMapper;
@@ -17,6 +20,7 @@ import org.springframework.util.NumberUtils;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class AppKlineService extends AbstractService<AppKline> implements BaseService<AppKline> {
@@ -148,4 +152,27 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
         commonTokenHistoryMapper.insert(history);
         commonTokenPriceService.updatePrice(tokenId, usdtPrice);
     }
+
+    public TickerVO getTickers(BigInteger pairId) {
+        CommonPair pair = commonPairService.findById(pairId);
+        if(null == pair){
+            return new TickerVO();
+        }
+        String key = "AppKline".toUpperCase() + "_Tickers_" + pair.getTokenId();
+        String priceObj = redisTemplate.opsForValue().get(key);
+        if (StringUtils.isBlank(priceObj)) {
+            TickerVO vo = commonTokenHistoryMapper.findTicker(pair.getTokenId(), System.currentTimeMillis() - RedisConstant.ONE_DAY);
+            CommonTokenPrice price = commonTokenPriceService.findOneBy("tokenId", pair.getTokenId());
+            if(null == price){
+                return null;
+            }
+            vo.setPrice(null == price ? BigDecimal.ZERO : price.getTokenPrice());
+            vo.setLow(BigDecimal.ZERO.compareTo(vo.getLow()) == 0 ? vo.getPrice(): vo.getLow());
+            vo.setHigh(BigDecimal.ZERO.compareTo(vo.getHigh()) == 0? vo.getPrice(): vo.getHigh());
+            redisTemplate.opsForValue().set(key, JSON.toJSONString(vo), 10, TimeUnit.SECONDS);
+            return vo;
+        }
+        return JSON.parseObject(priceObj, TickerVO.class);
+    }
+
 }

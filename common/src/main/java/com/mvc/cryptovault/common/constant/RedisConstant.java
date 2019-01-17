@@ -21,4 +21,5 @@ public interface RedisConstant {
     String SMS_VALI_PRE = "SMS_VALI_PRE_";
     String MAIL_VALI_PRE = "MAIL_VALI_PRE";
     String APPFINANCIAL_RATIO = "APPFINANCIAL_RATIO";
+    Long ONE_DAY = 3600 * 24 * 1000L;
 }

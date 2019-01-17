@@ -25,53 +25,59 @@ import java.util.List;
 @RequestMapping("transaction")
 public class TransactionController extends BaseController {
 
-    @ApiOperation("获取交易对,很少变动,本地必须缓存")
-    @GetMapping("pair")
-    @SwaggerMock("${transaction.pair}")
-    public Result<List<PairVO>> getPair(@ModelAttribute @Valid PairDTO pairDTO) {
-        return new Result<>(transactionService.getPair(getUserId(), pairDTO));
-    }
+  @ApiOperation("获取交易对,很少变动,本地必须缓存")
+  @GetMapping("pair")
+  @SwaggerMock("${transaction.pair}")
+  public Result<List<PairVO>> getPair(@ModelAttribute @Valid PairDTO pairDTO) {
+    return new Result<>(transactionService.getPair(getUserId(), pairDTO));
+  }
 
-    @ApiOperation("获取挂单列表")
-    @GetMapping()
-    @SwaggerMock("${transaction.list}")
-    public Result<List<OrderVO>> getTransactions(@ModelAttribute OrderDTO dto) {
-        return new Result<>(transactionService.getTransactions(getUserId(), dto));
-    }
+  @ApiOperation("获取挂单列表")
+  @GetMapping()
+  @SwaggerMock("${transaction.list}")
+  public Result<List<OrderVO>> getTransactions(@ModelAttribute OrderDTO dto) {
+    return new Result<>(transactionService.getTransactions(getUserId(), dto));
+  }
 
-    @ApiOperation("获取7日交易K线")
-    @GetMapping("pair/kline")
-    @SwaggerMock("${transaction.kline}")
-    public Result<KLineVO> getKLine(@RequestParam BigInteger pairId) {
-        return new Result<>(transactionService.getKLine(getUserId(), pairId));
-    }
+  @ApiOperation("获取24小时最新，最高，最低价格, 每10秒钟更新")
+  @GetMapping("pair/tickers")
+  public Result<TickerVO> getTickers(@RequestParam BigInteger pairId){
+    return new Result<>(transactionService.getTickers(getUserId(), pairId));
+  }
 
-    @ApiOperation("筛选已参与订单")
-    @GetMapping("partake")
-    @SwaggerMock("${transaction.all}")
-    public Result<List<MyOrderVO>> getUserTransactions(@ModelAttribute @Valid MyTransactionDTO dto) {
-        return new Result<>(transactionService.getUserTransactions(getUserId(), dto));
-    }
+  @ApiOperation("获取7日交易K线")
+  @GetMapping("pair/kline")
+  @SwaggerMock("${transaction.kline}")
+  public Result<KLineVO> getKLine(@RequestParam BigInteger pairId) {
+    return new Result<>(transactionService.getKLine(getUserId(), pairId));
+  }
 
-    @ApiOperation("发起挂单")
-    @PostMapping("")
-    @SwaggerMock("${transaction.buy}")
-    public Result<Boolean> buy(@RequestBody TransactionBuyDTO dto) {
-        return new Result<>(transactionService.buy(getUserId(), dto));
-    }
+  @ApiOperation("筛选已参与订单")
+  @GetMapping("partake")
+  @SwaggerMock("${transaction.all}")
+  public Result<List<MyOrderVO>> getUserTransactions(@ModelAttribute @Valid MyTransactionDTO dto) {
+    return new Result<>(transactionService.getUserTransactions(getUserId(), dto));
+  }
 
-    @ApiOperation("挂单信息获取transactionType:1购买 2出售")
-    @GetMapping("info")
-    @SwaggerMock("${transacction.info}")
-    public Result<OrderInfoVO> getInfo(@RequestParam BigInteger pairId, @RequestParam Integer transactionType) {
-        return new Result<>(transactionService.getInfo(getUserId(), pairId, transactionType));
-    }
+  @ApiOperation("发起挂单")
+  @PostMapping("")
+  @SwaggerMock("${transaction.buy}")
+  public Result<Boolean> buy(@RequestBody TransactionBuyDTO dto) {
+    return new Result<>(transactionService.buy(getUserId(), dto));
+  }
 
-    @ApiOperation("取消挂单")
-    @DeleteMapping("{id}")
-    @SwaggerMock("${transaction.cancel}")
-    public Result<Boolean> cancel(@PathVariable BigInteger id) {
-        return new Result<>(transactionService.cancel(getUserId(), id));
-    }
+  @ApiOperation("挂单信息获取transactionType:1购买 2出售")
+  @GetMapping("info")
+  @SwaggerMock("${transacction.info}")
+  public Result<OrderInfoVO> getInfo(@RequestParam BigInteger pairId, @RequestParam Integer transactionType) {
+    return new Result<>(transactionService.getInfo(getUserId(), pairId, transactionType));
+  }
+
+  @ApiOperation("取消挂单")
+  @DeleteMapping("{id}")
+  @SwaggerMock("${transaction.cancel}")
+  public Result<Boolean> cancel(@PathVariable BigInteger id) {
+    return new Result<>(transactionService.cancel(getUserId(), id));
+  }
 
 }
