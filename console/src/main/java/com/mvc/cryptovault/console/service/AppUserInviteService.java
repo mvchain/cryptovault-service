@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.console.service;
 
+import com.github.pagehelper.PageHelper;
 import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.AppUserInvite;
 import com.mvc.cryptovault.common.bean.dto.RecommendDTO;
@@ -27,12 +28,17 @@ public class AppUserInviteService extends AbstractService<AppUserInvite> impleme
     AppUserService appUserService;
 
     public List<RecommendVO> getRecommend(RecommendDTO dto) {
-        String ids = appUserMapper.getRecommend(dto);
+        String str = "";
+        if (dto.getInviteUserId() != null && !dto.getInviteUserId().equals(BigInteger.ZERO)) {
+            str = " and invite_user_id < " + dto.getInviteUserId();
+        }
+        String ids = appUserMapper.getRecommend(dto, str);
         if (StringUtils.isBlank(ids)) {
             return null;
         }
         Condition condition = new Condition(AppUser.class);
         Example.Criteria criteria = condition.createCriteria();
+        PageHelper.orderBy("id desc");
         ConditionUtil.andCondition(criteria, "id in (" + ids + ")");
         List<AppUser> list = appUserService.findByCondition(condition);
         List<RecommendVO> result = list.stream().map(obj -> {
