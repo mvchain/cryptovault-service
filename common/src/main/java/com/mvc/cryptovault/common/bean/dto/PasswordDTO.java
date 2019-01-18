@@ -11,9 +11,12 @@ import lombok.Data;
 @Data
 @ApiModel("忘记密码 ")
 public class PasswordDTO {
+
     @ApiModelProperty("密码")
     private String password;
     @ApiModelProperty("临时密码")
     private String token;
+    @ApiModelProperty("密码类型 1密码 2支付密码")
+    private Integer type;
 
 }

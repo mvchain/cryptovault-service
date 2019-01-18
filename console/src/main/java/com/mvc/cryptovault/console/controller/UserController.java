@@ -60,10 +60,14 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("password")
-    public Result<Boolean> forget(@RequestParam("userId") BigInteger userId, @RequestParam("password") String password) {
+    public Result<Boolean> forget(@RequestParam("userId") BigInteger userId, @RequestParam("password") String password, @RequestParam("type") Integer type) {
         AppUser user = appUserService.findById(userId);
         if (null != user) {
-            user.setPassword(password);
+            if (type == 1) {
+                user.setPassword(password);
+            } else if (type == 2) {
+                user.setTransactionPassword(password);
+            }
             appUserService.update(user);
             appUserService.updateCache(userId);
         }

@@ -119,7 +119,7 @@ public interface ConsoleRemoteService {
     Result<Boolean> mnemonicsActive(@RequestParam("email") String email);
 
     @PostMapping("user/password")
-    Result<Boolean> forget(@RequestParam("userId") BigInteger userId, @RequestParam("password") String password);
+    Result<Boolean> forget(@RequestParam("userId") BigInteger userId, @RequestParam("password") String password, @RequestParam("type") Integer type);
 
     @GetMapping("user/pvKey")
     Result<AppUser> getUserByPvKey(@RequestParam("value") String value);

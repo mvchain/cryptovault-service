@@ -91,8 +91,8 @@ public class UserService {
         userRemoteService.mnemonicsActive(email);
     }
 
-    public void forget(BigInteger userId, String password) {
-        userRemoteService.forget(userId, password);
+    public void forget(BigInteger userId, String password, Integer type) {
+        userRemoteService.forget(userId, password, type);
     }
 
     public AppUser reset(AppUserResetDTO appUserResetDTO) {

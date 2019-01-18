@@ -187,7 +187,7 @@ public class UserController extends BaseController {
             Integer userIdInt = claim.get("userId", Integer.class);
             userId = BigInteger.valueOf(userIdInt);
         }
-        userService.forget(userId, passwordDTO.getPassword());
+        userService.forget(userId, passwordDTO.getPassword(), passwordDTO.getType());
         return new Result<>(true);
     }
 
