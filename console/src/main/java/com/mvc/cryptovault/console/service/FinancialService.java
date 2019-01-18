@@ -256,6 +256,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         Example.Criteria criteria = condition.createCriteria();
         PageHelper.startPage(pageDTO.getPageNum(), pageDTO.getPageSize(), pageDTO.getOrderBy());
         ConditionUtil.andCondition(criteria, "status = ", status);
+        ConditionUtil.andCondition(criteria, "financial_id = ", id);
         if (StringUtils.isNotBlank(searchKey)) {
             if (searchKey.matches(RULE_EMAIL)) {
                 AppUser user = appUserService.findOneBy("email", searchKey);
