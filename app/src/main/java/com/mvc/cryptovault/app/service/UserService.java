@@ -101,14 +101,16 @@ public class UserService {
             Boolean result = mailService.checkSmsValiCode(appUserResetDTO.getEmail(), appUserResetDTO.getValue());
             Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
             user = userRemoteService.getUserByUsername(appUserResetDTO.getEmail()).getData();
+            Assert.notNull(user, MessageConstants.getMsg("SMS_ERROR"));
         } else if (appUserResetDTO.getResetType() == 1) {
             user = userRemoteService.getUserByPvKey(appUserResetDTO.getValue()).getData();
+            Assert.notNull(user, MessageConstants.getMsg("PVKEY_WRONG"));
         } else if (appUserResetDTO.getResetType() == 2) {
             String pvKey = MnemonicUtil.getPvKey(Arrays.asList(appUserResetDTO.getValue().split(",")));
-            Assert.notNull(pvKey, MessageConstants.getMsg("USER_PASS_WRONG"));
+            Assert.notNull(pvKey, MessageConstants.getMsg("MNEMONICS_ERROR"));
             user = userRemoteService.getUserByPvKey(pvKey).getData();
+            Assert.notNull(user, MessageConstants.getMsg("MNEMONICS_ERROR"));
         }
-        Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
         return user;
     }
 
