@@ -97,6 +97,7 @@ public class UserController extends BaseController {
         String refreshToken = JwtHelper.createRefresh(mnemonicsDTO.getEmail(), user.getId());
         vo.setRefreshToken(refreshToken);
         vo.setToken(token);
+        vo.setEmail(user.getEmail());
         vo.setUserId(user.getId());
         return new Result<>(vo);
     }

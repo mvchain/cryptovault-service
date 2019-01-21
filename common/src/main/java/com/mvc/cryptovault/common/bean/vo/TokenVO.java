@@ -19,5 +19,6 @@ public class TokenVO implements Serializable {
     private BigInteger userId;
     private String token;
     private String refreshToken;
+    private String email;
 
 }
