@@ -10,7 +10,7 @@ import java.math.BigInteger;
 
 public interface FinancialMapper extends MyMapper<AppFinancial> {
 
-    @Update("update app_financial set sold = sold + #{value} where id = #{id} and sold + #{value} <= limitValue")
+    @Update("update app_financial set sold = sold + #{value} where id = #{id} and sold + #{value} <= limit_value")
     Integer updateSold( @Param("id")BigInteger id, @Param("value") BigDecimal value);
 
     @Update("update app_financial set `status` = 1 WHERE start_at <= #{currentTimeMillis} and `status` = 0")
