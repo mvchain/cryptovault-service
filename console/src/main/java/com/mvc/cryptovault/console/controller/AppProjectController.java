@@ -26,7 +26,10 @@ public class AppProjectController extends BaseController {
     AppProjectService appProjectService;
 
     @GetMapping()
-    Result<PageInfo<AppProject>> getProject(@RequestParam Integer projectType, @RequestParam(required = false) BigInteger id, @RequestParam Integer type, @RequestParam Integer pageSize) {
+    Result<PageInfo<AppProject>> getProject(@RequestParam("userId") BigInteger userId, @RequestParam Integer projectType, @RequestParam(required = false) BigInteger id, @RequestParam Integer type, @RequestParam Integer pageSize) {
+        if(projectType == 3){
+            return new Result<>(new PageInfo<>(appProjectService.getMyProject(userId, id, pageSize)));
+        }
         final BigInteger projectId = id == null ? BigInteger.ZERO : id;
         List<AppProject> list = appProjectService.findAll("id desc");
         list = list.stream().filter(obj -> obj.getVisiable() == 1).collect(Collectors.toList());

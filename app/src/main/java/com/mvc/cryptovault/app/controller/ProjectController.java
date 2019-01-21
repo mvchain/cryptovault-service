@@ -32,7 +32,7 @@ public class ProjectController extends BaseController {
     @GetMapping
     @SwaggerMock("${project.all}")
     public Result<List<ProjectSimpleVO>> getProject(@ModelAttribute @Valid ProjectDTO projectDTO) {
-        return new Result<>(projectService.getProject(projectDTO));
+        return new Result<>(projectService.getProject(getUserId(), projectDTO));
     }
 
     @ApiOperation("获取参与的项目列表")

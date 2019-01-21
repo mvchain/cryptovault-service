@@ -15,7 +15,7 @@ import java.math.BigInteger;
 @ApiModel("项目搜索")
 public class ProjectDTO {
 
-    @ApiModelProperty("0即将预约 1预约中 2已结束")
+    @ApiModelProperty("0即将预约 1预约中 2已结束 3我参与的")
     @NotNull(message = "{PROJECT_TYPE_NULL}")
     private Integer projectType;
 

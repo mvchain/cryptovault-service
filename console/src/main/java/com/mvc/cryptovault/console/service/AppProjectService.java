@@ -6,7 +6,6 @@ import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.AppProjectUserTransaction;
 import com.mvc.cryptovault.common.bean.AppUser;
-import com.mvc.cryptovault.common.bean.CommonPair;
 import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.ExportPartake;
@@ -46,7 +45,7 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
         AppProject appProject = new AppProject();
         BeanUtils.copyProperties(dProjectDTO, appProject);
         appProject.setStatus(0);
-        appProject.setPairId(BigInteger.ZERO );
+        appProject.setPairId(BigInteger.ZERO);
         appProject.setTokenName(commonTokenService.getTokenName(dProjectDTO.getTokenId()));
         appProject.setBaseTokenName(commonTokenService.getTokenName(dProjectDTO.getBaseTokenId()));
         appProject.setCreatedAt(System.currentTimeMillis());
@@ -130,4 +129,13 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
     public String findIdsByName(String projectName) {
         return appProjectMapper.findIdsByName(projectName);
     }
+
+    public List<AppProject> getMyProject(BigInteger userId, BigInteger id, Integer pageSize) {
+        String str = "";
+        if (null != id && !id.equals(BigInteger.ZERO)) {
+            str = " AND t2.project_id < " + id;
+        }
+        return appProjectMapper.getMyProject(userId, str, pageSize);
+    }
+
 }
