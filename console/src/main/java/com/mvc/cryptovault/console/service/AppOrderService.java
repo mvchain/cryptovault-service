@@ -67,7 +67,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         Condition condition = new Condition(AppOrder.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "user_id = ", userId);
-        ConditionUtil.andCondition(criteria, "classify = ", transactionSearchDTO.getTransactionType());
+        ConditionUtil.andCondition(criteria, "classify = ", transactionSearchDTO.getClassify());
         ConditionUtil.andCondition(criteria, "token_id = ", transactionSearchDTO.getTokenId());
         PageHelper.startPage(1, transactionSearchDTO.getPageSize());
         PageHelper.orderBy("id desc");
