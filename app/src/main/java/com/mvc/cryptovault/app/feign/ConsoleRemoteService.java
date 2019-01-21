@@ -31,7 +31,8 @@ public interface ConsoleRemoteService {
             @RequestParam("id") BigInteger id,
             @RequestParam("type") Integer type,
             @RequestParam("pageSize") Integer pageSize,
-            @RequestParam("tokenId") BigInteger tokenId
+            @RequestParam("tokenId") BigInteger tokenId,
+            @RequestParam("classify") Integer classify
     );
 
     @GetMapping("appOrder/{id}")
