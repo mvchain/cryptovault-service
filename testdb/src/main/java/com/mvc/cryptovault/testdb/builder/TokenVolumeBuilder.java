@@ -6,11 +6,23 @@ import com.mvc.cryptovault.common.bean.TokenVolume;
  * @author qiyichen
  * @create 2019/1/19 16:06
  */
-public class TokenVolumeBuilder implements BaseBuilder<TokenVolume> {
+public class TokenVolumeBuilder extends BaseBuilder<TokenVolume> {
 
+
+    public static final Integer NUMBER = 100;
 
     @Override
     public String getInstance(Integer id) {
+        return null;
+    }
+
+    @Override
+    public String getHeader() {
+        return null;
+    }
+
+    @Override
+    public String tableName() {
         return null;
     }
 }

@@ -6,12 +6,42 @@ import com.mvc.cryptovault.common.bean.AppFinancial;
  * @author qiyichen
  * @create 2019/1/19 16:00
  */
-public class AppFinancialBuilder implements BaseBuilder<AppFinancial> {
+public class AppFinancialBuilder extends BaseBuilder<AppFinancial> {
 
+    public static final Integer NUMBER = 100;
 
     @Override
     public String getInstance(Integer id) {
-        String sql = "INSERT INTO `app_financial` " +
+        String sql2 = "(%s, '%s', %s, %s, '%s', '%s', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)";
+        String sql = String.format(sql2,
+                id,
+                "理财" + id,
+                1,
+                5,
+                "JYWD",
+                "VRT",
+                0.3f,
+                1,
+                10,
+                20,
+                0,
+                0,
+                10000,
+                100,
+                50,
+                0,
+                0,
+                0,
+                2,
+                0,
+                1
+        );
+        return sql;
+    }
+
+    @Override
+    public String getHeader() {
+        return "INSERT INTO `app_financial` " +
                 "(" +
                 "`id`, " +
                 "`name`, " +
@@ -33,32 +63,11 @@ public class AppFinancialBuilder implements BaseBuilder<AppFinancial> {
                 "`updated_at`, " +
                 "`status`, " +
                 "`sold`, " +
-                "`visible`) VALUES" +
-                " (%s, '%s', %s, %s, '%s', '%s', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);";
-        String sql2 = "(%s, '%s', %s, %s, '%s', '%s', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)";
-        sql = String.format(sql2,
-                id,
-                "aa" + id,
-                1,
-                5,
-                "JYWD",
-                "VRT",
-                0.3f,
-                1,
-                10,
-                20,
-                0,
-                0,
-                10000,
-                100,
-                50,
-                0,
-                0,
-                0,
-                2,
-                0,
-                1
-                );
-        return sql;
+                "`visible`) VALUES ";
+    }
+
+    @Override
+    public String tableName() {
+        return "app_financial";
     }
 }
