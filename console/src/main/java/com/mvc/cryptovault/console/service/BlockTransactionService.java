@@ -38,8 +38,6 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     @Autowired
     AppOrderService orderService;
     @Autowired
-    AppOrderDetailService appOrderDetailService;
-    @Autowired
     AppUserBalanceService appUserBalanceService;
     @Autowired
     CommonTokenService tokenService;
@@ -53,41 +51,19 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     AdminUserService adminUserService;
     @Autowired
     RedisTaskContainer redisTaskContainer;
+    @Autowired
+    AppUserAddressService appUserAddressService;
 
     public void doSendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Long now = System.currentTimeMillis();
         CommonAddress address = commonAddressService.findOneBy("address", transactionDTO.getAddress());
-        if(null != address && !address.getUserId().equals(BigInteger.ZERO)){
-           //inner
-            AppOrder order = new AppOrder();
-            AppOrderDetail appOrderDetail = new AppOrderDetail();
-            AppOrder orderTarget = new AppOrder();
-            AppOrderDetail appOrderDetailTarget = new AppOrderDetail();
-//            appOrder.setClassify(0);
-//            appOrder.setCreatedAt(now);
-//            appOrder.setUpdatedAt(now);
-//            appOrder.setFromAddress("");
-//            appOrder.setHash("");
-//            appOrder.setOrderContentId(transaction.getId());
-//            appOrder.setOrderContentName("CONTENT_BLOCK");
-//            appOrder.setOrderNumber(transaction.getOrderNumber());
-//            appOrder.setValue(transactionDTO.getValue());
-//            appOrder.setUserId(userId);
-//            appOrder.setOrderRemark(tokenName);
-//            appOrder.setTokenId(transactionDTO.getTokenId());
-//            appOrder.setStatus(0);
-//            appOrder.setOrderType(2);
-//            detail.setCreatedAt(now);
-//            detail.setUpdatedAt(now);
-//            detail.setFee(BigDecimal.ZERO);
-//            detail.setFromAddress("");
-//            detail.setHash("");
-//            detail.setToAddress(transactionDTO.getAddress());
-//            detail.setOrderId(appOrder.getId());
-//            detail.setValue(transactionDTO.getValue());
-
-
-
+        if (null != address && !address.getUserId().equals(BigInteger.ZERO)) {
+            //inner
+            String userAddress = appUserAddressService.getAddress(userId, transactionDTO.getTokenId());
+            String tokenName = tokenService.getTokenName(transactionDTO.getTokenId());
+            appUserBalanceService.updateBalance(address.getUserId(), transactionDTO.getTokenId(), transactionDTO.getValue());
+            orderService.saveOrder(userAddress, transactionDTO.getAddress(), transactionDTO.getTokenId(), transactionDTO.getValue(), userId, tokenName, 2);
+            orderService.saveOrder(userAddress, transactionDTO.getAddress(), transactionDTO.getTokenId(), transactionDTO.getValue(), address.getUserId(), tokenName, 1);
         } else {
             saveBlockTrans(userId, transactionDTO, now);
         }
@@ -122,18 +98,10 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         appOrder.setOrderRemark(tokenName);
         appOrder.setTokenId(transactionDTO.getTokenId());
         appOrder.setStatus(0);
+        appOrder.setToAddress(transactionDTO.getAddress());
+        appOrder.setFee(BigDecimal.ZERO);
         appOrder.setOrderType(2);
         orderService.save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(now);
-        detail.setUpdatedAt(now);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setToAddress(transactionDTO.getAddress());
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(transactionDTO.getValue());
-        appOrderDetailService.save(detail);
     }
 
     public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {

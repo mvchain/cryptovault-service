@@ -160,9 +160,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         BeanUtils.copyProperties(token, result);
         List<CommonPair> list = commonPairService.findBy("tokenId", id);
         Long vrt = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT) && obj.getStatus() == 1).count();
-        Long balance = list.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE) && obj.getStatus() == 1).count();
         result.setVrt(vrt.intValue());
-        result.setBalance(balance.intValue());
         result.setInner(StringUtils.isBlank(token.getTokenContractAddress()) && (null == token.getTokenDecimal() || 0 == token.getTokenDecimal()) ? 1 : 0);
         return result;
     }
@@ -192,9 +190,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
             BeanUtils.copyProperties(commonToken, vo);
             List<CommonPair> data = commonPairService.findBy("tokenId", commonToken.getId());
             Long vrt = data.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_VRT) && obj.getStatus() == 1).count();
-            Long balance = data.stream().filter(obj -> obj.getBaseTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BALANCE) && obj.getStatus() == 1).count();
             vo.setVrt(vrt.intValue());
-            vo.setBalance(balance.intValue());
             vos.add(vo);
         }
         PageInfo result = new PageInfo(list);
@@ -238,7 +234,7 @@ public class CommonTokenService extends AbstractService<CommonToken> implements 
         CommonToken token = new CommonToken();
         BeanUtils.copyProperties(dto, token);
         update(token);
-        commonPairService.updatePair(dto.getId(), dto.getVrt(), dto.getBalance());
+        commonPairService.updatePair(dto.getId(), dto.getVrt());
     }
 
     public String getTokenName(BigInteger tokenId) {

@@ -55,8 +55,7 @@ public class AppUserBalanceController extends BaseController {
 
     @GetMapping("debit/{userId}")
     public Result<BigDecimal> debit(@PathVariable("userId") BigInteger userId) {
-        BigDecimal result = appUserBalanceService.getBalanceByTokenId(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE);
-        return new Result<>(result);
+        return new Result<>(BigDecimal.ZERO);
     }
 
     @PostMapping("debit/{userId}")

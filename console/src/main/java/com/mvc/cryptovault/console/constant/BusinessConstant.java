@@ -73,4 +73,5 @@ public interface BusinessConstant {
     Integer CLASSIFY_BLOCK = 0;
     String REDIS_QUEUE = "REDIS_QUEUE";
     String WITHDRAW_USDT_QUEUE = "WITHDRAW_USDT_QUEUE";
+    String INNER_BLOCK ="INNER_BLOCK";
 }

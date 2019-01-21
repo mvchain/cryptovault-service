@@ -39,9 +39,6 @@ public class DTokenSettingVO implements Serializable {
     @ApiModelProperty("是否开通vrt交易")
     private Integer vrt;
 
-    @ApiModelProperty("是否开通余额交易")
-    private Integer balance;
-
     @ApiModelProperty("令牌id")
     private BigInteger id;
 

@@ -49,8 +49,6 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
     @Autowired
     AppOrderService appOrderService;
     @Autowired
-    AppOrderDetailService appOrderDetailService;
-    @Autowired
     CommonPairService commonPairService;
     @Autowired
     CommonTokenService commonTokenService;

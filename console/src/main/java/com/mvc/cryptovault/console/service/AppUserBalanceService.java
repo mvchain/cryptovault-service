@@ -137,12 +137,11 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             vo.setRatio(null == tokenPrice ? BigDecimal.ZERO : tokenPrice.getTokenPrice());
             vo.setTokenName(token.getTokenName());
             vo.setTokenImage(token.getTokenImage());
-            if (visible == 1 || ignoreHide || token.getId().compareTo(BusinessConstant.BASE_TOKEN_ID_BALANCE) <= 0) {
+            if (visible == 1 || ignoreHide || token.getId().compareTo(BusinessConstant.BASE_TOKEN_ID_VRT) <= 0) {
                 result.add(vo);
             }
         }
         initDefault(map, BusinessConstant.BASE_TOKEN_ID_VRT, result);
-        initDefault(map, BusinessConstant.BASE_TOKEN_ID_BALANCE, result);
         Collections.sort(result, comparator);
         return result;
     }
@@ -163,12 +162,6 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
     }
 
     public void debit(BigInteger userId, BigDecimal value, Integer orderType, Integer transferType) {
-        String key = "AppUserBalance".toUpperCase() + "_" + userId;
-        AppUserBalance balance = getAppUserBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE);
-        appUserBalanceMapper.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE, value);
-        balance = getAppUserBalance(userId, BusinessConstant.BASE_TOKEN_ID_BALANCE);
-        redisTemplate.boundHashOps(key).put(String.valueOf(balance.getTokenId()), balance.getVisible() + "#" + String.valueOf(balance.getBalance()));
-        appOrderService.saveHzOrder(value, userId, orderType, transferType);
     }
 
     public void setAssetVisible(AssertVisibleDTO visibleDTO, BigInteger userId) {

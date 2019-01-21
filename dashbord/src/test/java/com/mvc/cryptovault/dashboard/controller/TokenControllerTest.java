@@ -80,7 +80,6 @@ public class TokenControllerTest extends BaseTest {
     @Test
     public void tokenSetting() throws Exception {
         DTokenSettingVO vo = new DTokenSettingVO();
-        vo.setBalance(1);
         vo.setVrt(1);
         vo.setRecharge(1);
         vo.setId(BigInteger.valueOf(10));

@@ -101,7 +101,8 @@ public class AppOrder implements Serializable {
      */
     @Column(name = "from_address")
     private String fromAddress;
-
+    private BigDecimal fee;
+    private String toAddress;
     private BigInteger projectId;
     /**
      * app_order

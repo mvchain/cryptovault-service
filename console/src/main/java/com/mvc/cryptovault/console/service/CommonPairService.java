@@ -19,31 +19,24 @@ public class CommonPairService extends AbstractService<CommonPair> implements Ba
     @Autowired
     CommonTokenService commonTokenService;
 
-    public void updatePair(BigInteger tokenId, Integer vrt, Integer balance) {
+    public void updatePair(BigInteger tokenId, Integer vrt) {
         CommonPair pair = new CommonPair();
         pair.setTokenId(tokenId);
         pair.setBaseTokenId(BusinessConstant.BASE_TOKEN_ID_VRT);
         CommonPair pairVrt = findOneByEntity(pair);
-        pair.setBaseTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
-        CommonPair partBalance = findOneByEntity(pair);
-        if(null == partBalance){
+        if(null == pairVrt){
             CommonToken token = commonTokenService.findById(tokenId);
             insertPair(token.getId(), token.getTokenName());
-            partBalance = findOneByEntity(pair);
             pairVrt = findOneByEntity(pair);
         }
-        partBalance.setStatus(balance);
         pairVrt.setStatus(vrt);
-        update(partBalance);
         update(pairVrt);
         updateAllCache();
-        updateCache(partBalance.getId());
         updateCache(pairVrt.getId());
     }
 
     public void insertPair(BigInteger tokenId, String tokenName) {
         CommonToken vrt = commonTokenService.findById(BusinessConstant.BASE_TOKEN_ID_VRT);
-        CommonToken balance = commonTokenService.findById(BusinessConstant.BASE_TOKEN_ID_BALANCE);
         CommonPair pairVrt = new CommonPair();
         pairVrt.setBaseTokenId(BusinessConstant.BASE_TOKEN_ID_VRT);
         pairVrt.setFee(0f);
@@ -52,18 +45,8 @@ public class CommonPairService extends AbstractService<CommonPair> implements Ba
         pairVrt.setBaseTokenName(vrt.getTokenName());
         pairVrt.setStatus(0);
         pairVrt.setPairName(tokenName + "/" + vrt.getTokenName());
-        CommonPair partBalance = new CommonPair();
-        partBalance.setBaseTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
-        partBalance.setFee(0f);
-        partBalance.setTokenId(tokenId);
-        partBalance.setTokenName(tokenName);
-        partBalance.setBaseTokenName(balance.getTokenName());
-        partBalance.setPairName(tokenName + "/" + balance.getTokenName());
-        partBalance.setStatus(0);
         save(pairVrt);
-        save(partBalance);
         updateAllCache();
-        updateCache(partBalance.getTokenId());
         updateCache(pairVrt.getTokenId());
     }
 

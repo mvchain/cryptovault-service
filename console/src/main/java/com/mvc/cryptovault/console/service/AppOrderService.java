@@ -28,8 +28,6 @@ import java.util.List;
 public class AppOrderService extends AbstractService<AppOrder> implements BaseService<AppOrder> {
 
     @Autowired
-    AppOrderDetailService appOrderDetailService;
-    @Autowired
     CommonTokenService commonTokenService;
     @Autowired
     CommonTokenPriceService commonTokenPriceService;
@@ -45,12 +43,11 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     public TransactionDetailVO getDetail(BigInteger userId, BigInteger id) {
         var order = findById(id);
         Assert.isTrue(userId.equals(order.getUserId()), MessageConstants.getMsg("PERMISSION_WRONG"));
-        var detail = appOrderDetailService.findById(id);
         var token = commonTokenService.findById(order.getTokenId());
         TransactionDetailVO vo = new TransactionDetailVO();
         vo.setClassify(order.getClassify());
         vo.setCreatedAt(order.getCreatedAt());
-        vo.setFee(null == detail ? null : detail.getFee());
+        vo.setFee(order.getFee());
         vo.setFeeTokenType(token.getTokenType());
         vo.setHashLink(token.getLink() + order.getHash());
         vo.setOrderRemark(order.getOrderRemark());
@@ -59,9 +56,9 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         vo.setTransactionType(order.getOrderType());
         vo.setBlockHash(order.getHash());
         vo.setStatus(order.getStatus());
-        vo.setToAddress(null == detail ? null : detail.getToAddress());
+        vo.setToAddress(order.getToAddress());
         vo.setUpdatedAt(order.getUpdatedAt());
-        vo.setValue(null == order.getValue()?null:order.getValue().abs());
+        vo.setValue(null == order.getValue() ? null : order.getValue().abs());
         return vo;
     }
 
@@ -103,7 +100,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
                 //地址存在且有对应用户， 则生成记录
                 blockTransaction.setUserId(address.getUserId());
                 blockTransaction.setOprType(blockTransaction.getOprType() == 1 ? 2 : 1);
-                if(blockTransaction.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)){
+                if (blockTransaction.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
                     //只有ETH能够扣除手续费
 //                    blockTransaction.setValue(blockTransaction.getValue().subtract(blockTransaction.getFee()));
                 }
@@ -127,36 +124,24 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         order.setHash(blockTransaction.getHash());
         order.setFromAddress(blockTransaction.getFromAddress());
         order.setUpdatedAt(time);
+        order.setToAddress(blockTransaction.getToAddress());
+        order.setFee(blockTransaction.getFee());
         order.setCreatedAt(time);
         order.setOrderRemark(tokenService.getTokenName(blockTransaction.getTokenId()));
         order.setTokenId(blockTransaction.getTokenId());
         order.setClassify(BusinessConstant.CLASSIFY_BLOCK);
         save(order);
-        AppOrderDetail appOrderDetail = new AppOrderDetail();
-        appOrderDetail.setValue(blockTransaction.getValue());
-        appOrderDetail.setOrderId(order.getId());
-        appOrderDetail.setUserId(order.getUserId());
-        appOrderDetail.setToAddress(blockTransaction.getToAddress());
-        appOrderDetail.setHash(blockTransaction.getHash());
-        appOrderDetail.setFromAddress(blockTransaction.getFromAddress());
-        appOrderDetail.setFee(blockTransaction.getFee());
-        appOrderDetail.setUpdatedAt(time);
-        appOrderDetail.setCreatedAt(time);
-        appOrderDetailService.save(appOrderDetail);
     }
 
     public void updateOrder(AppOrder obj, BigDecimal fee) {
         //修改订单列表,并发送通知
         obj.setStatus(2);
+        obj.setHash(obj.getHash());
+        obj.setFee(fee);
         obj.setUpdatedAt(System.currentTimeMillis());
         update(obj);
-        AppOrderDetail detail = appOrderDetailService.findById(obj.getId());
-        detail.setHash(obj.getHash());
-        detail.setFee(fee);
-        appOrderDetailService.update(detail);
         appMessageService.transferMsg(obj.getId(), obj.getUserId(), obj.getValue(), tokenService.getTokenName(obj.getTokenId()), obj.getOrderType(), obj.getStatus());
         updateCache(obj.getId());
-        appOrderDetailService.updateCache(detail.getOrderId());
     }
 
     public void saveOrder(AppProjectUserTransaction appProjectUserTransaction, AppProject project) {
@@ -174,20 +159,11 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setUserId(appProjectUserTransaction.getUserId());
         appOrder.setTokenId(project.getBaseTokenId());
         appOrder.setStatus(appProjectUserTransaction.getResult());
+        appOrder.setFee(BigDecimal.ZERO);
+        appOrder.setToAddress("");
         appOrder.setOrderRemark(project.getProjectName());
         appOrder.setOrderType(appProjectUserTransaction.getResult() != 9 && appProjectUserTransaction.getResult() != 4 ? 2 : 1);
         save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUpdatedAt(time);
-        detail.setUserId(appOrder.getUserId());
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(appProjectUserTransaction.getValue());
-        appOrderDetailService.save(detail);
         //发送推送
         appMessageService.sendProject(appProjectUserTransaction.getUserId(), project.getId(), appOrder.getId(), appProjectUserTransaction.getResult(), project.getStatus(), project.getTokenName(), project.getProjectName(), appProjectUserTransaction.getValue());
     }
@@ -209,6 +185,8 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setOrderNumber(transaction.getOrderNumber());
         appOrder.setValue(transaction.getSuccessValue());
         appOrder.setUserId(transaction.getUserId());
+        appOrder.setFee(BigDecimal.ZERO);
+        appOrder.setToAddress("");
         appOrder.setTokenId(pair.getTokenId());
         appOrder.setStatus(2);
         appOrder.setOrderType(transaction.getTransactionType());
@@ -222,53 +200,10 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         baseOrder.setOrderType(transaction.getTransactionType() == 1 ? 2 : 1);
         baseOrder.setOrderNumber(getOrderNumber());
         save(baseOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUpdatedAt(time);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setUserId(appOrder.getUserId());
-        detail.setValue(transaction.getValue());
-        appOrderDetailService.save(detail);
-        detail.setOrderId(baseOrder.getId());
-        detail.setValue(baseOrder.getValue());
-        appOrderDetailService.save(detail);
         appMessageService.sendTrade(appOrder.getId(), appOrder.getUserId(), pair.getPairName(), appOrder.getOrderType(), appOrder.getValue(), pair.getTokenName());
     }
 
     public void saveHzOrder(BigDecimal value, BigInteger userId, Integer orderType, Integer transferType) {
-        Long time = System.currentTimeMillis();
-        AppOrder appOrder = new AppOrder();
-        appOrder.setClassify(3);
-        appOrder.setCreatedAt(time);
-        appOrder.setUpdatedAt(time);
-        appOrder.setFromAddress("");
-        appOrder.setHash("");
-        appOrder.setOrderContentId(BigInteger.ZERO);
-        appOrder.setOrderContentName(BusinessConstant.CONTENT_EMIT);
-        appOrder.setOrderNumber(getOrderNumber());
-        appOrder.setValue(value);
-        appOrder.setUserId(userId);
-        appOrder.setTokenId(BusinessConstant.BASE_TOKEN_ID_BALANCE);
-        appOrder.setStatus(2);
-        appOrder.setOrderType(orderType);
-        appOrder.setOrderRemark("余额");
-        save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUpdatedAt(time);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setUserId(appOrder.getUserId());
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(value);
-        appOrderDetailService.save(detail);
-        appMessageService.transferMsg(appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(BusinessConstant.BASE_TOKEN_ID_BALANCE), transferType, 2);
     }
 
     public void saveOrderProject(AppProjectUserTransaction appProjectUserTransaction, AppProject appProject) {
@@ -290,21 +225,12 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setValue(appProjectPartake.getReverseValue());
         appOrder.setUserId(appProjectPartake.getUserId());
         appOrder.setTokenId(appProjectPartake.getTokenId());
+        appOrder.setFee(BigDecimal.ZERO);
+        appOrder.setToAddress("");
         appOrder.setStatus(2);
         appOrder.setOrderType(1);
         appOrder.setOrderRemark(null == appProject ? "" : appProject.getProjectName());
         save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUpdatedAt(time);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setUserId(appOrder.getUserId());
-        detail.setHash("");
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(appOrder.getValue());
-        appOrderDetailService.save(detail);
         return appOrder;
     }
 
@@ -356,20 +282,11 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setUserId(appProjectUserTransaction.getUserId());
         appOrder.setTokenId(project.getBaseTokenId());
         appOrder.setStatus(9);
+        appOrder.setFee(BigDecimal.ZERO);
+        appOrder.setToAddress("");
         appOrder.setOrderRemark(project.getProjectName());
         appOrder.setOrderType(1);
         save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUpdatedAt(time);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setUserId(appOrder.getUserId());
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(appProjectUserTransaction.getValue());
-        appOrderDetailService.save(detail);
     }
 
     public void saveOrder(AppUserFinancialPartake partake, AppFinancial financial) {
@@ -377,7 +294,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         saveOrder(partake, partake.getIncome(), financial.getTokenId(), "理财");
     }
 
-    private void saveOrder(AppUserFinancialPartake partake, BigDecimal value, BigInteger tokenId, String remark){
+    private void saveOrder(AppUserFinancialPartake partake, BigDecimal value, BigInteger tokenId, String remark) {
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(4);
@@ -393,23 +310,14 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setTokenId(tokenId);
         appOrder.setStatus(2);
         appOrder.setOrderType(1);
+        appOrder.setFee(BigDecimal.ZERO);
+        appOrder.setToAddress("");
         appOrder.setOrderRemark(remark);
         save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUserId(appOrder.getUserId());
-        detail.setUpdatedAt(time);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(value);
-        appOrderDetailService.save(detail);
         appMessageService.transferFinancialMsg(appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(tokenId));
     }
 
-    public void saveFinancialOrder(AppUserFinancialPartake partake, AppFinancial  appFinancial) {
+    public void saveFinancialOrder(AppUserFinancialPartake partake, AppFinancial appFinancial) {
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(4);
@@ -424,37 +332,28 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setUserId(partake.getUserId());
         appOrder.setTokenId(appFinancial.getBaseTokenId());
         appOrder.setStatus(2);
+        appOrder.setFee(BigDecimal.ZERO);
+        appOrder.setToAddress("");
         appOrder.setOrderType(2);
         appOrder.setOrderRemark(appFinancial.getName());
         save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUpdatedAt(time);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setUserId(appOrder.getUserId());
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(partake.getValue());
-        appOrderDetailService.save(detail);
         appMessageService.transferFinancialMsg(appOrder.getId(), appOrder.getUserId(), partake.getValue(), tokenService.getTokenName(appFinancial.getBaseTokenId()));
     }
 
     /**
-     * @param classify 0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账 4理財
-     * @param orderContentId 关联数据id
+     * @param classify         0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账 4理財
+     * @param orderContentId   关联数据id
      * @param orderContentName 关联类型
-     * @param orderNumber 订单号
-     * @param value 数量
+     * @param orderNumber      订单号
+     * @param value            数量
      * @param userId
      * @param tokenId
-     * @param status 状态0打包中 1确认中 2确认
-     * @param orderType 1转入 2转出
+     * @param status           状态0打包中 1确认中 2确认
+     * @param orderType        1转入 2转出
      * @param remark
      * @param message
      */
-    public void saveOrder(Integer classify, BigInteger orderContentId, String orderContentName, String orderNumber, BigDecimal value, BigInteger userId, BigInteger tokenId, Integer status , Integer orderType, String remark, String message, Boolean sendMsg) {
+    public void saveOrder(Integer classify, BigInteger orderContentId, String orderContentName, String orderNumber, BigDecimal value, BigInteger userId, BigInteger tokenId, Integer status, Integer orderType, String remark, String message, Boolean sendMsg) {
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(4);
@@ -468,21 +367,35 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setValue(value);
         appOrder.setUserId(userId);
         appOrder.setTokenId(tokenId);
+        appOrder.setFee(BigDecimal.ZERO);
         appOrder.setStatus(status);
         appOrder.setOrderType(orderType);
         appOrder.setOrderRemark(remark);
+        appOrder.setToAddress("");
         save(appOrder);
-        AppOrderDetail detail = new AppOrderDetail();
-        detail.setCreatedAt(time);
-        detail.setUpdatedAt(time);
-        detail.setFee(BigDecimal.ZERO);
-        detail.setFromAddress("");
-        detail.setHash("");
-        detail.setUserId(appOrder.getUserId());
-        detail.setToAddress("");
-        detail.setOrderId(appOrder.getId());
-        detail.setValue(value);
-        appOrderDetailService.save(detail);
         appMessageService.transferMsg(appOrder.getId(), appOrder.getUserId(), message, sendMsg);
+    }
+
+    public void saveOrder(String from, String to, BigInteger tokenId, BigDecimal value, BigInteger userId, String tokenName, Integer orderType) {
+        Long time = System.currentTimeMillis();
+        AppOrder appOrder = new AppOrder();
+        appOrder.setClassify(0);
+        appOrder.setCreatedAt(time);
+        appOrder.setUpdatedAt(time);
+        appOrder.setFromAddress(from);
+        appOrder.setHash("");
+        appOrder.setOrderContentId(BigInteger.ZERO);
+        appOrder.setOrderContentName(BusinessConstant.INNER_BLOCK);
+        appOrder.setOrderNumber(getOrderNumber());
+        appOrder.setValue(value);
+        appOrder.setToAddress(to);
+        appOrder.setFee(BigDecimal.ZERO);
+        appOrder.setUserId(userId);
+        appOrder.setTokenId(tokenId);
+        appOrder.setStatus(2);
+        appOrder.setOrderType(orderType);
+        appOrder.setOrderRemark(tokenName);
+        save(appOrder);
+        appMessageService.transferMsg(appOrder.getId(), userId, value, tokenName, orderType, 2);
     }
 }
