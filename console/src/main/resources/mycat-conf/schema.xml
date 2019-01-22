@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+
+    <!--schema 属性说明
+dataNode: 逻辑库名, 即 use someDatabase 中的库名
+checkSQLschema: 建议设置默认值, 用于对schema字段的特殊处理, 实际使用中避免使用该关键字即可
+sqlMaxLimit: 如果查询的表存在分片且查询条件中没有limit字段, 则会默认加上该值
+-->
+    <schema name="vpay" checkSQLschema="false" sqlMaxLimit="100">
+
+        <!--table属性说明
+         name：逻辑表名，同一个库（schema）不允许重复
+        dataNode：所属的数据库节点名
+        rule：使用的规则名，mycat默认内置了多种规则，可以查看rule.xml
+        ruleRequired： 如果需要绑定分片规则则设置为true，为true时rule必须存在
+        primaryKey： 如果使用了非主键进行分片，需要设置该属性，具体逻辑单独查询，较为复杂
+        type：不设置为普通表，可以指定为 global， 指定为全局表时， 所有节点会冗余该表， 用于部分类似字典的表
+        autoIncrement： 申明是否使用自增长主键，默认false
+        needAddLimit： 用于覆盖sqlMaxLimit属性， 默认为true
+        -->
+        <!--以下数据很少,单库即可-->
+        <table name="admin_permission" dataNode="dn1" primaryKey="id" autoIncrement="true"/>
+        <table name="admin_user" dataNode="dn1" primaryKey="id" autoIncrement="true"/>
+        <table name="admin_user_permission" dataNode="dn1" primaryKey="user_id" autoIncrement="true"/>
+        <table name="admin_wallet" dataNode="dn1" primaryKey="id" autoIncrement="true"/>
+        <table name="app_project" dataNode="dn1" primaryKey="id" autoIncrement="true"/>
+        <table name="block_hot_address" dataNode="dn1" primaryKey="id" autoIncrement="true"/>
+        <table name="common_pair" dataNode="dn1" primaryKey="id" autoIncrement="true"/>
+        <table name="common_token" dataNode="dn1" primaryKey="id" autoIncrement="true"/>
+        <table name="common_token_control" dataNode="dn1" primaryKey="token_id" autoIncrement="true"/>
+        <table name="common_token_control_next" dataNode="dn1" primaryKey="token_id" autoIncrement="true"/>
+        <table name="common_token_price" dataNode="dn1" primaryKey="token_id" autoIncrement="true"/>
+        <table name="app_financial" dataNode="dn1" primaryKey="id" autoIncrement="true"/>
+        <table name="app_financial_content" dataNode="dn1" primaryKey="financial_id" autoIncrement="true"/>
+        <table name="app_financial_detail" dataNode="dn1" primaryKey="financial_id" autoIncrement="true"/>
+        <!--以下数据库较大,进行分片-->
+        <table name="app_message" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_order" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_order_detail" dataNode="dn1,dn2,dn3" primaryKey="order_id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_project_partake" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_project_user_transaction" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_user" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur"/>
+        <table name="app_user_address" dataNode="dn1,dn2,dn3" primaryKey="user_id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_user_balance" dataNode="dn1,dn2,dn3" primaryKey="user_id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_user_transaction" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="block_sign" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur"/>
+        <table name="block_transaction" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur"/>
+        <table name="block_usdt_withdraw_queue" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur"/>
+        <table name="common_address" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur"/>
+        <table name="common_token_history" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur-tokenid"/>
+        <table name="token_volume" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur"/>
+        <table name="app_user_financial_income" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_user_financial_partake" dataNode="dn1,dn2,dn3" primaryKey="id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+        <table name="app_user_invite" dataNode="dn1,dn2,dn3" primaryKey="user_id" autoIncrement="true" rule="sharding-by-murmur-userid"/>
+    </schema>
+
+    <!--dataHost属性说明， 对于部分不需要变动的不做说明
+    name： 唯一标识 dataHost 标签，供上层的标签使用。
+    maxCon： 指定每个读写实例连接池的最大连接。
+    minCon： 指定每个读写实例连接池的最小连接，初始化连接池的大小。
+    balance： 0：仅使用writeHost  1.不用管，不常用 2：所有writeHost、readhost随机负载 3:读写分离
+    writeType: 负载均衡类型,1.5后废弃，不推荐设置,或者设置为0
+    switchType：-1 表示不自动切换 1 默认值，自动切换。2 基于 MySQL 主从同步的状态决定是否切换。3 基于 MySQL galary cluster 的切换机制
+    dbType： 数据库类型，如mysql等， dbDriver相同
+    -->
+    <dataNode name="dn1" dataHost="localhost1" database="vpay"/>
+    <dataNode name="dn2" dataHost="localhost2" database="vpay"/>
+    <dataNode name="dn3" dataHost="localhost3" database="vpay"/>
+
+    <dataHost name="localhost1" maxCon="1000" minCon="10" balance="3"
+              writeType="0" dbType="mysql" dbDriver="native" switchType="1" slaveThreshold="100">
+        <heartbeat>select 1</heartbeat>
+        <writeHost host="hostM1" url="192.168.205.134:3301" user="root"
+                   password="123456">
+            <readHost host="hostS1" url="192.168.205.134:3304" user="root" password="123456"/>
+        </writeHost>
+    </dataHost>
+
+    <dataHost name="localhost2" maxCon="1000" minCon="10" balance="3"
+              writeType="0" dbType="mysql" dbDriver="native" switchType="1" slaveThreshold="100">
+        <heartbeat>select 2</heartbeat>
+        <writeHost host="hostM2" url="192.168.205.134:3302" user="root"
+                   password="123456">
+            <readHost host="hostS2" url="192.168.205.134:3305" user="root" password="123456"/>
+        </writeHost>
+    </dataHost>
+
+    <dataHost name="localhost3" maxCon="1000" minCon="10" balance="3"
+              writeType="0" dbType="mysql" dbDriver="native" switchType="1" slaveThreshold="100">
+        <heartbeat>select 3</heartbeat>
+        <writeHost host="hostM3" url="192.168.205.134:3303" user="root"
+                   password="123456">
+            <readHost host="hostS3" url="192.168.205.134:3306" user="root" password="123456"/>
+        </writeHost>
+    </dataHost>
+
+</mycat:schema>

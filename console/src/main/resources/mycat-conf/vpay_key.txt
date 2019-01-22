@@ -1,0 +1,87 @@
+#所有操作都在 db1 上
+#创建 MYCAT_SEQUENCE 表
+DROP TABLE IF EXISTS MYCAT_SEQUENCE;
+#– name sequence 名称
+#– current_value 当前 value
+#– increment 增长步长!   mycat在数据库中一次读取多少个sequence
+
+CREATE TABLE MYCAT_SEQUENCE (name VARCHAR(50) NOT NULL,current_value INT
+NOT NULL,increment INT NOT NULL DEFAULT 1, PRIMARY KEY(name))
+ENGINE=InnoDB;
+
+#插入一条 sequence
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('admin_permission', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('admin_user', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('admin_user_permission', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('admin_wallet', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_project', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('block_hot_address', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('common_pair', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('common_token', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('common_token_control', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('common_token_control_next', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('common_token_price', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_message', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_order', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_order_detail', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_project_partake', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_project_user_transaction', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_user', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_user_address', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_user_balance', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_user_transaction', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('block_sign', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('block_transaction', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('block_usdt_withdraw_queue', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('common_address', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('common_token_history', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('token_volume', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_user_financial_income', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_user_financial_partake', 100000, 1);
+INSERT INTO MYCAT_SEQUENCE(name,current_value,increment) VALUES ('app_financial', 100000, 1);
+
+#创建相关 function
+#获取当前 sequence 的值 (返回当前值,增量)
+DROP FUNCTION IF EXISTS mycat_seq_currval;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` FUNCTION `mycat_seq_currval`(seq_name VARCHAR(50))
+RETURNS VARCHAR(64) charset utf8
+DETERMINISTIC
+BEGIN
+DECLARE retval VARCHAR(64);
+SET retval="-999999999,null";
+SELECT CONCAT(CAST(current_value AS CHAR),",",CAST(increment AS
+CHAR) ) INTO retval
+FROM MYCAT_SEQUENCE WHERE NAME = seq_name;
+RETURN retval ;
+END
+;;
+DELIMITER ;
+
+
+#设置 sequence 值
+DROP FUNCTION IF EXISTS mycat_seq_setval;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` FUNCTION mycat_seq_setval(seq_name VARCHAR(50),value INTEGER)
+RETURNS varchar(64) CHARSET utf8
+DETERMINISTIC
+BEGIN
+UPDATE MYCAT_SEQUENCE
+SET current_value = value
+WHERE name = seq_name;
+RETURN mycat_seq_currval(seq_name);
+END ;;
+DELIMITER ;
+
+#获取下一个 sequence 值
+DROP FUNCTION IF EXISTS `mycat_seq_nextval`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` FUNCTION `mycat_seq_nextval`(seq_name VARCHAR(50))
+RETURNS VARCHAR(64)CHARSET utf8
+DETERMINISTIC
+BEGIN
+UPDATE MYCAT_SEQUENCE SET current_value = current_value + increment
+WHERE NAME = seq_name;
+RETURN mycat_seq_currval(seq_name);
+END;;
+DELIMITER ;
