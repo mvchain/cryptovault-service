@@ -1,14 +1,14 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.AppUser;
-import com.mvc.cryptovault.common.util.MnemonicUtil;
+
 import com.mvc.cryptovault.testdb.util.EncryptionUtil;
+import com.mvc.cryptovault.testdb.util.MnemonicUtil;
 
 /**
  * @author qiyichen
  * @create 2019/1/19 16:03
  */
-public class AppUserBuilder extends BaseBuilder<AppUser> {
+public class AppUserBuilder extends BaseBuilder {
 
     public static final Integer NUMBER = 100000;
 
@@ -35,7 +35,7 @@ public class AppUserBuilder extends BaseBuilder<AppUser> {
         return "INSERT INTO `app_user` (`id`, `cellphone`, `password`, `head_image`, `transaction_password`, `nickname`, `created_at`, `updated_at`, `status`, `invite_level`, `email`, `pv_key`, `invite_num`) VALUES ";
     }
 
-    public   @Override
+    public @Override
     String tableName() {
         return "app_user";
     }

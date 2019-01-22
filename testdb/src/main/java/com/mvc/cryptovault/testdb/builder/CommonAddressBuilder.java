@@ -1,12 +1,10 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.CommonAddress;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:06
  */
-public class CommonAddressBuilder extends BaseBuilder<CommonAddress> {
+public class CommonAddressBuilder extends BaseBuilder {
     public static final Integer NUMBER = 50000000;
 
     @Override

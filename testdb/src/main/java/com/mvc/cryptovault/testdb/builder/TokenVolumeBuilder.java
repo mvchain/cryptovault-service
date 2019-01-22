@@ -1,12 +1,10 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.TokenVolume;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:06
  */
-public class TokenVolumeBuilder extends BaseBuilder<TokenVolume> {
+public class TokenVolumeBuilder extends BaseBuilder {
 
 
     public static final Integer NUMBER = 100;

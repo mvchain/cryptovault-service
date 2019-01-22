@@ -1,12 +1,10 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.AppOrder;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:02
  */
-public class AppOrderBuilder extends BaseBuilder<AppOrder> {
+public class AppOrderBuilder extends BaseBuilder {
     public static final Integer NUMBER = 50000000;
 
     @Override

@@ -1,12 +1,10 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.AppUserFinancialPartake;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:04
  */
-public class AppUserFinancialPartakeBuilder extends BaseBuilder<AppUserFinancialPartake> {
+public class AppUserFinancialPartakeBuilder extends BaseBuilder {
     public static final Integer NUMBER = 1000000;
 
     @Override
@@ -16,12 +14,12 @@ public class AppUserFinancialPartakeBuilder extends BaseBuilder<AppUserFinancial
     }
 
     @Override
-    public  String getHeader() {
+    public String getHeader() {
         return "INSERT INTO `app_user_financial_partake` (`id`, `user_id`, `financial_id`, `created_at`, `updated_at`, `value`, `times`, `shadow_value`, `status`, `income`, `order_number`, `token_id`, `base_token_id`) VALUES ";
     }
 
     @Override
-    public   String tableName() {
+    public String tableName() {
         return "app_user_financial_partake";
     }
 }

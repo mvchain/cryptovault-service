@@ -14,7 +14,7 @@ public class Main {
 
     static {
         try {
-            DbUtil.init("jdbc:mysql://192.168.15.31:3306/vpay_test?useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC", "root", "123456");
+            DbUtil.init("jdbc:mysql://localhost:8066/vpay?useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC", "root", "123456");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,12 +1,10 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.AppUserTransaction;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:04
  */
-public class AppUserTransactionBuilder extends BaseBuilder<AppUserTransaction> {
+public class AppUserTransactionBuilder extends BaseBuilder {
     public static final Integer NUMBER = 50000000;
 
     @Override
@@ -16,7 +14,7 @@ public class AppUserTransactionBuilder extends BaseBuilder<AppUserTransaction> {
     }
 
     @Override
-    public   String getHeader() {
+    public String getHeader() {
         return "INSERT INTO `app_user_transaction` (`id`, `pair_id`, `created_at`, `updated_at`, `order_number`, `parent_id`, `value`, `success_value`, `user_id`, `target_user_id`, `price`, `transaction_type`, `self_order`, `status`) VALUES ";
     }
 

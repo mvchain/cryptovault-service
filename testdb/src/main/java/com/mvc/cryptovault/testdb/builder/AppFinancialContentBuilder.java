@@ -1,12 +1,10 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.AppFinancialContent;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:01
  */
-public class AppFinancialContentBuilder extends BaseBuilder<AppFinancialContent> {
+public class AppFinancialContentBuilder extends BaseBuilder {
     public static final Integer NUMBER = 100;
 
     @Override

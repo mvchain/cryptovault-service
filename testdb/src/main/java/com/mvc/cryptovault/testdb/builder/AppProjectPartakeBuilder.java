@@ -1,13 +1,10 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.AppMessage;
-import com.mvc.cryptovault.common.bean.AppProjectPartake;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:02
  */
-public class AppProjectPartakeBuilder extends BaseBuilder<AppProjectPartake> {
+public class AppProjectPartakeBuilder extends BaseBuilder {
     public static final Integer NUMBER = AppUserBuilder.NUMBER;
 
     @Override
@@ -21,7 +18,7 @@ public class AppProjectPartakeBuilder extends BaseBuilder<AppProjectPartake> {
     }
 
     @Override
-    public   String tableName() {
+    public String tableName() {
         return "app_project_partake";
     }
 }

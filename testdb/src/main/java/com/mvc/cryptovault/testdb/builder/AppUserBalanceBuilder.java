@@ -1,17 +1,15 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.AppUserBalance;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:03
  */
-public class AppUserBalanceBuilder  extends BaseBuilder<AppUserBalance>{
+public class AppUserBalanceBuilder extends BaseBuilder {
     public static final Integer NUMBER = AppUserBuilder.NUMBER;
 
     @Override
     public String getInstance(Integer id) {
-        return String.format(" (%s, %s, %s, %s, %s)",  id, 5, 10000, 1, 0);
+        return String.format(" (%s, %s, %s, %s, %s)", id, 5, 10000, 1, 0);
     }
 
     @Override

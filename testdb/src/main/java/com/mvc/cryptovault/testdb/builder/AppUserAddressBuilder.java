@@ -1,13 +1,11 @@
 package com.mvc.cryptovault.testdb.builder;
 
 
-import com.mvc.cryptovault.common.bean.AppUserAddress;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 16:03
  */
-public class AppUserAddressBuilder extends BaseBuilder<AppUserAddress> {
+public class AppUserAddressBuilder extends BaseBuilder {
     public static final Integer NUMBER = AppUserBuilder.NUMBER;
 
     @Override

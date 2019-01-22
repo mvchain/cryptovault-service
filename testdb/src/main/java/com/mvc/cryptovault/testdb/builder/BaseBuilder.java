@@ -1,17 +1,13 @@
 package com.mvc.cryptovault.testdb.builder;
 
-import com.mvc.cryptovault.common.bean.AppUserFinancialPartake;
-
-import java.math.BigInteger;
-
 /**
  * @author qiyichen
  * @create 2019/1/19 17:19
  */
-public abstract class BaseBuilder<T> {
+public abstract class BaseBuilder {
     volatile Long id = 1L;
 
-    public  abstract String getInstance(Integer id);
+    public abstract String getInstance(Integer id);
 
     public abstract String getHeader();
 
