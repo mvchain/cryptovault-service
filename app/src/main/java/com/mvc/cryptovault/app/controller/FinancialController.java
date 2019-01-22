@@ -58,9 +58,9 @@ public class FinancialController extends BaseController {
     }
 
     @ApiOperation("根据理财记录id持仓收益列表详情")
-    @GetMapping("partake/{id}/detail")
-    public Result<List<FinancialPartakeListVO>> getPartakeList(@PathVariable BigInteger id, @ModelAttribute FinancialPartakeListDTO financialPartakeListDTO) {
-        return new Result<>(financialService.getPartakeList(id, financialPartakeListDTO, getUserId()));
+    @GetMapping("partake/{partakeId}/detail")
+    public Result<List<FinancialPartakeListVO>> getPartakeList(@PathVariable BigInteger partakeId, @ModelAttribute FinancialPartakeListDTO financialPartakeListDTO) {
+        return new Result<>(financialService.getPartakeList(partakeId, financialPartakeListDTO, getUserId()));
     }
 
     @ApiOperation("根据理财项目id购买理财")

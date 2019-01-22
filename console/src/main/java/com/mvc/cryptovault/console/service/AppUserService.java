@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.AppUserDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
@@ -31,11 +32,15 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.*;
 
 import static com.mvc.cryptovault.common.constant.RedisConstant.APP_USER_USERNAME;
 
 @Service
 public class AppUserService extends AbstractService<AppUser> implements BaseService<AppUser> {
+    ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("sign-pool-%d").build();
+    ExecutorService executorService = new ThreadPoolExecutor(10, 10, 10, TimeUnit.MINUTES,
+            new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.DiscardPolicy());
 
     @Autowired
     AppUserBalanceService appUserBalanceService;
@@ -161,42 +166,51 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
     }
 
     public void sign(BigInteger userId) {
-        //签到时自己的理财解锁,影子积分入账,上级添加奖励积分
-        List<AppUserFinancialPartake> list = appUserFinancialPartakeService.findBy("userId", userId);
-        for (AppUserFinancialPartake partake : list) {
-            AppFinancial appFinancial = financialService.findById(partake.getFinancialId());
-            BigDecimal value = (partake.getCreatedAt() + RedisConstant.ONE_DAY) < System.currentTimeMillis() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
-            BigDecimal shadow = partake.getShadowValue();
-            BigDecimal income = value.add(shadow);
-            if (income.compareTo(BigDecimal.ZERO) == 0) {
-                continue;
-            }
-            List<AppFinancialDetail> detail = appFinancialDetailService.findDetails(partake.getFinancialId());
-            Collections.reverse(detail);
-            if (shadow.compareTo(BigDecimal.ZERO) > 0) {
-                partake.setShadowValue(BigDecimal.ZERO);
-                partake.setUpdatedAt(System.currentTimeMillis());
-                String messageIncome = shadow.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 奖励已发放";
-                appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), shadow, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageIncome, false);
-            }
-            if (partake.getTimes() < appFinancial.getTimes()) {
-                partake.setUpdatedAt(System.currentTimeMillis());
-                partake.setTimes(partake.getTimes() + 1);
-                String messageLock = value.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 收益已发放";
-                appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), value, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageLock, false);
-                appUserFinancialIncomeService.insert(partake, appFinancial, value);
-            }
-            appUserBalanceService.updateBalance(userId, partake.getTokenId(), income);
-            appUserFinancialPartakeService.update(partake);
-            for (int i = 0; i < appFinancial.getDepth(); i++) {
-                BigDecimal incomeParent = income.divide(BigDecimal.valueOf(100)).multiply(new BigDecimal(detail.get(i).getRatio()));
-                AppUserInvite user = appUserInviteService.findOneBy("inviteUserId", userId);
-                if (null == user) {
-                    break;
-                }
-                appUserFinancialPartakeService.addShadow(user.getUserId(), incomeParent, appFinancial.getId());
-            }
-        }
+        executorService.submit(signJob(userId));
+    }
 
+    private Runnable signJob(final BigInteger userId) {
+        return new Runnable() {
+            @Override
+            public void run() {
+                //签到时自己的理财解锁,影子积分入账,上级添加奖励积分
+                List<AppUserFinancialPartake> list = appUserFinancialPartakeService.findBy("userId", userId);
+                for (AppUserFinancialPartake partake : list) {
+                    AppFinancial appFinancial = financialService.findById(partake.getFinancialId());
+                    BigDecimal value = (partake.getCreatedAt() + RedisConstant.ONE_DAY) < System.currentTimeMillis() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
+                    BigDecimal shadow = partake.getShadowValue();
+                    BigDecimal income = value.add(shadow);
+                    if (income.compareTo(BigDecimal.ZERO) == 0) {
+                        continue;
+                    }
+                    List<AppFinancialDetail> detail = appFinancialDetailService.findDetails(partake.getFinancialId());
+                    Collections.reverse(detail);
+                    if (shadow.compareTo(BigDecimal.ZERO) > 0) {
+                        partake.setShadowValue(BigDecimal.ZERO);
+                        partake.setUpdatedAt(System.currentTimeMillis());
+                        String messageIncome = shadow.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 奖励已发放";
+                        appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), shadow, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageIncome, false);
+                    }
+                    if (partake.getTimes() < appFinancial.getTimes()) {
+                        partake.setUpdatedAt(System.currentTimeMillis());
+                        partake.setTimes(partake.getTimes() + 1);
+                        String messageLock = value.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 收益已发放";
+                        partake.setIncome(partake.getIncome().add(value));
+                        appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), value, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageLock, false);
+                        appUserFinancialIncomeService.insert(partake, appFinancial, value);
+                    }
+                    appUserBalanceService.updateBalance(userId, partake.getTokenId(), income);
+                    appUserFinancialPartakeService.update(partake);
+                    for (int i = 0; i < appFinancial.getDepth(); i++) {
+                        BigDecimal incomeParent = income.divide(BigDecimal.valueOf(100)).multiply(new BigDecimal(detail.get(i).getRatio()));
+                        AppUserInvite user = appUserInviteService.findOneBy("inviteUserId", userId);
+                        if (null == user) {
+                            break;
+                        }
+                        appUserFinancialPartakeService.addShadow(user.getUserId(), incomeParent, appFinancial.getId());
+                    }
+                }
+            }
+        };
     }
 }

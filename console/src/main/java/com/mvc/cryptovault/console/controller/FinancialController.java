@@ -54,8 +54,8 @@ public class FinancialController extends BaseController {
         return new Result<>(result);
     }
 
-    @GetMapping("partake/{id}/detail")
-    public Result<List<FinancialPartakeListVO>> getPartakeList(@PathVariable("id") BigInteger financialId, @ModelAttribute FinancialPartakeListDTO dto, @RequestParam("userId") BigInteger userId) {
+    @GetMapping("partake/{financialId}/detail")
+    public Result<List<FinancialPartakeListVO>> getPartakeList(@PathVariable("financialId") BigInteger financialId, @ModelAttribute FinancialPartakeListDTO dto, @RequestParam("userId") BigInteger userId) {
         List<FinancialPartakeListVO> result = financialService.getPartakeList(financialId, dto, userId);
         return new Result<>(result);
     }
