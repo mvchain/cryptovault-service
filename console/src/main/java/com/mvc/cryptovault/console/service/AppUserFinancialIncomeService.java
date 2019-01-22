@@ -32,7 +32,7 @@ public class AppUserFinancialIncomeService extends AbstractService<AppUserFinanc
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         calendar.set(Calendar.SECOND, 0);
-        Long stopAt = calendar.getTime().getTime();
+        Long stopAt = calendar.getTime().getTime() + RedisConstant.ONE_DAY;
         Long startAt = stopAt - RedisConstant.ONE_DAY;
         List<AppUserFinancialIncome> list = appUserFinancialIncomeMapper.getLastDay(userId, id, startAt, stopAt);
         BigDecimal balance = list.stream().map(obj -> obj.getTokenId() == null ? BigDecimal.ZERO : obj.getValue().multiply(commonTokenPriceService.findById(obj.getTokenId()).getTokenPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
