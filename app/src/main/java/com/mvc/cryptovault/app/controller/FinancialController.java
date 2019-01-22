@@ -45,7 +45,6 @@ public class FinancialController extends BaseController {
         return new Result<>(financialService.getFinancialBalance(getUserId()));
     }
 
-
     @ApiOperation("理财详情查看(购买时详情获取)")
     @GetMapping("{id}")
     public Result<FinancialDetailVO> getDetail(@PathVariable BigInteger id) {

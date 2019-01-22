@@ -178,13 +178,13 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                 partake.setUpdatedAt(System.currentTimeMillis());
                 String messageIncome = shadow.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 奖励已发放";
                 appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), shadow, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageIncome, false);
-                appUserFinancialIncomeService.insert(partake, appFinancial, shadow);
             }
             if (partake.getTimes() < appFinancial.getTimes()) {
                 partake.setUpdatedAt(System.currentTimeMillis());
                 partake.setTimes(partake.getTimes() + 1);
                 String messageLock = value.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 收益已发放";
                 appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), value, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageLock, false);
+                appUserFinancialIncomeService.insert(partake, appFinancial, value);
             }
             appUserBalanceService.updateBalance(userId, partake.getTokenId(), income);
             appUserFinancialPartakeService.update(partake);
