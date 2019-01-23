@@ -73,7 +73,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
             return false;
         }
         Assert.isTrue(financialBuyDTO.getTransactionPassword().equals(user.getTransactionPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
-        Assert.isTrue(financialBuyDTO.getValue().compareTo(financial.getMinValue()) > 0, MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
+        Assert.isTrue(financialBuyDTO.getValue().compareTo(financial.getMinValue()) >= 0, MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
         BigDecimal partake = appUserFinancialPartakeService.getPartake(userId, id);
         Assert.isTrue(partake.add(financialBuyDTO.getValue()).compareTo(financial.getUserLimit()) <= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, financial.getBaseTokenId());
