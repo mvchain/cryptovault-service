@@ -18,6 +18,6 @@ public interface AppUserFinancialIncomeMapper extends MyMapper<AppUserFinancialI
     @Select("SELECT IFNULL(sum(`value`),0) value, token_id  FROM app_user_financial_income where user_id = #{userId} and created_at >= #{startAt} and created_at < #{stopAt} GROUP BY token_id")
     List<AppUserFinancialIncome> getLast(@Param("userId") BigInteger userId, @Param("startAt") Long startAt, @Param("stopAt") Long stopAt);
 
-    @Select("SELECT IFNULL(sum(`value`),0) value, token_id  FROM app_user_financial_income where user_id = #{userId} and partake_id = #{id} and  created_at >= #{startAt} and created_at < #{stopAt}")
+    @Select("SELECT IFNULL(sum(`value`),0) value FROM app_user_financial_income where user_id = #{userId} and partake_id = #{id} and  created_at >= #{startAt} and created_at < #{stopAt}")
     List<AppUserFinancialIncome> getLastDay(@Param("userId") BigInteger userId,@Param("id") BigInteger id, @Param("startAt") Long startAt, @Param("stopAt") Long stopAt);
 }
