@@ -10,7 +10,7 @@ public class AppUserFinancialPartakeBuilder extends BaseBuilder {
     @Override
     public String getInstance(Integer id) {
         return String.format("(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '%s', %s, %s)",
-                id, getUserId(), 1, 0, 0, 10, 13, 0, 2, 5, getOrderNumber(), 5, 1);
+                id, getUserId(), 1, 10, 0, 10, 13, 0, 2, 5, getOrderNumber(), 5, 1);
     }
 
     @Override

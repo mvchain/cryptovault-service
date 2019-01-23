@@ -5,12 +5,12 @@ package com.mvc.cryptovault.testdb.builder;
  * @create 2019/1/19 16:02
  */
 public class AppProjectUserTransactionBuilder extends BaseBuilder {
-    public static final Integer NUMBER = 50000000;
+    public static final Integer NUMBER = 20000000;
 
     @Override
     public String getInstance(Integer id) {
         return String.format("(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '%s')",
-                id, getUserId(), 1, 0, 0, 2, 2, 5, 5000, 0, 0, 0, getOrderNumber());
+                id, getUserId(), 1, 10, 0, 2, 2, 5, 5000, 0, 0, 0, getOrderNumber());
     }
 
     @Override

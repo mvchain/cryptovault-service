@@ -10,7 +10,7 @@ public class AppUserInviteBuilder extends BaseBuilder {
 
     @Override
     public String getInstance(Integer id) {
-        return String.format("(%s, %s, %s, %s)", id, id, 0, 0);
+        return String.format("(%s, %s, %s, %s)", id, id, 10, 0);
     }
 
     @Override

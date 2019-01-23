@@ -28,7 +28,7 @@ public class AppFinancialBuilder extends BaseBuilder {
                 100,
                 50,
                 0,
-                0,
+                10,
                 0,
                 2,
                 0,

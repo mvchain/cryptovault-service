@@ -5,7 +5,7 @@ package com.mvc.cryptovault.testdb.builder;
  * @create 2019/1/19 16:06
  */
 public class CommonAddressBuilder extends BaseBuilder {
-    public static final Integer NUMBER = 50000000;
+    public static final Integer NUMBER = 20000000;
 
     @Override
     public String getInstance(Integer id) {

@@ -10,7 +10,7 @@ public class BlockTransactionBuilder extends BaseBuilder {
     @Override
     public String getInstance(Integer id) {
         return String.format("(%s, '%s', %s, %s, %s, %s, %s, '%s', %s, %s, %s, %s, '%s', '%s', %s, '%s', '%s', '%s')",
-                id, "test", 0, 0, 0, 0, 5, "ETH", (int) (Math.random() * 2) + 1, getUserId(), 2, 6, "test", "test", 5, "test", "test", getOrderNumber());
+                id, "test", 10, 0, 0, 0, 5, "ETH", (int) (Math.random() * 2) + 1, getUserId(), 2, 6, "test", "test", 5, "test", "test", getOrderNumber());
     }
 
     @Override

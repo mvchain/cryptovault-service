@@ -23,11 +23,12 @@ public class AppUserBuilder extends BaseBuilder {
         String email = "qiyic" + id + "@qq.com";
         String password = "";
         try {
-            password = EncryptionUtil.md5(email + EncryptionUtil.md5("123456"));
+//            password = EncryptionUtil.md5(email + EncryptionUtil.md5("123456"));
+            password = "123456";
         } catch (Exception e) {
         }
         return String.format("(%s, '%s', '%s', '%s', '%s', '%s', %s, %s, %s, %s, '%s', '%s', %s)",
-                id, "test", password, "test", password, email, 0, 0, 1, 0, email, getCode(), 0);
+                id, "test", password, "test", password, email, 10, 0, 1, 0, email, getCode(), 0);
     }
 
     @Override
