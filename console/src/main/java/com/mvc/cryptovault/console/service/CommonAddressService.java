@@ -13,6 +13,8 @@ import com.neemre.btcdcli4j.core.BitcoindException;
 import com.neemre.btcdcli4j.core.CommunicationException;
 import com.neemre.btcdcli4j.core.client.BtcdClient;
 import com.neemre.btcdcli4j.core.domain.Output;
+import com.neemre.btcdcli4j.core.domain.OutputOverview;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,13 +75,16 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         ExportOrders usdtOrder = new ExportOrders();
         BlockHotAddress blockHotAddress = new BlockHotAddress();
         Integer btcNumber = 0;
+        StringBuilder orders = new StringBuilder();
+        Map<String, BigDecimal> output = new HashMap<>(list.size());
         for (BlockTransaction transaction : list) {
             if (transaction.getTokenType().equalsIgnoreCase("ETH")) {
                 addEthWithdrawOrder(result, nonceMap, tokenMap, hot, cold, transaction);
             } else if (transaction.getTokenType().equalsIgnoreCase("BTC")) {
-                addBtcWithdrawOrder(result, tokenMap, btcCold, transaction, usdtOrder, blockHotAddress, btcNumber);
+                addBtcWithdrawOrder(orders, output, result, tokenMap, btcCold, transaction, usdtOrder, blockHotAddress, btcNumber);
             }
         }
+        addBtcOrder(result, tokenMap, btcCold, orders, output);
         if (null != usdtOrder.getFromAddress()) {
             //send fee
             CommonToken token = tokenMap.get(BusinessConstant.BASE_TOKEN_ID_USDT);
@@ -90,6 +95,39 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         return result;
     }
 
+    private void addBtcOrder(List<ExportOrders> result, Map<BigInteger, CommonToken> tokenMap, AdminWallet btcCold, StringBuilder orders, Map<String, BigDecimal> output) throws BitcoindException, IOException, CommunicationException {
+        if (output.size() > 0) {
+            List<Output> unspents = BtcAction.listUnspent(Arrays.asList(btcCold.getAddress()));
+            Assert.isTrue(unspents.size() > 0, "冷钱包余额不足,请充值或等待确认");
+            if (unspents.size() > 0) {
+                BigDecimal balance = unspents.stream().map(obj -> obj.getAmount()).reduce(BigDecimal.ZERO, BigDecimal::add);
+                BigDecimal use = output.values().stream().map(obj -> obj).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+                List<OutputOverview> input = new ArrayList<>(unspents.size());
+                for (Output obj : unspents) {
+                    //使用后余额也还原到该地址
+                    input.add(obj);
+                }
+                CommonToken token = tokenMap.get(BusinessConstant.BASE_TOKEN_ID_BTC);
+                BigDecimal fee = NumberUtils.parseNumber(String.valueOf(token.getTransaferFee()), BigDecimal.class);
+                output.put(btcCold.getAddress(), balance.subtract(BigDecimal.valueOf(fee.floatValue() * output.size())).subtract(BigDecimal.valueOf(use.floatValue())));
+                String row = btcdClient.createRawTransaction(input, output);
+                ExportOrders order = new ExportOrders();
+                order.setFromAddress(btcCold.getAddress());
+                order.setTokenType(token.getTokenType());
+                order.setToAddress("");
+                order.setGasLimit(BigDecimal.ZERO);
+                order.setGasPrice(BigDecimal.ZERO);
+                order.setOrderId(orders.toString());
+                order.setNonce(null);
+                order.setFeeAddress(JSON.toJSONString(unspents));
+                order.setContractAddress(row);
+                order.setOprType(1);
+                result.add(order);
+            }
+        }
+    }
+
     /**
      * USDT由热钱包中转,只记录单条记录
      *
@@ -98,7 +136,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
      * @param btcCold
      * @param transaction
      */
-    private void addBtcWithdrawOrder(List<ExportOrders> result, Map<BigInteger, CommonToken> tokenMap, AdminWallet btcCold, BlockTransaction transaction, ExportOrders usdtOrder, BlockHotAddress blockHotAddress, Integer btcNumber) {
+    private void addBtcWithdrawOrder(StringBuilder orders, Map<String, BigDecimal> output, List<ExportOrders> result, Map<BigInteger, CommonToken> tokenMap, AdminWallet btcCold, BlockTransaction transaction, ExportOrders usdtOrder, BlockHotAddress blockHotAddress, Integer btcNumber) {
         try {
             CommonToken token = tokenMap.get(transaction.getTokenId());
             BigDecimal fee = new BigDecimal(String.valueOf(token.getTransaferFee()));
@@ -151,12 +189,14 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
                 }
             } else {
                 //btc need another wallet
+                output.put(transaction.getToAddress(), transaction.getValue());
+                orders = StringUtils.isBlank(orders) ? orders : orders.append(",");
+                orders.append(transaction.getOrderNumber());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
     private void addEthWithdrawOrder(List<ExportOrders> result, Map<String, BigInteger> nonceMap, Map<BigInteger, CommonToken> tokenMap, AdminWallet hot, AdminWallet cold, BlockTransaction transaction) throws IOException {
         ExportOrders orders = new ExportOrders();

@@ -85,7 +85,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
             BeanUtils.copyProperties(obj, vo);
             vo.setTokenName(token.getTokenName());
             vo.setValue(vo.getValue().abs());
-            vo.setRatio(price.getTokenPrice());
+            vo.setRatio(null == price ? BigDecimal.ZERO : price.getTokenPrice());
             vo.setTransactionType(obj.getOrderType());
             result.add(vo);
         });
@@ -290,11 +290,11 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveOrder(AppUserFinancialPartake partake, AppFinancial financial) {
-        saveOrder(partake, partake.getValue(), financial.getBaseTokenId(), "理财");
-        saveOrder(partake, partake.getIncome(), financial.getTokenId(), "理财");
+        saveOrder(partake, partake.getValue(), financial.getBaseTokenId(), "理财", financial.getName());
+        saveOrder(partake, partake.getIncome(), financial.getTokenId(), "理财", financial.getName());
     }
 
-    private void saveOrder(AppUserFinancialPartake partake, BigDecimal value, BigInteger tokenId, String remark) {
+    private void saveOrder(AppUserFinancialPartake partake, BigDecimal value, BigInteger tokenId, String remark, String name) {
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(4);
@@ -314,7 +314,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setToAddress("");
         appOrder.setOrderRemark(remark);
         save(appOrder);
-        appMessageService.transferFinancialMsg(appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(tokenId));
+        appMessageService.transferFinancialMsg(name, appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(tokenId));
     }
 
     public void saveFinancialOrder(AppUserFinancialPartake partake, AppFinancial appFinancial) {
@@ -337,7 +337,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setOrderType(2);
         appOrder.setOrderRemark(appFinancial.getName());
         save(appOrder);
-        appMessageService.transferFinancialMsg(appOrder.getId(), appOrder.getUserId(), partake.getValue(), tokenService.getTokenName(appFinancial.getBaseTokenId()));
+        appMessageService.transferFinancialMsg(appFinancial.getName(), appOrder.getId(), appOrder.getUserId(), partake.getValue(), tokenService.getTokenName(appFinancial.getBaseTokenId()));
     }
 
     /**

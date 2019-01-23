@@ -39,10 +39,8 @@ public class BeanConfig {
 
     @Value("${jpush.secret}")
     private String MASTER_SECRET;
-
     @Value("${jpush.app_key}")
     private String APP_KEY;
-
     @Value("${service.name}")
     private String serviceName;
     @Value("${service.expire}")
@@ -55,6 +53,23 @@ public class BeanConfig {
     public String WALLET_SERVICE;
     @Value("${usdt.propId}")
     private Integer propId;
+
+    @Value("${node.btc.rpc.protocol}")
+    private String btcProtocol;
+    @Value("${node.btc.rpc.host}")
+    private String btcHost;
+    @Value("${node.btc.rpc.port}")
+    private Integer btcPort;
+    @Value("${node.btc.rpc.user}")
+    private String btcUser;
+    @Value("${node.btc.rpc.password}")
+    private String btcPassword;
+
+    @Bean("btcClient")
+    public BtcdClient btcClient() throws IOException, BitcoindException, CommunicationException {
+        BtcdClientImpl btcdClient = new BtcdClientImpl(btcProtocol, btcHost, btcPort, btcUser, btcPassword);
+        return btcdClient;
+    }
 
     @Bean
     public HTreeMap hTreeMap() {
@@ -123,6 +138,5 @@ public class BeanConfig {
         BtcAction.init(propId, btcdClient);
         return btcdClient;
     }
-
 
 }

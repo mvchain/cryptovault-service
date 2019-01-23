@@ -29,6 +29,7 @@ import tk.mybatis.mapper.entity.Example;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -80,7 +81,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         transaction.setTokenId(transactionDTO.getTokenId());
         transaction.setStatus(0);
         transaction.setTransactionStatus(1);
-        transaction.setTokenType(transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) ? "BTC" : "ETH");
+        transaction.setTokenType(transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) || transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BTC) ? "BTC" : "ETH");
         transaction.setToAddress(transactionDTO.getAddress());
         transaction.setOrderNumber(getOrderNumber());
         save(transaction);
@@ -229,11 +230,13 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         return list;
     }
 
-    public void updateHash(String orderId, String hash) {
-        if (StringUtils.isNotBlank(orderId)) {
-            blockTransactionMapper.updateHash(orderId, hash);
-            BlockTransaction trans = findOneBy("hash", hash);
-            orderService.updateOrderWithBlockTransaction(trans);
+    public void updateHash(String orderIds, String hash) {
+        if (StringUtils.isNotBlank(orderIds)) {
+            Arrays.stream(orderIds.split(",")).forEach(orderId -> {
+                blockTransactionMapper.updateHash(orderId, hash);
+                BlockTransaction trans = findOneBy("orderNumber", orderId);
+                orderService.updateOrderWithBlockTransaction(trans);
+            });
         }
     }
 

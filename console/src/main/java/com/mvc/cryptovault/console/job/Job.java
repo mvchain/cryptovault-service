@@ -132,19 +132,24 @@ public class Job {
     private void updateUsdtPrice() {
         String usdtUrl = "https://data.block.cc/api/v1/price?symbol=USDT";
         String ethUrl = "https://data.block.cc/api/v1/price?symbol=ETH";
+        String btcUrl = "https://data.block.cc/api/v1/price?symbol=BTC";
         JSONObject usdtResult = null;
         JSONObject ethResult = null;
+        JSONObject btcResult = null;
         try {
             usdtResult = restTemplate.getForObject(usdtUrl, JSONObject.class);
             ethResult = restTemplate.getForObject(ethUrl, JSONObject.class);
+            btcResult = restTemplate.getForObject(btcUrl, JSONObject.class);
         } catch (RestClientException e) {
             log.warn(e.getMessage());
             return;
         }
         BigDecimal usdtPrice = parseValue(usdtResult);
         BigDecimal ethPrice = parseValue(ethResult);
+        BigDecimal btcPrice = parseValue(btcResult);
         appKlineService.saveHistory(BusinessConstant.BASE_TOKEN_ID_USDT, usdtPrice);
         appKlineService.saveHistory(BusinessConstant.BASE_TOKEN_ID_ETH, ethPrice);
+        appKlineService.saveHistory(BusinessConstant.BASE_TOKEN_ID_BTC, btcPrice);
     }
 
     /**

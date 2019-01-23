@@ -9,7 +9,6 @@ import com.mvc.cryptovault.common.bean.CommonToken;
 import com.mvc.cryptovault.common.bean.CommonTokenPrice;
 import com.mvc.cryptovault.common.bean.vo.*;
 import com.mvc.cryptovault.common.constant.RedisConstant;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -30,21 +29,12 @@ public class TokenService {
     StringRedisTemplate redisTemplate;
     RestTemplate restTemplate = new RestTemplate();
 
-    final BigInteger BASE_TOKEN_ID_BALANCE = BigInteger.valueOf(2);
-
     public List<TokenDetailVO> getTokens(BigInteger timestamp) {
         Result<PageInfo<CommonToken>> listData = tokenRemoteService.all(1, 0, 999, timestamp);
         ArrayList<TokenDetailVO> result = new ArrayList<>(listData.getData().getList().size());
         for (CommonToken token : listData.getData().getList()) {
             TokenDetailVO vo = new TokenDetailVO();
-            Integer tokenType = 0;
-            if (token.getId().equals(BASE_TOKEN_ID_BALANCE)) {
-                tokenType = 0;
-            } else if (StringUtils.isBlank(token.getTokenType())) {
-                tokenType = 1;
-            } else {
-                tokenType = 2;
-            }
+            Integer tokenType = 2;
             vo.setVisible(token.getVisible());
             vo.setTokenImage(token.getTokenImage());
             vo.setTokenCnName(token.getTokenCnName());

@@ -79,6 +79,15 @@ node.bitcoind.notification.alert.port: 5158
 node.bitcoind.notification.block.port: 5159
 usdt.propId: 1
 
+node.btc.rpc.protocol: http
+node.btc.rpc.host: 45.195.202.209
+#node.bitcoind.rpc.host: localhost
+node.btc.rpc.port: 12321
+node.btc.rpc.user: test
+node.btc.rpc.password: test
+node.btc.http.auth_scheme: Basic
+node.btc.notification.alert.port: 5158
+node.btc.notification.block.port: 5159
 
 #scheduled.kline: '0 0 12 * * ?'
 scheduled.kline: '*/60 * * * * ?'

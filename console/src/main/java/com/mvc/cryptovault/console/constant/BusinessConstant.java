@@ -22,14 +22,14 @@ public interface BusinessConstant {
     String APP_PROJECT_ORDER_NUMBER = "APP_PROJECT_ORDER_NUMBER_";
 
     /**
-     *  vrt
+     * vrt
      */
     BigInteger BASE_TOKEN_ID_VRT = BigInteger.ONE;
 
     /**
-     * 余额
+     * BTC
      */
-    BigInteger BASE_TOKEN_ID_BALANCE = BigInteger.valueOf(2);
+    BigInteger BASE_TOKEN_ID_BTC = BigInteger.valueOf(2);
     /**
      * ETH
      */
@@ -49,7 +49,7 @@ public interface BusinessConstant {
     /**
      * 充值
      */
-    Integer OPR_TYPE_RECHARGE= 1;
+    Integer OPR_TYPE_RECHARGE = 1;
     /**
      * 提现
      */
@@ -73,5 +73,5 @@ public interface BusinessConstant {
     Integer CLASSIFY_BLOCK = 0;
     String REDIS_QUEUE = "REDIS_QUEUE";
     String WITHDRAW_USDT_QUEUE = "WITHDRAW_USDT_QUEUE";
-    String INNER_BLOCK ="INNER_BLOCK";
+    String INNER_BLOCK = "INNER_BLOCK";
 }

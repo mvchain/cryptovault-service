@@ -6,7 +6,6 @@ import com.mvc.cryptovault.common.bean.dto.DebitDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionSearchDTO;
 import com.mvc.cryptovault.common.bean.vo.*;
-import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,7 +65,7 @@ public class AssetService {
 
     public Boolean sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Boolean regResult = false;
-        if(transactionDTO.getTokenId().equals(BigInteger.valueOf(4))){
+        if (transactionDTO.getTokenId().equals(BigInteger.valueOf(4)) || transactionDTO.getTokenId().equals(BigInteger.valueOf(2))) {
             //usdt
             regResult = transactionDTO.getAddress().matches(USDT_REG_ARR);
         } else {

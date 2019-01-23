@@ -7,51 +7,47 @@ import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.util.BaseContextHandler;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.bean.Balance;
-import com.mvc.cryptovault.console.bean.UsdtTransaction;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.util.btc.BtcAction;
 import com.mvc.cryptovault.console.util.btc.entity.TetherBalance;
 import com.neemre.btcdcli4j.core.BitcoindException;
 import com.neemre.btcdcli4j.core.CommunicationException;
 import com.neemre.btcdcli4j.core.client.BtcdClient;
-import com.neemre.btcdcli4j.core.domain.Block;
-import com.neemre.btcdcli4j.core.domain.Output;
-import com.neemre.btcdcli4j.core.domain.OutputOverview;
-import com.neemre.btcdcli4j.core.domain.SignatureResult;
+import com.neemre.btcdcli4j.core.domain.*;
 import com.neemre.btcdcli4j.core.http.HttpLayerException;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
+import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * @author qiyichen
  * @create 2018/11/29 14:03
  */
-@Service("UsdtService")
+@Service("BtcService")
 @Transactional(rollbackFor = RuntimeException.class)
 @Log4j
-public class UsdtService extends BlockService {
+public class BtcService extends BlockService {
 
-    @Autowired
+    @Resource(name = "btcClient")
     BtcdClient btcdClient;
     @Autowired
     BlockSignService blockSignService;
-    @Value("${usdt.propId}")
-    private Integer propId;
     private static String nowHash = "";
     private AdminWallet hotWallet = null;
     @Autowired
@@ -98,153 +94,54 @@ public class UsdtService extends BlockService {
     @Override
     public void run(String... args) throws Exception {
         executorService.execute(() -> {
-            BaseContextHandler.set("thread-key", "usdtOldListener");
+            BaseContextHandler.set("thread-key", "btcOldListener");
             try {
                 oldListener();
             } catch (Exception e) {
                 oldListener();
             }
         });
-        executorService.execute(() -> {
-            BaseContextHandler.set("thread-key", "usdtSignJob");
-            try {
-                signJob();
-            } catch (Exception e) {
-                signJob();
-            }
-        });
-        executorService.execute(() -> {
-            BaseContextHandler.set("thread-key", "usdtQueueJob");
-            try {
-                queueJob();
-            } catch (Exception e) {
-                queueJob();
-            }
-        });
-    }
-
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public void queueJob() {
-        while (true) {
-            List<BlockUsdtWithdrawQueue> list = blockUsdtWithdrawQueueService.findStart();
-            for (BlockUsdtWithdrawQueue obj : list) {
-                try {
-                    String result = BtcAction.prepareCollection(obj.getFromAddress(), obj.getToAddress(), obj.getFee(), obj.getValue());
-                    SignatureResult raw = btcdClient.signRawTransaction(result);
-                    if (!raw.getComplete()) {
-                        obj.setStatus(9);
-                        blockUsdtWithdrawQueueService.update(obj);
-                        continue;
-                    }
-                    String hash = btcdClient.sendRawTransaction(raw.getHex());
-                    obj.setStatus(2);
-                    blockUsdtWithdrawQueueService.update(obj);
-                    blockTransactionService.updateHash(obj.getOrderId(), hash);
-                } catch (Exception e) {
-                    if (e.getMessage().equalsIgnoreCase("Error #-26: 258: txn-mempool-conflict") || e.getMessage().startsWith("No unspent on address")) {
-                        //该种错误添加到重试列表
-                        obj.setStartedAt(System.currentTimeMillis() + APPROVE_WAIT);
-                        blockUsdtWithdrawQueueService.update(obj);
-                        continue;
-                    }
-                    obj.setStatus(9);
-                    blockUsdtWithdrawQueueService.update(obj);
-                    continue;
-                }
-            }
-            try {
-                Thread.sleep(20);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-        }
 
     }
 
-    private void signJob() {
-
-        while (true) {
-            try {
-                BlockSign sign = blockSignService.findOneByToken("BTC");
-                sign(sign);
-                Thread.sleep(20);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    protected String getOrderNumber() {
+        Long id = redisTemplate.boundValueOps(BusinessConstant.APP_PROJECT_ORDER_NUMBER).increment();
+        return "P" + String.format("%09d", id);
     }
 
-    private void sign(BlockSign sign) {
-        try {
-            if (null == sign) {
+    private List<BlockTransaction> blockTransaction(Transaction tx, Integer height) throws IOException {
+        List<BlockTransaction> list = new ArrayList<>(tx.getDetails().size());
+        tx.getDetails().stream().forEach(obj -> {
+            CommonAddress address = commonAddressService.findOneBy("address", obj.getAddress());
+            if (null == address || null == address.getUserId()) {
                 return;
             }
-            String result = btcdClient.sendRawTransaction(sign.getSign());
-            sign.setHash(result);
-            sign.setStatus(1);
-            blockSignService.update(sign);
-            blockTransactionService.updateHash(sign.getOrderId(), result);
-            //开始更新usdt排队列表
-            blockUsdtWithdrawQueueService.start(sign.getOrderId(), sign.getToAddress());
-        } catch (Exception e) {
-            if (e.getMessage().equalsIgnoreCase("Error #-26: 258: txn-mempool-conflict")) {
-                //该种错误添加到重试列表
-                sign.setStartedAt(System.currentTimeMillis() + APPROVE_WAIT);
-                blockSignService.update(sign);
+            List<BlockTransaction> result = blockTransactionService.findBy("hash", tx.getTxId());
+            if (result.size() > 0) {
                 return;
             }
-            sign.setStatus(9);
-            sign.setResult(e.getMessage());
-            blockSignService.update(sign);
-            if (StringUtils.isNotBlank(sign.getOrderId())) {
-                //更新区块交易表
-                String message = "交易失败";
-                String data = e.getMessage();
-                updateError(sign.getOrderId(), message, data);
-            }
-        }
-    }
-
-    private BlockTransaction blockTransaction(UsdtTransaction tx) throws IOException {
-        BlockTransaction transaction = new BlockTransaction();
-        BigDecimal value = new BigDecimal(tx.getAmount());
-        CommonAddress address = isOurAddress(tx.getSendingaddress(), tx.getReferenceaddress());
-        //非内部地址忽略
-        if (null == address) {
-            return null;
-        }
-        Long time = System.currentTimeMillis();
-        transaction.setFromAddress(tx.getSendingaddress());
-        transaction.setToAddress(tx.getReferenceaddress());
-        transaction.setHash(tx.getTxid());
-        transaction.setUpdatedAt(time);
-        transaction.setTokenType("BTC");
-        transaction.setCreatedAt(time);
-        transaction.setValue(value);
-        transaction.setUserId(address.getUserId());
-        transaction.setOrderNumber("");
-        transaction.setFee(new BigDecimal(tx.getFee()));
-        transaction.setHeight(tx.getBlock());
-        transaction.setStatus(tx.getConfirmations().compareTo(BigInteger.valueOf(6)) >= 0 ? 2 : 1);
-        transaction.setTransactionStatus(tx.getConfirmations().compareTo(BigInteger.valueOf(6)) >= 0 ? 5 : 4);
-        //根据地址判断操作类型
-        if (address.getUserId().equals(BigInteger.ZERO)) {
-            transaction.setOprType(9);
-        } else if (tx.getReferenceaddress().equalsIgnoreCase(address.getAddress())) {
-            transaction.setOprType(1);
-        } else {
-            transaction.setOprType(2);
-        }
-        transaction.setTokenId(BusinessConstant.BASE_TOKEN_ID_USDT);
-        if (tx.getValid() == false) {
-            //校验是否成功
-            transaction.setStatus(9);
-            transaction.setTransactionStatus(6);
-            transaction.setErrorMsg(tx.getInvalidreason());
-            transaction.setErrorData(tx.getInvalidreason());
-        }
-        return transaction;
+            BlockTransaction transaction = new BlockTransaction();
+            Long time = System.currentTimeMillis();
+            transaction.setCreatedAt(time);
+            transaction.setUpdatedAt(time);
+            transaction.setHash(tx.getTxId());
+            transaction.setValue(obj.getAmount());
+            transaction.setOprType(BigInteger.ZERO.equals(address.getUserId()) ? 9 : 1);
+            transaction.setErrorData("");
+            transaction.setErrorMsg("");
+            transaction.setTransactionStatus(4);
+            transaction.setStatus(1);
+            transaction.setFee(null == obj.getFee() ? BigDecimal.ZERO : obj.getFee());
+            transaction.setFromAddress(address.getAddress());
+            transaction.setToAddress(address.getAddress());
+            transaction.setUserId(address.getUserId());
+            transaction.setTokenId(BusinessConstant.BASE_TOKEN_ID_BTC);
+            transaction.setTokenType("BTC");
+            transaction.setOrderNumber(getOrderNumber());
+            transaction.setHeight(BigInteger.valueOf(height));
+            list.add(transaction);
+        });
+        return list;
     }
 
     private void oldListener() {
@@ -254,16 +151,22 @@ public class UsdtService extends BlockService {
             try {
                 Thread.sleep(100);
                 String height = btcdClient.getBlockChainInfo().getBestBlockHash();
+                if (StringUtils.isBlank(lastNumber)) {
+                    lastNumber = btcdClient.getBlockChainInfo().getBestBlockHash();
+                    redisTemplate.opsForValue().set(RedisConstant.BTC_LAST_HEIGHT, lastNumber);
+                }
                 block = btcdClient.getBlock(lastNumber);
                 Boolean ignore = isIgnore(lastNumber, block, height);
                 if (ignore) {
                     continue;
                 }
-                List<String> txList = btcdClient.getBlock(block.getHash()).getTx();
-                readTxList(txList);
+                List<String> txList = block.getTx();
+                readTxList(txList, block.getHeight());
                 nowHash = null == block ? nowHash : block.getHash();
                 lastNumber = block.getNextBlockHash();
-                redisTemplate.opsForValue().set(RedisConstant.USDT_LAST_HEIGHT, lastNumber);
+                if (null != block && null != block.getNextBlockHash()) {
+                    redisTemplate.opsForValue().set(RedisConstant.BTC_LAST_HEIGHT, lastNumber);
+                }
                 updateStatus(block.getHeight().toString());
             } catch (HttpLayerException e1) {
                 log.warn(e1.getMessage());
@@ -273,25 +176,19 @@ public class UsdtService extends BlockService {
         }
     }
 
-    private void readTxList(List<String> txList) {
+    private void readTxList(List<String> txList, Integer height) {
         for (String txId : txList) {
             try {
-                UsdtTransaction tx = null;
-                Object txStr = btcdClient.remoteCall("omni_gettransaction", Arrays.asList(txId));
-                tx = JSON.parseObject(String.valueOf(txStr), UsdtTransaction.class);
+                Transaction tx = btcdClient.getTransaction(txId, true);
                 if (null == tx) {
                     continue;
                 }
-                BlockTransaction trans = blockTransaction(tx);
-                if (null != trans) {
-                    saveOrUpdate(trans);
-                    BigDecimal fromValue = getBalance(trans.getFromAddress(), trans.getTokenId());
-                    BigDecimal toValue = getBalance(trans.getToAddress(), trans.getTokenId());
-                    updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), fromValue);
-                    updateAddressBalance(trans.getTokenId(), trans.getToAddress(), toValue);
-                }
-                updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), getBalance(trans.getFromAddress(), trans.getTokenId()));
-                updateAddressBalance(trans.getTokenId(), trans.getToAddress(), getBalance(trans.getToAddress(), trans.getTokenId()));
+                List<BlockTransaction> transs = blockTransaction(tx, height);
+                transs.forEach(trans -> {
+                    if (null != trans) {
+                        saveOrUpdate(trans, "BTC");
+                    }
+                });
             } catch (Exception e) {
                 // not mine transaction
             }
@@ -305,7 +202,7 @@ public class UsdtService extends BlockService {
             ignore = true;
         }
         if (block.getConfirmations() == -1) {
-            redisTemplate.opsForValue().set(RedisConstant.USDT_LAST_HEIGHT, block.getPreviousBlockHash());
+            redisTemplate.opsForValue().set(RedisConstant.BTC_LAST_HEIGHT, block.getPreviousBlockHash());
             ignore = true;
         }
         if (nowHash.equalsIgnoreCase(block.getHash())) {
@@ -320,7 +217,7 @@ public class UsdtService extends BlockService {
                 return BigDecimal.ZERO;
             }
             if (tokenId.equals(BusinessConstant.BASE_TOKEN_ID_USDT)) {
-                Object result = btcdClient.remoteCall("omni_getbalance", Arrays.asList(fromAddress, propId));
+                Object result = null;
                 Balance balance = JSON.parseObject(String.valueOf(result), Balance.class);
                 return new BigDecimal(balance.getBalance());
             } else {
@@ -397,7 +294,8 @@ public class UsdtService extends BlockService {
      * @param token
      * @param addresses
      */
-    private void sendBtc(AdminWallet wallet, CommonToken token, List<String> addresses) throws BitcoindException, CommunicationException {
+    private void sendBtc(AdminWallet wallet, CommonToken token, List<String> addresses) throws
+            BitcoindException, CommunicationException {
         Map<String, BigDecimal> output = new HashMap<>();
         List<OutputOverview> input = new ArrayList<>(addresses.size());
         List<Output> listUnspent = btcdClient.listUnspent();

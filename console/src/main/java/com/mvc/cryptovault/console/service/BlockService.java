@@ -5,16 +5,20 @@ import com.mvc.cryptovault.common.bean.AdminWallet;
 import com.mvc.cryptovault.common.bean.BlockTransaction;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.CommonToken;
+import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.config.SpringContextUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -36,8 +40,25 @@ public abstract class BlockService implements CommandLineRunner {
 
     static {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("address-pool-%d").build();
-        executorService = new ThreadPoolExecutor(10, 10, 10, TimeUnit.MINUTES,
+        executorService = new ThreadPoolExecutor(12, 12, 12, TimeUnit.MINUTES,
                 new LinkedBlockingQueue<Runnable>(1024), namedThreadFactory, new ThreadPoolExecutor.DiscardPolicy());
+    }
+
+    protected Boolean saveOrUpdate(BlockTransaction blockTransaction, String btc) {
+        if (null == blockTransaction) {
+            return null;
+        }
+        Condition condition = new Condition(BlockTransaction.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "hash = ", blockTransaction.getHash());
+        ConditionUtil.andCondition(criteria, "to_address = ", blockTransaction.getToAddress());
+        List<BlockTransaction> result = blockTransactionService.findByCondition(condition);
+        if (result.size() == 0) {
+            return blockTransactionService.saveTrans(blockTransaction);
+        } else {
+            blockTransactionService.updateTrans(result.get(0), blockTransaction);
+            return false;
+        }
     }
 
     protected Boolean saveOrUpdate(BlockTransaction blockTransaction) {
@@ -124,11 +145,12 @@ public abstract class BlockService implements CommandLineRunner {
 
     public abstract BigInteger getEthEstimateTransfer(String tokenContractAddress, String toAddress, String address, BigDecimal value) throws IOException;
 
-    public BlockService get(String tokenType){
-        if("usdt".equalsIgnoreCase(tokenType)){
+    public BlockService get(String tokenType) {
+        if ("usdt".equalsIgnoreCase(tokenType)) {
             return SpringContextUtil.getBean("UsdtService");
         } else {
             return SpringContextUtil.getBean("EthService");
         }
-    };
+    }
+
 }
