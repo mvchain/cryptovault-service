@@ -76,6 +76,9 @@ public class DCommonTokenController extends BaseController {
         token = new CommonToken();
         BeanUtils.copyProperties(dTokenDTO, token);
         token.setTokenType(null == dTokenDTO.getBlockType() ? "" : dTokenDTO.getBlockType());
+        token.setVisible(0);
+        token.setWithdraw(0);
+        token.setRecharge(0);
         commonTokenService.save(token);
         commonPairService.insertPair(token.getId(), dTokenDTO.getTokenName());
         commonTokenService.updateAllCache();
