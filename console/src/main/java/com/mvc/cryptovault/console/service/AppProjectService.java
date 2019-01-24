@@ -150,6 +150,7 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
 
     public List<AppProject> getMyProject(BigInteger userId, BigInteger id, Integer pageSize) {
         String str = "";
+        PageHelper.clearPage();
         if (null != id && !id.equals(BigInteger.ZERO)) {
             str = " AND t2.project_id < " + id;
         }
