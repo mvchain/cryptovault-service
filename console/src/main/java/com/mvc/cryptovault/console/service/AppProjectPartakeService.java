@@ -1,8 +1,10 @@
 package com.mvc.cryptovault.console.service;
 
+import com.github.pagehelper.PageHelper;
 import com.mvc.cryptovault.common.bean.AppOrder;
 import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.AppProjectPartake;
+import com.mvc.cryptovault.common.bean.AppProjectUserTransaction;
 import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
@@ -16,11 +18,11 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AppProjectPartakeService extends AbstractService<AppProjectPartake> implements BaseService<AppProjectPartake> {
@@ -37,6 +39,8 @@ public class AppProjectPartakeService extends AbstractService<AppProjectPartake>
     AppProjectService appProjectService;
     @Autowired
     AppOrderService appOrderService;
+    @Autowired
+    AppProjectUserTransactionService appProjectUserTransactionService;
 
     public void savePartake(ImportPartake partake, AppProject appProject) {
         AppProjectPartake appProjectPartake = new AppProjectPartake();
@@ -68,9 +72,9 @@ public class AppProjectPartakeService extends AbstractService<AppProjectPartake>
         list.forEach(appProjectPartake -> {
             //统计所有项目,统一发送推送
             AppProject appProject = projectMap.get(appProjectPartake.getProjectId());
-            if(null ==appProject ){
-                appProject =  appProjectService.findById(appProjectPartake.getProjectId());
-                projectMap.put(appProjectPartake.getProjectId(),appProject);
+            if (null == appProject) {
+                appProject = appProjectService.findById(appProjectPartake.getProjectId());
+                projectMap.put(appProjectPartake.getProjectId(), appProject);
             }
             appProjectPartake.setTimes(appProjectPartake.getTimes() - 1);
             //没有释放完毕,更新下一次推送时间为下一个周期
@@ -97,4 +101,33 @@ public class AppProjectPartakeService extends AbstractService<AppProjectPartake>
         String result = appProjectPartakeMapper.getTag(userId);
         return result;
     }
+
+    public List<ImportPartake> getPartakes(AppProject appProject) {
+        BigDecimal value = BigDecimal.ZERO;
+        PageHelper.orderBy("created_at asc");
+        List<AppProjectUserTransaction> list = appProjectUserTransactionService.findBy("projectId", appProject.getId());
+        Map<BigInteger, BigDecimal> maps = new HashMap<>();
+        for (AppProjectUserTransaction transaction : list) {
+            BigDecimal val = maps.get(transaction.getUserId());
+            if (null == val) {
+                val = BigDecimal.ZERO;
+            }
+            BigDecimal limitValue = value.add(transaction.getValue()).compareTo(appProject.getProjectTotal()) > 0 ? appProject.getProjectTotal().subtract(value) : transaction.getValue();
+            val = val.add(limitValue);
+            value = value.add(limitValue);
+            maps.put(transaction.getUserId(), val);
+            if (value.compareTo(appProject.getProjectTotal()) >= 0) {
+                break;
+            }
+        }
+        List<ImportPartake> result = maps.entrySet().stream().map(obj -> {
+            ImportPartake partake = new ImportPartake();
+            partake.setProjectId(appProject.getId());
+            partake.setUserId(obj.getKey());
+            partake.setValue(obj.getValue());
+            return partake;
+        }).collect(Collectors.toList());
+        return result;
+    }
+
 }

@@ -12,6 +12,7 @@ import com.mvc.cryptovault.common.bean.vo.ExportPartake;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
+import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.dao.AppProjectMapper;
@@ -19,6 +20,8 @@ import com.mvc.cryptovault.console.util.PageUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -120,10 +123,25 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
     public void updateProjectStatus() {
         Long currentTimeMillis = System.currentTimeMillis();
         Integer result1 = appProjectMapper.updateProjectStartStatus(currentTimeMillis);
-        Integer result2 = appProjectMapper.updateProjectStopStatus(currentTimeMillis);
-        if (result1 > 0 || result2 > 0) {
+        Condition condition = new Condition(AppProject.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "status = ", 1);
+        if (result1 > 0) {
             updateAllCache("id desc");
         }
+        ConditionUtil.andCondition(criteria, "stop_at <= ", currentTimeMillis);
+        List<AppProject> list = findByCondition(condition);
+        for (AppProject appProject : list) {
+            Integer result = appProjectMapper.updateProjectStopStatus(appProject.getId(), appProject.getUpdatedAt(), currentTimeMillis);
+            if (result < 0) {
+                continue;
+            }
+            updateAllCache("id desc");
+            //筛选众筹成功人员
+            List<ImportPartake> partakes = appProjectPartakeService.getPartakes(appProject);
+            importPartake(partakes, appProject.getId().toString());
+        }
+
     }
 
     public String findIdsByName(String projectName) {
