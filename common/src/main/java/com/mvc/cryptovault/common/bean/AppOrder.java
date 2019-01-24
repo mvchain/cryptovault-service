@@ -214,7 +214,7 @@ public class AppOrder implements Serializable {
     }
 
     /**
-     * 转账状态[0待打包 1确认中 2打包成功 9打包失败]
+     * "转账状态[0待打包 1确认中 2打包成功 4理财取出 5理财奖励 6理财收益(利息) 9打包失败]"
      * @param status 转账状态[0待打包 1确认中 2打包成功 9打包失败]
      */
     public void setStatus(Integer status) {

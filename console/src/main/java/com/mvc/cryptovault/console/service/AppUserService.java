@@ -8,7 +8,6 @@ import com.mvc.cryptovault.common.bean.dto.AppUserDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.AppUserRetVO;
 import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
-import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
@@ -178,7 +177,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                 List<AppUserFinancialPartake> list = appUserFinancialPartakeService.findBy("userId", userId);
                 for (AppUserFinancialPartake partake : list) {
                     AppFinancial appFinancial = financialService.findById(partake.getFinancialId());
-                    BigDecimal value = (partake.getCreatedAt() + RedisConstant.ONE_DAY) >= TimeUtil.getDayZeroTime() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
+                    BigDecimal value = partake.getCreatedAt() < TimeUtil.getDayZeroTime() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
                     BigDecimal shadow = partake.getShadowValue();
                     BigDecimal income = value.add(shadow);
                     if (income.compareTo(BigDecimal.ZERO) == 0) {
@@ -189,15 +188,14 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                     if (shadow.compareTo(BigDecimal.ZERO) > 0) {
                         partake.setShadowValue(BigDecimal.ZERO);
                         partake.setUpdatedAt(System.currentTimeMillis());
-                        String messageIncome = shadow.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 奖励已发放";
-                        appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), shadow, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageIncome, false);
+                        String messageIncome = appFinancial.getName() + " 理财提成发放: " + shadow.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId());
+                        //“项目名称”理财提成发放： 10 ETH
+                        appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), shadow, partake.getUserId(), partake.getTokenId(), 5, 1, appFinancial.getName(), messageIncome, false);
                     }
                     if (partake.getTimes() < appFinancial.getTimes()) {
                         partake.setUpdatedAt(System.currentTimeMillis());
                         partake.setTimes(partake.getTimes() + 1);
-                        String messageLock = value.setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId()) + appFinancial.getName() + " 收益已发放";
                         partake.setIncome(partake.getIncome().add(value));
-                        appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), value, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageLock, false);
                         appUserFinancialIncomeService.insert(partake, appFinancial, value);
                     }
                     if (partake.getTimes().equals(appFinancial.getTimes())) {
@@ -205,12 +203,18 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                     }
                     appUserBalanceService.updateBalance(userId, partake.getTokenId(), income);
                     appUserFinancialPartakeService.update(partake);
+                    BigInteger nowUserId = userId;
                     for (int i = 0; i < appFinancial.getDepth(); i++) {
+                        if (null == nowUserId) {
+                            continue;
+                        }
                         BigDecimal incomeParent = income.divide(BigDecimal.valueOf(100)).multiply(new BigDecimal(detail.get(i).getRatio()));
-                        AppUserInvite user = appUserInviteService.findOneBy("inviteUserId", userId);
+                        AppUserInvite user = appUserInviteService.findOneBy("inviteUserId", nowUserId);
                         if (null == user) {
+                            nowUserId = null;
                             break;
                         }
+                        nowUserId = user.getUserId();
                         appUserFinancialPartakeService.addShadow(user.getUserId(), incomeParent, appFinancial.getId());
                     }
                 }

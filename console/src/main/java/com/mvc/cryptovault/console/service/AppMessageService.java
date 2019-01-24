@@ -49,10 +49,9 @@ public class AppMessageService {
     }
 
     @Async
-    public void transferFinancialMsg(String name, BigInteger id, BigInteger userId, BigDecimal value, String tokenName) {
-        String msg = String.format(MODEL_TRANSFER, value.stripTrailingZeros().toPlainString(), tokenName, name + " 理财", "成功");
-        Boolean result = jPushService.send(msg, id, String.valueOf(userId));
-        saveMsg(userId, result, id, msg);
+    public void transferFinancialMsg(String name, BigInteger id, BigInteger userId, BigDecimal value, String tokenName, String message) {
+        Boolean result = jPushService.send(message, id, String.valueOf(userId));
+        saveMsg(userId, result, id, message);
     }
 
     @Async

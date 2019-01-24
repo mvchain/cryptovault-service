@@ -20,6 +20,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -289,12 +290,18 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         save(appOrder);
     }
 
+    //“项目名称”理财成功参与： 100 USDT
+    //“项目名称”理财提成发放： 10 ETH
+    //“项目名称”理财取出本金：1000 USDT
+    //“项目名称”理财取出利息： 10 USDT
     public void saveOrder(AppUserFinancialPartake partake, AppFinancial financial) {
-        saveOrder(partake, partake.getValue(), financial.getBaseTokenId(), "理财", financial.getName());
-        saveOrder(partake, partake.getIncome(), financial.getTokenId(), "理财", financial.getName());
+        String msg = financial.getName() + " 理财取出本金: " + partake.getValue().setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getBaseTokenId());
+        String incomeMsg = financial.getName() + " 理财取出利息: " + partake.getIncome().setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getTokenId());
+        saveOrder(msg, partake, partake.getValue(), financial.getBaseTokenId(), financial.getName(), financial.getName(), 4);
+        saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), partake.getIncome(), partake.getUserId(), partake.getTokenId(), 6, 1, financial.getName(), incomeMsg, false);
     }
 
-    private void saveOrder(AppUserFinancialPartake partake, BigDecimal value, BigInteger tokenId, String remark, String name) {
+    private void saveOrder(String msg, AppUserFinancialPartake partake, BigDecimal value, BigInteger tokenId, String remark, String name, Integer status) {
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(4);
@@ -308,13 +315,13 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setValue(value);
         appOrder.setUserId(partake.getUserId());
         appOrder.setTokenId(tokenId);
-        appOrder.setStatus(2);
+        appOrder.setStatus(status);
         appOrder.setOrderType(1);
         appOrder.setFee(BigDecimal.ZERO);
         appOrder.setToAddress("");
         appOrder.setOrderRemark(remark);
         save(appOrder);
-        appMessageService.transferFinancialMsg(name, appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(tokenId));
+        appMessageService.transferFinancialMsg(name, appOrder.getId(), appOrder.getUserId(), value, tokenService.getTokenName(tokenId), msg);
     }
 
     public void saveFinancialOrder(AppUserFinancialPartake partake, AppFinancial appFinancial) {
@@ -337,7 +344,9 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         appOrder.setOrderType(2);
         appOrder.setOrderRemark(appFinancial.getName());
         save(appOrder);
-        appMessageService.transferFinancialMsg(appFinancial.getName(), appOrder.getId(), appOrder.getUserId(), partake.getValue(), tokenService.getTokenName(appFinancial.getBaseTokenId()));
+        //“项目名称”理财成功参与： 100 USDT
+        String msg = appFinancial.getName() + " 理财成功参与: " + partake.getValue().setScale(4, RoundingMode.DOWN) + " " + commonTokenService.getTokenName(partake.getBaseTokenId());
+        appMessageService.transferFinancialMsg(appFinancial.getName(), appOrder.getId(), appOrder.getUserId(), partake.getValue(), tokenService.getTokenName(appFinancial.getBaseTokenId()), msg);
     }
 
     /**

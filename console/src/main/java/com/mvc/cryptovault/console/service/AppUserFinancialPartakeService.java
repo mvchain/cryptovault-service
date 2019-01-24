@@ -110,9 +110,7 @@ public class AppUserFinancialPartakeService extends AbstractService<AppUserFinan
         if (null == partake) {
             return;
         }
-        partake.setShadowValue(partake.getShadowValue().add(incomeParent));
-        partake.setUpdatedAt(System.currentTimeMillis());
-        update(partake);
+        appUserFinancialPartakeMapper.updateShadow(partake.getId(), incomeParent, System.currentTimeMillis(), partake.getUpdatedAt());
     }
 
     private AppUserFinancialPartake getFirstPartake(BigInteger userId, BigInteger appFinancialId) {
