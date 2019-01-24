@@ -177,7 +177,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
             vo.setId(obj.getId());
             if (financialPartakeDTO.getFinancialType() == 1) {
                 //计息中的数据需要获取的是昨日收益
-                BigDecimal value = appUserFinancialIncomeService.getLastDay(userId, obj.getId());
+                BigDecimal value = appUserFinancialIncomeService.getLastDay(userId, obj.getId(), obj.getTokenId());
                 vo.setValue(value);
             } else {
                 vo.setValue(obj.getIncome());

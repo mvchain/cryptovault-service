@@ -90,7 +90,7 @@ public class AppUserFinancialPartakeService extends AbstractService<AppUserFinan
         String key = RedisConstant.APPFINANCIAL_RATIO + getNowDate() + appFinancial.getId();
         Object ratioStr = redisTemplate.opsForValue().get(key);
         if (null == ratioStr) {
-            ratioStr = Math.random() * (appFinancial.getIncomeMax() - appFinancial.getIncomeMin()) + appFinancial.getIncomeMin();
+            ratioStr = (Math.random() * (appFinancial.getIncomeMax() - appFinancial.getIncomeMin()) + appFinancial.getIncomeMin()) / 365;
             redisTemplate.opsForValue().set(key, String.valueOf(ratioStr), 1, TimeUnit.DAYS);
         }
         Float ratio = Float.valueOf(String.valueOf(ratioStr));

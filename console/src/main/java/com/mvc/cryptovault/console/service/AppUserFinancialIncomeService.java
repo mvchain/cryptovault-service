@@ -25,7 +25,7 @@ public class AppUserFinancialIncomeService extends AbstractService<AppUserFinanc
     @Autowired
     private CommonTokenPriceService commonTokenPriceService;
 
-    public BigDecimal getLastDay(BigInteger userId, BigInteger id) {
+    public BigDecimal getLastDay(BigInteger userId, BigInteger id, BigInteger tokenId) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
         calendar.set(Calendar.HOUR_OF_DAY, 0);
@@ -35,7 +35,7 @@ public class AppUserFinancialIncomeService extends AbstractService<AppUserFinanc
         Long stopAt = calendar.getTime().getTime() + RedisConstant.ONE_DAY;
         Long startAt = stopAt - RedisConstant.ONE_DAY;
         List<AppUserFinancialIncome> list = appUserFinancialIncomeMapper.getLastDay(userId, id, startAt, stopAt);
-        BigDecimal balance = list.stream().map(obj -> obj.getTokenId() == null ? BigDecimal.ZERO : obj.getValue().multiply(commonTokenPriceService.findById(obj.getTokenId()).getTokenPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal balance = list.stream().map(obj -> obj.getValue()).reduce(BigDecimal.ZERO, BigDecimal::add);
         return balance;
     }
 

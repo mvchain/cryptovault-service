@@ -19,6 +19,7 @@ import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
 import com.mvc.cryptovault.console.dao.AppUserMapper;
+import com.mvc.cryptovault.console.util.TimeUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -177,7 +178,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                 List<AppUserFinancialPartake> list = appUserFinancialPartakeService.findBy("userId", userId);
                 for (AppUserFinancialPartake partake : list) {
                     AppFinancial appFinancial = financialService.findById(partake.getFinancialId());
-                    BigDecimal value = (partake.getCreatedAt() + RedisConstant.ONE_DAY) < System.currentTimeMillis() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
+                    BigDecimal value = (partake.getCreatedAt() + RedisConstant.ONE_DAY) >= TimeUtil.getDayZeroTime() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
                     BigDecimal shadow = partake.getShadowValue();
                     BigDecimal income = value.add(shadow);
                     if (income.compareTo(BigDecimal.ZERO) == 0) {
@@ -198,6 +199,9 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                         partake.setIncome(partake.getIncome().add(value));
                         appOrderService.saveOrder(4, partake.getId(), BusinessConstant.CONTENT_FINANCIAL, getOrderNumber(), value, partake.getUserId(), partake.getTokenId(), 2, 1, appFinancial.getName(), messageLock, false);
                         appUserFinancialIncomeService.insert(partake, appFinancial, value);
+                    }
+                    if (partake.getTimes().equals(appFinancial.getTimes())) {
+                        partake.setStatus(2);
                     }
                     appUserBalanceService.updateBalance(userId, partake.getTokenId(), income);
                     appUserFinancialPartakeService.update(partake);
