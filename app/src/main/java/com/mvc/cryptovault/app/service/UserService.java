@@ -55,6 +55,7 @@ public class UserService {
         vo.setRefreshToken(refreshToken);
         vo.setToken(token);
         vo.setUserId(user.getId());
+        vo.setEmail(user.getEmail());
         return vo;
     }
 
