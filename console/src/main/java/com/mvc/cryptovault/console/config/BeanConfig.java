@@ -54,23 +54,6 @@ public class BeanConfig {
     @Value("${usdt.propId}")
     private Integer propId;
 
-    @Value("${node.btc.rpc.protocol}")
-    private String btcProtocol;
-    @Value("${node.btc.rpc.host}")
-    private String btcHost;
-    @Value("${node.btc.rpc.port}")
-    private Integer btcPort;
-    @Value("${node.btc.rpc.user}")
-    private String btcUser;
-    @Value("${node.btc.rpc.password}")
-    private String btcPassword;
-
-    @Bean("btcClient")
-    public BtcdClient btcClient() throws IOException, BitcoindException, CommunicationException {
-        BtcdClientImpl btcdClient = new BtcdClientImpl(btcProtocol, btcHost, btcPort, btcUser, btcPassword);
-        return btcdClient;
-    }
-
     @Bean
     public HTreeMap hTreeMap() {
         HTreeMap myCache = DBMaker.heapDB().concurrencyScale(16).make().hashMap("consoleCache")

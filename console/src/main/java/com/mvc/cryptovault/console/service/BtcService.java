@@ -25,14 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +40,7 @@ import java.util.stream.Collectors;
 @Log4j
 public class BtcService extends BlockService {
 
-    @Resource(name = "btcClient")
+    @Autowired
     BtcdClient btcdClient;
     @Autowired
     BlockSignService blockSignService;
@@ -179,6 +175,15 @@ public class BtcService extends BlockService {
     private void readTxList(List<String> txList, Integer height) {
         for (String txId : txList) {
             try {
+                Object txStr = null;
+                try {
+                    txStr = btcdClient.remoteCall("omni_gettransaction", Arrays.asList(txId));
+                } catch (BitcoindException e) {
+                    //notBtc transaction
+                }
+                if (null != txStr) {
+                    continue;
+                }
                 Transaction tx = btcdClient.getTransaction(txId, true);
                 if (null == tx) {
                     continue;

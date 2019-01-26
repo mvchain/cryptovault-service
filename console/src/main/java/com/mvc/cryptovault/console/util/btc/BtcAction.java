@@ -57,9 +57,13 @@ public class BtcAction {
         return tetherBalanceList;
     }
 
+    public static BigDecimal getBtcBalance(List<Output> unspent) {
+        return unspent.stream().map(obj -> obj.getAmount()).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
     public static List<Output> listUnspent(List<String> addresses) throws BitcoindException, IOException, CommunicationException {
         if (addresses != null) {
-            return btcdClient.listUnspent(0, 9999999, addresses);
+            return btcdClient.listUnspent(0, Integer.MAX_VALUE, addresses);
         } else {
             return btcdClient.listUnspent();
         }

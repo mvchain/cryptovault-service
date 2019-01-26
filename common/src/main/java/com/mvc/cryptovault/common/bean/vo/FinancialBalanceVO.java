@@ -18,7 +18,7 @@ public class FinancialBalanceVO {
     private BigDecimal balance;
     @ApiModelProperty("收益")
     private BigDecimal income;
-    @ApiModelProperty("昨日收益")
+    @ApiModelProperty("今日收益")
     private BigDecimal lastIncome;
 
 }

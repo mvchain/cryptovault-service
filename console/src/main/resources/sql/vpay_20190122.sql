@@ -474,7 +474,7 @@ CREATE TABLE `block_sign` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `opr_type` tinyint(4) DEFAULT NULL,
   `order_id` varchar(64) DEFAULT NULL,
-  `sign` text,
+  `sign` longtext,
   `result` varchar(255) DEFAULT NULL,
   `status` tinyint(4) DEFAULT NULL,
   `hash` varchar(128) DEFAULT NULL,

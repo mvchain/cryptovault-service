@@ -19,7 +19,6 @@ import org.web3j.crypto.ECKeyPair;
 import org.web3j.crypto.Keys;
 import org.web3j.protocol.Web3j;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.security.InvalidAlgorithmParameterException;
@@ -40,8 +39,6 @@ public class BlockHeightService extends AbstractService<BlockHeight> implements 
     Web3j web3j;
     @Autowired
     BtcdClient btcdClient;
-    @Resource(name = "btcClient")
-    BtcdClient btcClient;
 
     @Async
     public void importAddress(List<CommonAddress> list, String fileName) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException {
@@ -56,8 +53,6 @@ public class BlockHeightService extends AbstractService<BlockHeight> implements 
                 if (obj.getTokenType().equalsIgnoreCase("BTC")) {
                     btcdClient.importAddress(obj.getAddress(), obj.getAddress(), false);
                     btcdClient.setAccount(obj.getAddress(), obj.getAddress());
-                    btcClient.importAddress(obj.getAddress(), obj.getAddress(), false);
-                    btcClient.setAccount(obj.getAddress(), obj.getAddress());
                 }
             } catch (Exception e) {
                 //address exist
