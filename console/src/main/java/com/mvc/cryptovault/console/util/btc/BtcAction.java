@@ -57,16 +57,25 @@ public class BtcAction {
         return tetherBalanceList;
     }
 
+    public static BigDecimal getBtcBalance(String address) throws BitcoindException, CommunicationException {
+        List<Output> unspent = btcdClient.listUnspent(1, Integer.MAX_VALUE, Arrays.asList(address));
+        return getBtcBalance(unspent);
+    }
+
     public static BigDecimal getBtcBalance(List<Output> unspent) {
         return unspent.stream().map(obj -> obj.getAmount()).reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public static List<Output> listUnspent(List<String> addresses) throws BitcoindException, IOException, CommunicationException {
         if (addresses != null) {
-            return btcdClient.listUnspent(0, Integer.MAX_VALUE, addresses);
+            return btcdClient.listUnspent(1, Integer.MAX_VALUE, addresses);
         } else {
             return btcdClient.listUnspent();
         }
+    }
+
+    public static List<Output> listUnspent(String addresses) throws BitcoindException, IOException, CommunicationException {
+        return listUnspent(Arrays.asList(addresses));
     }
 
     /**
@@ -189,4 +198,12 @@ public class BtcAction {
     public static String sendRawTransaction(String hex) throws BitcoindException, IOException, CommunicationException {
         return btcdClient.sendRawTransaction(hex);
     }
+
+
+    public static String getScriptPubKey(String address) throws BitcoindException, IOException, CommunicationException {
+        List<Output> listUnspent = listUnspent(address);
+        if (listUnspent.size() == 0) return null;
+        return listUnspent.get(0).getScriptPubKey();
+    }
+
 }
