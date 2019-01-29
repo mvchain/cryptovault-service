@@ -41,14 +41,15 @@ public class MailService {
         int code = (int) ((Math.random() * 9 + 1) * 100000);
         message.setTo(email);
         message.setFrom("bzt.vpay@gmail.com");
-        message.setSubject(String.format("[BZT]Your Code:%s", code));
-        message.setText(String.format("[BZT]Your Code:%s", code));
+        message.setSubject(String.format("Your Code:%s", code));
+        message.setText(String.format("Your Code:%s", code));
         try {
             mailSender.send(message);
             redisTemplate.opsForHash().put(key, "CODE", String.valueOf(code));
             redisTemplate.expire(key, EXPIRE, TimeUnit.MINUTES);
             return true;
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
