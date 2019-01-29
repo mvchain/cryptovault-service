@@ -40,9 +40,9 @@ public class MailService {
         String key = RedisConstant.MAIL_VALI_PRE + email;
         int code = (int) ((Math.random() * 9 + 1) * 100000);
         message.setTo(email);
-        message.setFrom("416350144@qq.com");
-        message.setSubject(String.format("Your Code:%s", code));
-        message.setText(String.format("Your Code:%s", code));
+        message.setFrom("bzt.vpay@gmail.com");
+        message.setSubject(String.format("[BZT]Your Code:%s", code));
+        message.setText(String.format("[BZT]Your Code:%s", code));
         try {
             mailSender.send(message);
             redisTemplate.opsForHash().put(key, "CODE", String.valueOf(code));
