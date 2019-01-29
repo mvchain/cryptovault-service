@@ -62,7 +62,7 @@ public class Job {
     /**
      * 修改任务状态
      */
-    @Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(cron = "*/2 * * * * ?")
     public void newAccount() {
         final String key = RedisConstant.PROJECT_START;
         Boolean result = getRedisLock(key, 5);
@@ -92,16 +92,16 @@ public class Job {
     /**
      * 发送BTC手续费
      */
-    @Scheduled(cron = "${scheduled.usdt.fee}")
-    public void sendBtcGas() {
-        final String key = RedisConstant.USDT_FEE;
-        Boolean result = getRedisLock(key, 120);
-        if (!result) {
-            return;
-        }
-        usdtService.senBtcGas();
-        redisTemplate.delete(key);
-    }
+//    @Scheduled(cron = "${scheduled.usdt.fee}")
+//    public void sendBtcGas() {
+//        final String key = RedisConstant.USDT_FEE;
+//        Boolean result = getRedisLock(key, 120);
+//        if (!result) {
+//            return;
+//        }
+//        usdtService.senBtcGas();
+//        redisTemplate.delete(key);
+//    }
 
     /**
      * 生成k线数据
