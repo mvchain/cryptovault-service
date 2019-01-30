@@ -1,14 +1,14 @@
 spring:
   datasource:
     name: test
-    url: jdbc:mysql://192.168.15.31:3306/vpay_mycat_bak?useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC
+    url: jdbc:mysql://47.99.103.238:3306/vpay?useUnicode=true&characterEncoding=UTF8&serverTimezone=UTC
     username: root
-    password: 123456
+    password: mvc123$%^
     # 使用druid数据源
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
   redis:
-    database: 3
+    database: 8
     host: 192.168.15.31
     #    timeout: 1000ms
     jedis:
@@ -79,15 +79,6 @@ node.bitcoind.notification.alert.port: 5158
 node.bitcoind.notification.block.port: 5159
 usdt.propId: 1
 
-node.btc.rpc.protocol: http
-node.btc.rpc.host: 45.195.202.209
-#node.bitcoind.rpc.host: localhost
-node.btc.rpc.port: 12321
-node.btc.rpc.user: test
-node.btc.rpc.password: test
-node.btc.http.auth_scheme: Basic
-node.btc.notification.alert.port: 5158
-node.btc.notification.block.port: 5159
 
 #scheduled.kline: '0 0 12 * * ?'
 scheduled.kline: '*/60 * * * * ?'

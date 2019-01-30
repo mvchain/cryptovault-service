@@ -586,11 +586,8 @@ CREATE TABLE `common_pair` (
 -- ----------------------------
 -- Records of common_pair
 -- ----------------------------
-INSERT INTO `common_pair` (`id`, `pair_name`, `base_token_id`, `token_id`, `base_token_name`, `status`, `token_name`, `fee`) VALUES ('1', 'USDT/VRT', '1', '4', 'VRT', '1', 'USDT', '0.00000000000000000000');
-INSERT INTO `common_pair` (`id`, `pair_name`, `base_token_id`, `token_id`, `base_token_name`, `status`, `token_name`, `fee`) VALUES ('2', 'JYWD/VRT', '1', '5', 'VRT', '1', 'JYWD', '0.00000000000000000000');
-INSERT INTO `common_pair` (`id`, `pair_name`, `base_token_id`, `token_id`, `base_token_name`, `status`, `token_name`, `fee`) VALUES ('3', 'USDT/余额', '2', '4', '余额', '1', 'USDT', '0.00000000000000000000');
-INSERT INTO `common_pair` (`id`, `pair_name`, `base_token_id`, `token_id`, `base_token_name`, `status`, `token_name`, `fee`) VALUES ('4', 'JYWD/余额', '2', '5', '余额', '1', 'JYWD', '0.00000000000000000000');
-INSERT INTO `common_pair` (`id`, `pair_name`, `base_token_id`, `token_id`, `base_token_name`, `status`, `token_name`, `fee`) VALUES ('5', 'ETH/VRT', '1', '3', 'VRT', '0', 'ETH', '0.00000000000000000000');
+INSERT INTO `common_pair` (`id`, `pair_name`, `base_token_id`, `token_id`, `base_token_name`, `status`, `token_name`, `fee`) VALUES ('1', 'USDT/BTZB', '1', '4', 'BTZB', '1', 'USDT', '0.00000000000000000000');
+INSERT INTO `common_pair` (`id`, `pair_name`, `base_token_id`, `token_id`, `base_token_name`, `status`, `token_name`, `fee`) VALUES ('5', 'ETH/BTZB', '1', '3', 'BTZB', '0', 'ETH', '0.00000000000000000000');
 
 -- ----------------------------
 -- Table structure for `common_token`
@@ -626,9 +623,9 @@ CREATE TABLE `common_token` (
 -- Records of common_token
 -- ----------------------------
 INSERT INTO `common_token` (`id`, `token_name`, `token_cn_name`, `token_en_name`, `token_image`, `token_type`, `link`, `token_decimal`, `token_contract_address`, `index_id`, `visible`, `withdraw`, `recharge`, `fee`, `transafer_fee`, `withdraw_min`, `withdraw_max`, `withdraw_day`, `delete_status`, `created_at`, `updated_at`, `hold`) VALUES ('1', 'BTZB', 'BTZB', 'BTZB', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', '', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', null, '', '0', '1', '1', '1', '0', '0', '0.00000000000000000000', '1000.00000000000000000000', '5000.00000000000000000000', '0', '0', '0', '0.00000000000000000000');
+INSERT INTO `common_token` (`id`, `token_name`, `token_cn_name`, `token_en_name`, `token_image`, `token_type`, `link`, `token_decimal`, `token_contract_address`, `index_id`, `visible`, `withdraw`, `recharge`, `fee`, `transafer_fee`, `withdraw_min`, `withdraw_max`, `withdraw_day`, `delete_status`, `created_at`, `updated_at`, `hold`) VALUES ('2', 'BTC', '比特币', 'bitcoin', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', 'BTC', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', null, null, null, '1', '1', '1', '0', '0.00005', '0.00000000000000000000', '1000.00000000000000000000', '5000.00000000000000000000', '0', '0', '0', '0.00000000000000000000');
 INSERT INTO `common_token` (`id`, `token_name`, `token_cn_name`, `token_en_name`, `token_image`, `token_type`, `link`, `token_decimal`, `token_contract_address`, `index_id`, `visible`, `withdraw`, `recharge`, `fee`, `transafer_fee`, `withdraw_min`, `withdraw_max`, `withdraw_day`, `delete_status`, `created_at`, `updated_at`, `hold`) VALUES ('3', 'ETH', '以太坊', 'ethernum', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', 'ETH', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', null, null, '2', '1', '0', '0', '0', '1', '0.00000000000000000000', '0.00000000000000000000', '0.00000000000000000000', '0', '0', '0', '1.00000000000000000000');
 INSERT INTO `common_token` (`id`, `token_name`, `token_cn_name`, `token_en_name`, `token_image`, `token_type`, `link`, `token_decimal`, `token_contract_address`, `index_id`, `visible`, `withdraw`, `recharge`, `fee`, `transafer_fee`, `withdraw_min`, `withdraw_max`, `withdraw_day`, `delete_status`, `created_at`, `updated_at`, `hold`) VALUES ('4', 'USDT', '泰达币', 'USDT', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', 'BTC', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', '18', null, '3', '1', '1', '1', '0', '0', '0.00000000000000000000', '1000.00000000000000000000', '5000.00000000000000000000', '0', '0', '0', '0.00000000000000000000');
-INSERT INTO `common_token` (`id`, `token_name`, `token_cn_name`, `token_en_name`, `token_image`, `token_type`, `link`, `token_decimal`, `token_contract_address`, `index_id`, `visible`, `withdraw`, `recharge`, `fee`, `transafer_fee`, `withdraw_min`, `withdraw_max`, `withdraw_day`, `delete_status`, `created_at`, `updated_at`, `hold`) VALUES ('5', 'JYWD', 'JYWD', 'JYWD', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', 'ETH', 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=538598390,4205429837&fm=27&gp=0.jpg', '18', '0x44866562beacdd42a863b5f2058649fdb4396cc6', '4', '1', '1', '1', '0', '0', '0.00000000000000000000', '1000.00000000000000000000', '5000.00000000000000000000', '0', '0', '0', '0.00000000000000000000');
 
 -- ----------------------------
 -- Table structure for `common_token_control`
@@ -712,10 +709,8 @@ CREATE TABLE `common_token_price` (
 -- ----------------------------
 -- Records of common_token_price
 -- ----------------------------
-INSERT INTO `common_token_price` (`token_id`, `token_name`, `token_price`) VALUES ('1', 'VRT', '1.00000000000000000000');
-INSERT INTO `common_token_price` (`token_id`, `token_name`, `token_price`) VALUES ('3', 'ETH', '792.83910297055246819212');
-INSERT INTO `common_token_price` (`token_id`, `token_name`, `token_price`) VALUES ('4', 'USDT', '6.83941780396151563138');
-INSERT INTO `common_token_price` (`token_id`, `token_name`, `token_price`) VALUES ('5', 'JYWD', '1.00000000000000000000');
+INSERT INTO `common_token_price` (`token_id`, `token_name`, `token_price`) VALUES ('1', 'BZTB', '1.00000000000000000000');
+
 
 -- ----------------------------
 -- Table structure for `token_volume`

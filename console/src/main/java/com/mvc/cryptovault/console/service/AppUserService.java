@@ -203,6 +203,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                     }
                     appUserBalanceService.updateBalance(userId, partake.getTokenId(), income);
                     appUserFinancialPartakeService.update(partake);
+                    appUserFinancialPartakeService.updateCache(partake.getId());
                     BigInteger nowUserId = userId;
                     for (int i = 0; i < appFinancial.getDepth(); i++) {
                         if (null == nowUserId) {
