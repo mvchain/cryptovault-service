@@ -264,7 +264,7 @@ public class EthService extends BlockService {
                         err -> processError(err),
                         () -> processDone("old"));
                 if (!lastNumber.equals(String.valueOf(height))) {
-                    lastNumber = String.valueOf(height);
+                    lastNumber = String.valueOf(NumberUtils.createBigInteger(lastNumber).add(BigInteger.ONE));
                     redisTemplate.opsForValue().set(RedisConstant.ETH_LAST_HEIGHT, lastNumber);
                     updateStatus(lastNumber);
                 }
