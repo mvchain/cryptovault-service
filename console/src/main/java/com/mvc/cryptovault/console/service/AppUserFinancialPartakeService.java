@@ -50,6 +50,7 @@ public class AppUserFinancialPartakeService extends AbstractService<AppUserFinan
     }
 
     public BigDecimal getIncome(BigInteger userId) {
+        PageHelper.clearPage();
         List<AppUserFinancialPartake> income = appUserFinancialPartakeMapper.getIncome(userId);
         BigDecimal balance = income.stream().map(obj -> obj.getIncome().multiply(commonTokenPriceService.findById(obj.getTokenId()).getTokenPrice())).reduce(BigDecimal.ZERO, BigDecimal::add);
         return balance;
