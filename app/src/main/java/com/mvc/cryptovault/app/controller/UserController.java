@@ -14,6 +14,8 @@ import com.mvc.cryptovault.common.util.MnemonicUtil;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,7 @@ import java.util.List;
 @Api(tags = "用户相关")
 @RequestMapping("user")
 @RestController
+@Log
 public class UserController extends BaseController {
 
     @Autowired
@@ -196,6 +199,7 @@ public class UserController extends BaseController {
     @PutMapping("password")
     public Result<Boolean> updatePwd(@RequestBody AppUserPwdDTO appUserPwdDTO) {
         userService.updatePwd(getUserId(), appUserPwdDTO);
+        log.info(appUserPwdDTO.getPassword());
         return new Result<>(true);
     }
 
@@ -203,6 +207,7 @@ public class UserController extends BaseController {
     @PutMapping("transactionPassword")
     public Result<Boolean> updateTransPwd(@RequestBody AppUserPwdDTO appUserPwdDTO) {
         userService.updateTransPwd(getUserId(), appUserPwdDTO);
+        log.info(appUserPwdDTO.getPassword());
         return new Result<>(true);
     }
 
