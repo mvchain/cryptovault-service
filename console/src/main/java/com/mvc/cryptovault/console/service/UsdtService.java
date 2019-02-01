@@ -285,12 +285,6 @@ public class UsdtService extends BlockService {
                 BlockTransaction trans = blockTransaction(tx);
                 if (null != trans) {
                     saveOrUpdate(trans);
-                    try {
-                        updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), BtcAction.getTetherBalance( trans.getFromAddress()).getBalance());
-                        updateAddressBalance(trans.getTokenId(), trans.getToAddress(), BtcAction.getTetherBalance( trans.getToAddress()).getBalance());
-                    } catch (Exception e){
-                        log.warn(e.getMessage());
-                    }
                 }
             } catch (Exception e) {
                 // not mine transaction
@@ -358,6 +352,12 @@ public class UsdtService extends BlockService {
         List<BlockTransaction> blockTransaction = blockTransactionService.findByCondition(condition);
         blockTransaction.forEach(obj -> {
             blockTransactionService.updateSuccess(obj);
+            try {
+                updateAddressBalance(obj.getTokenId(), obj.getFromAddress(), BtcAction.getTetherBalance(obj.getFromAddress()).getBalance());
+                updateAddressBalance(obj.getTokenId(), obj.getToAddress(), BtcAction.getTetherBalance(obj.getToAddress()).getBalance());
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
         });
     }
 

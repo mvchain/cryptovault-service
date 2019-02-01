@@ -192,12 +192,6 @@ public class BtcService extends BlockService {
                 transs.forEach(trans -> {
                     if (null != trans) {
                         saveOrUpdate(trans, "BTC");
-                        try {
-                            updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), BtcAction.getBtcBalance(trans.getFromAddress()));
-                            updateAddressBalance(trans.getTokenId(), trans.getToAddress(), BtcAction.getBtcBalance(trans.getToAddress()));
-                        } catch (Exception e) {
-                            log.warn(e.getMessage());
-                        }
                     }
                 });
             } catch (Exception e) {
@@ -266,6 +260,12 @@ public class BtcService extends BlockService {
         List<BlockTransaction> blockTransaction = blockTransactionService.findByCondition(condition);
         blockTransaction.forEach(obj -> {
             blockTransactionService.updateSuccess(obj);
+            try {
+                updateAddressBalance(obj.getTokenId(), obj.getFromAddress(), BtcAction.getBtcBalance(obj.getFromAddress()));
+                updateAddressBalance(obj.getTokenId(), obj.getToAddress(), BtcAction.getBtcBalance(obj.getToAddress()));
+            } catch (Exception e) {
+                log.warn(e.getMessage());
+            }
         });
     }
 
