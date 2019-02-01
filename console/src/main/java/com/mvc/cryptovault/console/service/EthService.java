@@ -564,7 +564,7 @@ public class EthService extends BlockService {
                 if (null == contract) {
                     return BigDecimal.ZERO;
                 }
-                result = new BigDecimal(balance).divide(BigDecimal.TEN.pow(contract.getTokenDecimal()), RoundingMode.HALF_DOWN);
+                result = new BigDecimal(balance).divide(BigDecimal.TEN.pow(contract.getTokenDecimal()));
             }
             return result;
         } catch (IOException e) {
