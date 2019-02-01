@@ -292,8 +292,6 @@ public class UsdtService extends BlockService {
                         log.warn(e.getMessage());
                     }
                 }
-                updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), getBalance(trans.getFromAddress(), trans.getTokenId()));
-                updateAddressBalance(trans.getTokenId(), trans.getToAddress(), getBalance(trans.getToAddress(), trans.getTokenId()));
             } catch (Exception e) {
                 // not mine transaction
             }
