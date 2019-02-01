@@ -259,6 +259,8 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         //已经成功的记录不修改,防止余额重复累加
         if (oldTrans.getStatus() != 2) {
             oldTrans.setStatus(blockTransaction.getStatus());
+        } else {
+            oldTrans.setTransactionStatus(5);
         }
         oldTrans.setUpdatedAt(System.currentTimeMillis());
         oldTrans.setHeight(blockTransaction.getHeight());

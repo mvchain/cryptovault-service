@@ -201,7 +201,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                     if (partake.getTimes().equals(appFinancial.getTimes())) {
                         partake.setStatus(2);
                     }
-                    appUserBalanceService.updateBalance(userId, partake.getTokenId(), income);
+                    appUserBalanceService.updateBalance(userId, partake.getTokenId(), shadow);
                     appUserFinancialPartakeService.update(partake);
                     appUserFinancialPartakeService.updateCache(partake.getId());
                     BigInteger nowUserId = userId;

@@ -73,6 +73,9 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
     }
 
     public void updateBalance(BigInteger userId, BigInteger baseTokenId, BigDecimal value) {
+        if (null == value || value.compareTo(BigDecimal.ZERO) == 0) {
+            return;
+        }
         AppUserBalance userBalance = getAppUserBalance(userId, baseTokenId);
         if (null == userBalance && !baseTokenId.equals(BigInteger.ZERO)) {
             userBalance = new AppUserBalance();
@@ -130,7 +133,7 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             vo.setTokenId(NumberUtils.parseNumber(String.valueOf(entry.getKey()), BigInteger.class));
             vo.setValue(balance);
             CommonToken token = commonTokenService.findById(vo.getTokenId());
-            if(null == token){
+            if (null == token) {
                 continue;
             }
             CommonTokenPrice tokenPrice = commonTokenPriceService.findById(vo.getTokenId());

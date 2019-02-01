@@ -210,8 +210,8 @@ public class UsdtService extends BlockService {
         BlockTransaction transaction = new BlockTransaction();
         BigDecimal value = new BigDecimal(tx.getAmount());
         CommonAddress address = isOurAddress(tx.getSendingaddress(), tx.getReferenceaddress());
-        //非内部地址忽略
-        if (null == address) {
+        //非内部地址忽略,非usdt充值忽略
+        if (null == address || !tx.getPositioninblock().equals(BigInteger.valueOf(propId))) {
             return null;
         }
         Long time = System.currentTimeMillis();
