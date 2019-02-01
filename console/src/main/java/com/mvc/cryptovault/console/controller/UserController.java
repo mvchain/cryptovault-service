@@ -43,11 +43,15 @@ public class UserController extends BaseController {
     @PutMapping()
     public Result<Boolean> updateUser(@RequestBody AppUser user) {
         AppUser userTemp = appUserService.findById(user.getId());
+        Object obj = redisTemplate.opsForHash().get(APP_USER_USERNAME + userTemp.getEmail(), "SIGN_DATE");
         redisTemplate.opsForHash().delete(APP_USER_USERNAME + userTemp.getEmail(), APP_USER_USERNAME + userTemp.getEmail());
         user.setUpdatedAt(System.currentTimeMillis());
         appUserService.update(user);
         user = appUserService.findById(user.getId());
         String key = APP_USER_USERNAME + user.getEmail();
+        if (null != obj) {
+            redisTemplate.opsForHash().putIfAbsent(key, "SIGN_DATE", String.valueOf(obj));
+        }
         redisTemplate.opsForHash().put(key, key, String.valueOf(user.getId()));
         appUserService.updateCache(user.getId());
         return new Result<>(true);
