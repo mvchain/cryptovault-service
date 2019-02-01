@@ -63,7 +63,8 @@ public class CommonTokenController extends BaseController {
         } else {
             vo.setFee(token.getTransaferFee());
         }
-        vo.setFeeTokenName(token.getTokenName());
+        String feeName = !token.getId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) && !token.getId().equals(BusinessConstant.BASE_TOKEN_ID_BTC) ? "Gwei" : token.getTokenName();
+        vo.setFeeTokenName(feeName);
         return new Result<>(vo);
     }
 
