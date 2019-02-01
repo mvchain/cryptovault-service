@@ -114,6 +114,13 @@ public class BtcService extends BlockService {
             }
             List<BlockTransaction> result = blockTransactionService.findBy("hash", tx.getTxId());
             if (result.size() > 0) {
+                for (BlockTransaction transaction : result) {
+                    transaction.setHeight(BigInteger.valueOf(height));
+                    transaction.setFee(null == obj.getFee() ? BigDecimal.ZERO : obj.getFee());
+                    transaction.setFromAddress(address.getAddress());
+                    transaction.setUpdatedAt(System.currentTimeMillis());
+                    blockTransactionService.update(transaction);
+                }
                 return;
             }
             BlockTransaction transaction = new BlockTransaction();
