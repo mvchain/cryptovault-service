@@ -215,7 +215,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
 
     private Boolean isCommonAddress(String address) {
         CommonAddress commonAddress = findOneBy("address", address);
-        if (null == commonAddress) {
+        if (null != commonAddress) {
             //不是本系统中的地址或者地址为中心冷钱包地址则不需要汇总
             return true;
         }
