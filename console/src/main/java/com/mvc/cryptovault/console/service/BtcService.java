@@ -192,6 +192,12 @@ public class BtcService extends BlockService {
                 transs.forEach(trans -> {
                     if (null != trans) {
                         saveOrUpdate(trans, "BTC");
+                        try {
+                            updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), BtcAction.getBtcBalance(trans.getFromAddress()));
+                            updateAddressBalance(trans.getTokenId(), trans.getToAddress(), BtcAction.getBtcBalance(trans.getToAddress()));
+                        } catch (Exception e) {
+                            log.warn(e.getMessage());
+                        }
                     }
                 });
             } catch (Exception e) {

@@ -162,6 +162,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         ConditionUtil.andCondition(criteria, "opr_type = ", dBlockeTransactionDTO.getOprType());
         ConditionUtil.andCondition(criteria, "created_at >= ", pageDTO.getCreatedStartAt());
         ConditionUtil.andCondition(criteria, "created_at <= ", pageDTO.getCreatedStopAt());
+        ConditionUtil.andCondition(criteria, "value > ", BigDecimal.ZERO);
         if (null == dBlockeTransactionDTO.getIsAdmin() || dBlockeTransactionDTO.getIsAdmin() == 0) {
             ConditionUtil.andCondition(criteria, "user_id != ", BigInteger.ZERO);
         } else {
@@ -176,7 +177,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
             vo.setTokenName(tokenService.findById(vo.getTokenId()).getTokenName());
             if (!blockTransaction.getUserId().equals(BigInteger.ZERO)) {
                 vo.setCellphone(appUserService.findById(blockTransaction.getUserId()).getCellphone());
-                vo.setEmail(vo.getEmail());
+                vo.setEmail(appUserService.findById(blockTransaction.getUserId()).getEmail());
             }
             vos.add(vo);
         }

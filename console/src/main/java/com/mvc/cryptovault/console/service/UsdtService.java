@@ -285,10 +285,12 @@ public class UsdtService extends BlockService {
                 BlockTransaction trans = blockTransaction(tx);
                 if (null != trans) {
                     saveOrUpdate(trans);
-                    BigDecimal fromValue = getBalance(trans.getFromAddress(), trans.getTokenId());
-                    BigDecimal toValue = getBalance(trans.getToAddress(), trans.getTokenId());
-                    updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), fromValue);
-                    updateAddressBalance(trans.getTokenId(), trans.getToAddress(), toValue);
+                    try {
+                        updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), BtcAction.getTetherBalance( trans.getFromAddress()).getBalance());
+                        updateAddressBalance(trans.getTokenId(), trans.getToAddress(), BtcAction.getTetherBalance( trans.getToAddress()).getBalance());
+                    } catch (Exception e){
+                        log.warn(e.getMessage());
+                    }
                 }
                 updateAddressBalance(trans.getTokenId(), trans.getFromAddress(), getBalance(trans.getFromAddress(), trans.getTokenId()));
                 updateAddressBalance(trans.getTokenId(), trans.getToAddress(), getBalance(trans.getToAddress(), trans.getTokenId()));
