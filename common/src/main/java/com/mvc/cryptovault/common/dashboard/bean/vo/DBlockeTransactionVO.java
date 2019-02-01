@@ -47,6 +47,8 @@ public class DBlockeTransactionVO implements Serializable {
     private String orderNumber;
     @ApiModelProperty("手机")
     private String cellphone;
+    @ApiModelProperty("邮箱")
+    private String email;
     @ApiModelProperty("修改订单状态(1. 待审核2. 待签名（审核通过后3. 拒绝4. 正在提币（导入签名文件后5. 提币成功（交易确认成功后6. 失败（交易确认失败后）)")
     private Integer transactionStatus;
 

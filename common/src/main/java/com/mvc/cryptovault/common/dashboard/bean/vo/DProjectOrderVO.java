@@ -25,6 +25,8 @@ public class DProjectOrderVO implements Serializable {
     private String projectId;
     @ApiModelProperty("用户手机号")
     private String cellphone;
+    @ApiModelProperty("邮箱")
+    private String email;
     @ApiModelProperty("令牌名称")
     private String tokenName;
     @ApiModelProperty("令牌id")

@@ -55,16 +55,8 @@ public class CommonTokenController extends BaseController {
         CommonToken token = commonTokenService.findById(tokenId);
         TransactionTokenVO vo = new TransactionTokenVO();
         vo.setBalance(appUserBalanceService.getBalanceByTokenId(userId, tokenId));
-        if (null != token.getTokenDecimal() && token.getTokenDecimal() > 0) {
-            //暂时返回非精确值
-            BigDecimal gasLimit = tokenId.equals(BusinessConstant.BASE_TOKEN_ID_ETH) ? BigDecimal.valueOf(21000) : BigDecimal.valueOf(21000);
-            BigDecimal gas = gasLimit.multiply(NumberUtils.parseNumber(String.valueOf(token.getTransaferFee()), BigDecimal.class).divide(BigDecimal.TEN.pow(token.getTokenDecimal() - 9)));
-            vo.setFee(gas.floatValue());
-        } else {
-            vo.setFee(token.getTransaferFee());
-        }
-        String feeName = !token.getId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) && !token.getId().equals(BusinessConstant.BASE_TOKEN_ID_BTC) ? "Gwei" : token.getTokenName();
-        vo.setFeeTokenName(feeName);
+        vo.setFee(token.getFee());
+        vo.setFeeTokenName("BZTB");
         return new Result<>(vo);
     }
 

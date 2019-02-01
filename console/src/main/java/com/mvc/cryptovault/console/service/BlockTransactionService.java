@@ -176,6 +176,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
             vo.setTokenName(tokenService.findById(vo.getTokenId()).getTokenName());
             if (!blockTransaction.getUserId().equals(BigInteger.ZERO)) {
                 vo.setCellphone(appUserService.findById(blockTransaction.getUserId()).getCellphone());
+                vo.setEmail(vo.getEmail());
             }
             vos.add(vo);
         }

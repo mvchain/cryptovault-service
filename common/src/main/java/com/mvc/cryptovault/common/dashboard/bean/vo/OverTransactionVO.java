@@ -36,6 +36,9 @@ public class OverTransactionVO implements Serializable {
     @ApiModelProperty("手机号")
     private String cellphone;
 
+    @ApiModelProperty("邮箱")
+    private String email;
+
     @ApiModelProperty("交易数量")
     private BigDecimal value;
 

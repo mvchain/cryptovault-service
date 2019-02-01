@@ -244,6 +244,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
             vo.setBaseTokenName(project.getBaseTokenName());
             vo.setCellphone(user.getCellphone());
             vo.setPayed(transaction.getPayed());
+            vo.setEmail(user.getEmail());
             vo.setProjectName(project.getProjectName());
             vo.setTokenId(project.getTokenId());
             vo.setProjectStatus(project.getStatus());

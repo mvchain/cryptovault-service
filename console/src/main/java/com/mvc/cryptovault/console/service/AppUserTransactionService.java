@@ -336,6 +336,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             CommonPair pair = commonPairService.findById(transaction.getPairId());
             vo.setCellphone(appUser.getCellphone());
             vo.setDeal(transaction.getSuccessValue());
+            vo.setEmail(appUser.getEmail());
             vo.setPairName(pair.getPairName());
             vo.setSurplus(transaction.getValue().subtract(transaction.getSuccessValue()));
             vos.add(vo);
@@ -386,6 +387,7 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             vo.setParentOrderNumber(parent.getOrderNumber());
             vo.setPairName(pair.getPairName());
             vo.setBaseTokenName(pair.getBaseTokenName());
+            vo.setEmail(appUser.getEmail());
             vo.setParentOrderNumber(parent.getOrderNumber());
             vos.add(vo);
         }

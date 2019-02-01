@@ -48,6 +48,9 @@ public class DTransactionVO implements Serializable {
     @ApiModelProperty("手机号")
     private String cellphone;
 
+    @ApiModelProperty("邮箱")
+    private String email;
+
     @ApiModelProperty
     private BigInteger id;
 
