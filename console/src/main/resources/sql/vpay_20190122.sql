@@ -483,7 +483,7 @@ CREATE TABLE `block_sign` (
   `token_type` varchar(16) DEFAULT NULL,
   `contract_address` varchar(128) DEFAULT NULL,
   `from_address` varchar(64) DEFAULT NULL,
-  `to_address` varchar(64) DEFAULT NULL,
+  `to_address` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 ALTER TABLE block_sign PARTITION by HASH(id) PARTITIONS 32; 
