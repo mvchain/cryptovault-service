@@ -161,4 +161,7 @@ public interface ConsoleRemoteService {
     @GetMapping("user/sign")
     Result<Boolean> getSign(@RequestParam("userId") BigInteger userId);
 
+    @GetMapping("appInfo/{appType}")
+    Result<AppInfo> getApp(@PathVariable("appType") String appType);
+
 }

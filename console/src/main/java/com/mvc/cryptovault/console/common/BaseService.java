@@ -48,7 +48,7 @@ public interface BaseService<T> {
      * @param id
      * @return
      */
-    T findById(BigInteger id);
+    T findById(Object id);
 
     /**
      * 通过Model中某个成员变量名称（非数据表中column的名称）查找,value需符合unique约束

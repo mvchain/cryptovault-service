@@ -778,3 +778,16 @@ ALTER TABLE token_volume PARTITION by HASH(token_id) PARTITIONS 256;
         CREATE INDEX `index_common_address_3` ON `common_address`(`address_type`) USING BTREE ;
         CREATE INDEX `index_common_token_history_1` ON `common_token_history`(`created_at`) USING BTREE ;
         CREATE INDEX `index_token_volume_1` ON `token_volume`(`created_at`) USING BTREE ;
+
+
+CREATE TABLE `app_info` (
+`app_type`  varchar(64) NULL ,
+`app_version`  varchar(255) NULL ,
+`app_version_code`  int NULL ,
+`app_package`  varchar(64) NULL ,
+PRIMARY KEY (`app_type`)
+);
+ALTER TABLE `app_info`
+ADD COLUMN `http_url`  varchar(255) NULL AFTER `app_package`;
+
+

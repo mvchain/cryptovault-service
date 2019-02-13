@@ -1,6 +1,6 @@
 spring:
   redis:
-    database: 1
+    database: 8
     host: 192.168.15.31
     timeout: 1000ms
     jedis:
@@ -19,6 +19,10 @@ spring:
       request-timeout: 10ms
   application:
     name: DASHBOARD
+  servlet:
+    multipart:
+      maxRequestSize: 100MB
+      max-file-size: 100MB
 logging:
   level:
     org: info
@@ -48,7 +52,6 @@ hystrix.command.default.execution:
 ribbon:
   ReadTimeout: 30000
   ConnectTimeout: 30000
-
 
 oss:
   endpoint: oss-cn-hongkong.aliyuncs.com

@@ -68,7 +68,7 @@ public abstract class AbstractService<T> implements BaseService<T> {
     }
 
     @Override
-    public T findById(BigInteger id) {
+    public T findById(Object id) {
         T obj = null;
         String key = modelClass.getSimpleName().toUpperCase() + "_" + id;
         String json = redisTemplate.opsForValue().get(key);

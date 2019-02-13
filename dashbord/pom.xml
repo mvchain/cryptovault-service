@@ -116,6 +116,16 @@
             <version>2.6.12</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.googlecode.plist</groupId>
+            <artifactId>dd-plist</artifactId>
+            <version>1.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apkinfo.api</groupId>
+            <artifactId>apktool</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

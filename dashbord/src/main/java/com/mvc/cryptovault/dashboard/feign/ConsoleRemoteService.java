@@ -112,6 +112,9 @@ public interface ConsoleRemoteService {
     @GetMapping("dashboard/appUserTransaction/sign")
     Result<List<ExportOrders>> exportSign();
 
+    @GetMapping("dashboard/appUserTransaction/signCount")
+    Result<List<SignSumVO>> exportSignCount();
+
     @GetMapping("dashboard/appUserTransaction/over")
     Result<PageInfo<OverTransactionVO>> overList(@RequestBody OverTransactionDTO overTransactionDTO);
 
@@ -180,5 +183,14 @@ public interface ConsoleRemoteService {
 
     @GetMapping("dashboard/financial/{id}/order")
     Result<PageInfo<AppFinancialOrderVO>> getFinancialOrderList(@PathVariable("id") BigInteger id, @RequestBody PageDTO pageDTO, @RequestParam(value = "searchKey", required = false) String searchKey, @RequestParam(value = "status", required = false) Integer status);
+
+    @GetMapping("appInfo/{appType}")
+    Result<AppInfo> getApp(@PathVariable("appType") String appType);
+
+    @GetMapping("appInfo")
+    Result<List<AppInfo>> getAppList();
+
+    @PostMapping("appInfo")
+    Result<Boolean> saveApp(@RequestBody AppInfo appInfo);
 
 }
