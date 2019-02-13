@@ -7,6 +7,7 @@ import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionDTO;
+import com.mvc.cryptovault.common.bean.vo.SignSumVO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
@@ -294,6 +295,10 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         transaction.setToAddress(dto.getToAddress());
         transaction.setOrderNumber(getOrderNumber());
         save(transaction);
+    }
+
+    public List<SignSumVO> exportSignSum() {
+        return blockTransactionMapper.exportSignSum();
     }
 
 }

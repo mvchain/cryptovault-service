@@ -10,6 +10,7 @@ import com.mvc.cryptovault.common.bean.OrderEntity;
 import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.vo.AdminWalletVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.SignSumVO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockStatusDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DBlockeTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DBlockeTransactionVO;
@@ -95,6 +96,13 @@ public class BlockController extends BaseController {
     public Result<Boolean> updateStatus(DBlockStatusDTO dBlockStatusDTO) {
         Boolean result = blockService.updateStatus(dBlockStatusDTO);
         return new Result<>(result);
+    }
+
+    @GetMapping("transaction/exportCount")
+    @ApiOperation("待签名数据统计查看")
+    public Result<List<SignSumVO>> getSignSum() {
+        List<SignSumVO> list = transactionService.exportSignCount();
+        return new Result(list);
     }
 
     @ApiOperation("待签名数据导出")

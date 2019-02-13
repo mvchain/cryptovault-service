@@ -1,11 +1,14 @@
 package com.mvc.cryptovault.console.dao;
 
 import com.mvc.cryptovault.common.bean.BlockTransaction;
+import com.mvc.cryptovault.common.bean.vo.SignSumVO;
 import com.mvc.cryptovault.console.common.MyMapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public interface BlockTransactionMapper extends MyMapper<BlockTransaction> {
 
@@ -20,4 +23,8 @@ public interface BlockTransactionMapper extends MyMapper<BlockTransaction> {
 
     @Update("update block_transaction set transaction_status = #{transactionStatus}, updated_at = #{currentTimeMillis} where id = #{id} and updated_at = #{now}")
     Integer updateTransactionStatus(@Param("transactionStatus") Integer transactionStatus, @Param("currentTimeMillis") Long currentTimeMillis, @Param("now") Long now, @Param("id")BigInteger id);
+
+    @Select("SELECT t2.token_name, t2.id token_id, sum(t1.`value`) total, t2.transafer_fee, count(1) num FROM block_transaction t1, common_token t2 WHERE t1.opr_type = 2 AND t1.token_id = t2.id AND transaction_status in (2,6) GROUP BY t1.token_id")
+    List<SignSumVO> exportSignSum();
+
 }

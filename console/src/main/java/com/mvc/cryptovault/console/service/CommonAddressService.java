@@ -2,6 +2,7 @@ package com.mvc.cryptovault.console.service;
 
 import com.alibaba.fastjson.JSON;
 import com.mvc.cryptovault.common.bean.*;
+import com.mvc.cryptovault.common.bean.vo.SignSumVO;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
@@ -54,6 +55,9 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
     BlockUsdtWithdrawQueueService blockUsdtWithdrawQueueService;
     private final BigDecimal USDT_LIMIT_FEE = new BigDecimal("0.00000546");
 
+    public List<SignSumVO> getExportSignSum() throws BitcoindException, IOException, CommunicationException {
+        return blockTransactionService.exportSignSum();
+    }
 
     public List<ExportOrders> exportSign() throws IOException, BitcoindException, CommunicationException {
         List<BlockTransaction> list = blockTransactionService.getSign();

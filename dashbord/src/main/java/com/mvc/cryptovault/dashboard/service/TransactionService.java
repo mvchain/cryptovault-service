@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.dto.AdminTransactionDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.SignSumVO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
 import org.springframework.stereotype.Service;
@@ -45,4 +46,10 @@ public class TransactionService extends BaseService {
         Result<Boolean> result = remoteService.buy(dto);
         return result.getData();
     }
+
+    public List<SignSumVO> exportSignCount() {
+        Result<List<SignSumVO>> result = remoteService.exportSignCount();
+        return result.getData();
+    }
+
 }

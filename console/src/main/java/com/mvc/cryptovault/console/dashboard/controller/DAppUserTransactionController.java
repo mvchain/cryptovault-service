@@ -5,6 +5,7 @@ import com.mvc.cryptovault.common.bean.AppUserTransaction;
 import com.mvc.cryptovault.common.bean.ExportOrders;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.SignSumVO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.OverTransactionDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DTransactionVO;
@@ -66,6 +67,12 @@ public class DAppUserTransactionController extends BaseController {
     @GetMapping("sign")
     public Result<List<ExportOrders>> exportSign() throws IOException, BitcoindException, CommunicationException {
         List<ExportOrders> result = commonAddressService.exportSign();
+        return new Result<>(result);
+    }
+
+    @GetMapping("signCount")
+    public Result<List<SignSumVO>> exportSignCount() throws IOException, BitcoindException, CommunicationException {
+        List<SignSumVO> result = commonAddressService.getExportSignSum();
         return new Result<>(result);
     }
 
