@@ -781,7 +781,7 @@ ALTER TABLE token_volume PARTITION by HASH(token_id) PARTITIONS 256;
 
 
 CREATE TABLE `app_info` (
-`app_type`  varchar(64) NULL ,
+`app_type`  varchar(64) not NULL ,
 `app_version`  varchar(255) NULL ,
 `app_version_code`  int NULL ,
 `app_package`  varchar(64) NULL ,
