@@ -33,7 +33,7 @@ public class AppController extends BaseController {
         return new Result<>(appService.getAppList());
     }
 
-    @PutMapping("")
+    @PostMapping("")
     @ApiOperation("设置当前更新信息")
     public Result<Boolean> readApp(@RequestBody MultipartFile file, @RequestParam String httpUrl) {
         String name = file.getOriginalFilename();
