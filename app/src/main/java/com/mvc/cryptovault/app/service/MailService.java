@@ -3,6 +3,7 @@ package com.mvc.cryptovault.app.service;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,6 +29,8 @@ public class MailService {
     private final static Long EXPIRE = 5L;
     @Autowired
     StringRedisTemplate redisTemplate;
+    @Value("${spring.mail.username}")
+    String mail;
 
     @Async
     public void send(String email) {
@@ -40,7 +43,7 @@ public class MailService {
         String key = RedisConstant.MAIL_VALI_PRE + email;
         int code = (int) ((Math.random() * 9 + 1) * 100000);
         message.setTo(email);
-        message.setFrom("bzt.vpay@gmail.com");
+        message.setFrom(mail);
         message.setSubject(String.format("Your Code:%s", code));
         message.setText(String.format("Your Code:%s", code));
         try {
