@@ -22,5 +22,7 @@ public class ProjectPublishVO {
     private Float releaseValue;
     @ApiModelProperty("项目id")
     private BigInteger projectId;
+    @ApiModelProperty("项目图片")
+    private String projectImage;
 
 }
