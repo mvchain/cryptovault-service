@@ -44,7 +44,7 @@ public class MailService {
         int code = (int) ((Math.random() * 9 + 1) * 100000);
         message.setTo(email);
         message.setFrom(mail);
-        message.setSubject(String.format("Your Code:%s", code));
+        message.setSubject(String.format("Identifying code"));
         message.setText(String.format("Your Code:%s", code));
         try {
             mailSender.send(message);
