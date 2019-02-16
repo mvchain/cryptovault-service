@@ -7,9 +7,12 @@ import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.AppProjectUserTransaction;
 import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.ImportPartake;
+import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.ProjectBuyDTO;
 import com.mvc.cryptovault.common.bean.dto.ReservationDTO;
 import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishDetailVO;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishVO;
 import com.mvc.cryptovault.common.bean.vo.PurchaseVO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectOrderDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectOrderVO;
@@ -185,7 +188,7 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         Condition condition = new Condition(AppProjectUserTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
         ConditionUtil.andCondition(criteria, "user_id = ", userId);
-        if(null != reservationDTO.getId() && !reservationDTO.getId().equals(BigInteger.ZERO)){
+        if (null != reservationDTO.getId() && !reservationDTO.getId().equals(BigInteger.ZERO)) {
             ConditionUtil.andCondition(criteria, "id < ", reservationDTO.getId());
         }
         return findByCondition(condition);
@@ -323,4 +326,22 @@ public class AppProjectUserTransactionService extends AbstractService<AppProject
         });
 
     }
+
+    public ProjectPublishDetailVO getPublishDetail(BigInteger userId, BigInteger projectId) {
+        ProjectPublishDetailVO vo = appProjectUserTransactionMapper.getPublishDetail(userId, projectId);
+        if(null == vo){
+            vo = new ProjectPublishDetailVO();
+        }
+        return vo;
+    }
+
+    public List<ProjectPublishVO> getPublish(BigInteger userId, BigInteger id, PageDTO pageDTO) {
+        if (null == id || id.equals(BigInteger.ZERO)) {
+            id = BigInteger.valueOf(Integer.MAX_VALUE);
+        }
+        PageHelper.startPage(1, pageDTO.getPageSize(), "t1.id desc");
+        List<ProjectPublishVO> result = appProjectUserTransactionMapper.getPublish(userId, id);
+        return result;
+    }
+
 }

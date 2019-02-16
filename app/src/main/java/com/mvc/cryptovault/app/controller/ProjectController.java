@@ -1,15 +1,14 @@
 package com.mvc.cryptovault.app.controller;
 
+import com.mvc.cryptovault.app.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.ProjectBuyDTO;
 import com.mvc.cryptovault.common.bean.dto.ProjectDTO;
 import com.mvc.cryptovault.common.bean.dto.ReservationDTO;
-import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
-import com.mvc.cryptovault.common.bean.vo.ProjectSimpleVO;
-import com.mvc.cryptovault.common.bean.vo.PurchaseVO;
-import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.*;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -54,6 +53,24 @@ public class ProjectController extends BaseController {
     @SwaggerMock("${project.buy}")
     public Result<Boolean> buy(@PathVariable BigInteger id, @RequestBody @Valid ProjectBuyDTO dto) {
         return new Result<>(projectService.buy(getUserId(), id, dto));
+    }
+
+    @ApiOperation("已发币项目列表")
+    @GetMapping("publish")
+    public Result<List<ProjectPublishVO>> getPublish(@RequestParam(value = "projectId", required = false) @ApiParam("上一条记录id,不传或0时则从头拉取") BigInteger projectId, @ModelAttribute PageDTO pageDTO) {
+        return new Result<>(projectService.getPublish(getUserId(), projectId, pageDTO));
+    }
+
+    @ApiOperation("参与项目详情")
+    @GetMapping("{projectId}/publish")
+    public Result<ProjectPublishDetailVO> getPublishDetail(@PathVariable BigInteger projectId) {
+        return new Result<>(projectService.getPublishDetail(getUserId(), projectId));
+    }
+
+    @ApiOperation("发币记录列表")
+    @GetMapping("{projectId}/publish/list")
+    public Result<List<ProjectPublishListVO>> getPublishList(@PathVariable BigInteger projectId, @RequestParam(value = "id", required = false) @ApiParam("上一条记录id,不传或0时则从头拉取") BigInteger id, @ModelAttribute PageDTO pageDTO) {
+        return new Result<>(projectService.getPublishList(getUserId(), projectId, id, pageDTO));
     }
 
 }

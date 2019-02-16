@@ -60,10 +60,19 @@ public interface ConsoleRemoteService {
     Result<Boolean> read(@RequestParam("userId") BigInteger userId, @PathVariable("id") BigInteger id);
 
     @GetMapping("appProject")
-    Result<PageInfo<AppProject>> getProject(@RequestParam("userId") BigInteger userId,@RequestParam("projectType") Integer projectType, @RequestParam("id") BigInteger projectId, @RequestParam("type") Integer type, @RequestParam("pageSize") Integer pageSize);
+    Result<PageInfo<AppProject>> getProject(@RequestParam("userId") BigInteger userId, @RequestParam("projectType") Integer projectType, @RequestParam("id") BigInteger projectId, @RequestParam("type") Integer type, @RequestParam("pageSize") Integer pageSize);
 
     @GetMapping("appProject/{id}")
     Result<AppProject> getProjectById(@PathVariable("id") BigInteger id);
+
+    @GetMapping("appProject/publish")
+    Result<List<ProjectPublishVO>> getPublish(@RequestParam("userId") BigInteger userId, @RequestParam(value = "id", required = false) BigInteger id, @RequestBody PageDTO pageDTO);
+
+    @GetMapping("appProject/{projectId}/publish")
+    Result<ProjectPublishDetailVO> getPublishDetail(@RequestParam("userId") BigInteger userId, @PathVariable("projectId") BigInteger projectId);
+
+    @GetMapping("appProject/{projectId}/publish/list")
+    Result<List<ProjectPublishListVO>> getPublishList(@RequestParam("userId") BigInteger userId, @PathVariable("projectId") BigInteger projectId, @RequestParam(value = "id", required = false) BigInteger id, @RequestBody PageDTO pageDTO);
 
     @GetMapping("appProjectUserTransaction")
     Result<PageInfo<PurchaseVO>> getReservation(@RequestParam("userId") BigInteger userId, @RequestBody ReservationDTO reservationDTO);

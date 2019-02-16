@@ -790,4 +790,5 @@ PRIMARY KEY (`app_type`)
 ALTER TABLE `app_info`
 ADD COLUMN `http_url`  varchar(255) NULL AFTER `app_package`;
 
-
+ALTER TABLE `block_transaction`
+ADD COLUMN `plat_fee`  decimal(40,20) NULL AFTER `order_number`;

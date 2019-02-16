@@ -59,10 +59,13 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     public void doSendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
         Long now = System.currentTimeMillis();
         CommonAddress address = commonAddressService.findOneBy("address", transactionDTO.getAddress());
+        CommonToken token = tokenService.findById(transactionDTO.getTokenId());
+        //扣除平台手续费
+        appUserBalanceService.updateBalance(address.getUserId(), BusinessConstant.BASE_TOKEN_ID_VRT, BigDecimal.ZERO.subtract(BigDecimal.valueOf(token.getFee())));
         if (null != address && !address.getUserId().equals(BigInteger.ZERO)) {
             //inner
             String userAddress = appUserAddressService.getAddress(userId, transactionDTO.getTokenId());
-            String tokenName = tokenService.getTokenName(transactionDTO.getTokenId());
+            String tokenName = token.getTokenName();
             appUserBalanceService.updateBalance(address.getUserId(), transactionDTO.getTokenId(), transactionDTO.getValue());
             orderService.saveOrder(userAddress, transactionDTO.getAddress(), transactionDTO.getTokenId(), transactionDTO.getValue(), userId, tokenName, 2);
             orderService.saveOrder(userAddress, transactionDTO.getAddress(), transactionDTO.getTokenId(), transactionDTO.getValue(), address.getUserId(), tokenName, 1);
@@ -72,7 +75,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
     }
 
     private void saveBlockTrans(BigInteger userId, TransactionDTO transactionDTO, Long now) {
-        String tokenName = tokenService.getTokenName(transactionDTO.getTokenId());
+        CommonToken token = tokenService.findById(transactionDTO.getTokenId());
         BlockTransaction transaction = new BlockTransaction();
         transaction.setCreatedAt(now);
         transaction.setUpdatedAt(now);
@@ -80,6 +83,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         transaction.setValue(transactionDTO.getValue());
         transaction.setUserId(userId);
         transaction.setTokenId(transactionDTO.getTokenId());
+        transaction.setPlatFee(BigDecimal.valueOf(token.getFee()));
         transaction.setStatus(0);
         transaction.setTransactionStatus(1);
         transaction.setTokenType(transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT) || transactionDTO.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BTC) ? "BTC" : "ETH");
@@ -97,11 +101,11 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         appOrder.setOrderNumber(transaction.getOrderNumber());
         appOrder.setValue(transactionDTO.getValue());
         appOrder.setUserId(userId);
-        appOrder.setOrderRemark(tokenName);
+        appOrder.setOrderRemark(token.getTokenName());
         appOrder.setTokenId(transactionDTO.getTokenId());
         appOrder.setStatus(0);
         appOrder.setToAddress(transactionDTO.getAddress());
-        appOrder.setFee(BigDecimal.ZERO);
+        appOrder.setFee(BigDecimal.valueOf(token.getFee()));
         appOrder.setOrderType(2);
         orderService.save(appOrder);
     }
@@ -119,6 +123,10 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         //校验密码是否正确
         AppUser user = appUserService.findById(userId);
         Assert.isTrue(transactionDTO.getPassword().equalsIgnoreCase(user.getTransactionPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
+        //校验手续费是否足够
+        CommonToken token = tokenService.findById(transactionDTO.getTokenId());
+        BigDecimal feeBalance = appUserBalanceService.getBalanceByTokenId(userId, BusinessConstant.BASE_TOKEN_ID_VRT);
+        Assert.isTrue(feeBalance.compareTo(BigDecimal.valueOf(token.getFee())) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
         //校验余额是否足够
         BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, transactionDTO.getTokenId());
         Assert.isTrue(balance.compareTo(transactionDTO.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
@@ -137,8 +145,10 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
                     continue;
                 }
                 if (dBlockStatusDTO.getStatus() == 2) {
+                    CommonToken token = tokenService.findById(blockTransaction.getTokenId());
                     //更新成功则修改用户余额并添加通知
                     appUserBalanceService.updateBalance(blockTransaction.getUserId(), blockTransaction.getTokenId(), blockTransaction.getValue());
+                    appUserBalanceService.updateBalance(blockTransaction.getUserId(), BusinessConstant.BASE_TOKEN_ID_VRT, BigDecimal.valueOf(token.getFee()));
                     orderService.saveReturnOrder(blockTransaction);
                 }
             }

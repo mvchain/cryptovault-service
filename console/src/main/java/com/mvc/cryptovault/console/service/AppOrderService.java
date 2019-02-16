@@ -2,7 +2,9 @@ package com.mvc.cryptovault.console.service;
 
 import com.github.pagehelper.PageHelper;
 import com.mvc.cryptovault.common.bean.*;
+import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionSearchDTO;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishListVO;
 import com.mvc.cryptovault.common.bean.vo.TransactionDetailVO;
 import com.mvc.cryptovault.common.bean.vo.TransactionSimpleVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
@@ -23,6 +25,7 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(rollbackFor = RuntimeException.class)
@@ -49,7 +52,7 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         vo.setClassify(order.getClassify());
         vo.setCreatedAt(order.getCreatedAt());
         vo.setFee(order.getFee());
-        vo.setFeeTokenType(token.getTokenType());
+        vo.setFeeTokenType("BZTB");
         vo.setHashLink(token.getLink() + order.getHash());
         vo.setOrderRemark(order.getOrderRemark());
         vo.setTokenName(token.getTokenName());
@@ -386,19 +389,20 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     }
 
     public void saveOrder(String from, String to, BigInteger tokenId, BigDecimal value, BigInteger userId, String tokenName, Integer orderType) {
+        CommonToken token = tokenService.findById(tokenId);
         Long time = System.currentTimeMillis();
         AppOrder appOrder = new AppOrder();
         appOrder.setClassify(0);
         appOrder.setCreatedAt(time);
         appOrder.setUpdatedAt(time);
         appOrder.setFromAddress(from);
+        appOrder.setFee(BigDecimal.valueOf(token.getFee()));
         appOrder.setHash("");
         appOrder.setOrderContentId(BigInteger.ZERO);
         appOrder.setOrderContentName(BusinessConstant.INNER_BLOCK);
         appOrder.setOrderNumber(getOrderNumber());
         appOrder.setValue(value);
         appOrder.setToAddress(to);
-        appOrder.setFee(BigDecimal.ZERO);
         appOrder.setUserId(userId);
         appOrder.setTokenId(tokenId);
         appOrder.setStatus(2);
@@ -407,4 +411,29 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         save(appOrder);
         appMessageService.transferMsg(appOrder.getId(), userId, value, tokenName, orderType, 2);
     }
+
+    public List<ProjectPublishListVO> getPublishList(BigInteger userId, BigInteger projectId, BigInteger id, PageDTO pageDTO) {
+        if (null == id || id.equals(BigInteger.ZERO)) {
+            id = BigInteger.valueOf(Integer.MAX_VALUE);
+        }
+        PageHelper.startPage(1, pageDTO.getPageSize(), "id desc");
+        Condition condition = new Condition(AppOrder.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "user_id = ", userId);
+        ConditionUtil.andCondition(criteria, "status = ", 2);
+        ConditionUtil.andCondition(criteria, "order_content_name = ", BusinessConstant.CONTENT_PROJECT);
+        ConditionUtil.andCondition(criteria, "order_content_id = ", projectId);
+        ConditionUtil.andCondition(criteria, "id < ", id);
+        List<AppOrder> list = findByCondition(condition);
+        return list.stream().map(obj -> {
+            ProjectPublishListVO vo = new ProjectPublishListVO();
+            vo.setCreatedAt(obj.getCreatedAt());
+            vo.setId(obj.getId());
+            vo.setTokenId(obj.getTokenId());
+            vo.setTokenName(commonTokenService.getTokenName(obj.getTokenId()));
+            vo.setValue(obj.getValue());
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
 }

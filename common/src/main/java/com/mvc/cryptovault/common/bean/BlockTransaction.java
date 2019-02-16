@@ -1,16 +1,13 @@
 package com.mvc.cryptovault.common.bean;
 
+import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import javax.persistence.Column;
-import lombok.Data;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import lombok.Data;
-import lombok.Generated;
 
 /**
  * block_transaction
@@ -127,6 +124,7 @@ public class BlockTransaction implements Serializable {
     @Column(name = "order_number")
     private String orderNumber;
 
+    private BigDecimal platFee;
     /**
      * block_transaction
      */
@@ -134,6 +132,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 区块链交易记录
+     *
      * @return id 区块链交易记录
      */
     public BigInteger getId() {
@@ -142,6 +141,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 区块链交易记录
+     *
      * @param id 区块链交易记录
      */
     public void setId(BigInteger id) {
@@ -150,6 +150,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 交易hash
+     *
      * @return hash 交易hash
      */
     public String getHash() {
@@ -158,6 +159,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 交易hash
+     *
      * @param hash 交易hash
      */
     public void setHash(String hash) {
@@ -166,6 +168,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 手续费
+     *
      * @return fee 手续费
      */
     public BigDecimal getFee() {
@@ -174,6 +177,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 手续费
+     *
      * @param fee 手续费
      */
     public void setFee(BigDecimal fee) {
@@ -182,6 +186,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 打包区块高度
+     *
      * @return height 打包区块高度
      */
     public BigInteger getHeight() {
@@ -190,6 +195,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 打包区块高度
+     *
      * @param height 打包区块高度
      */
     public void setHeight(BigInteger height) {
@@ -198,6 +204,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 令牌id
+     *
      * @return token_id 令牌id
      */
     public BigInteger getTokenId() {
@@ -206,6 +213,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 令牌id
+     *
      * @param tokenId 令牌id
      */
     public void setTokenId(BigInteger tokenId) {
@@ -214,6 +222,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 操作类型 1充值 2提现
+     *
      * @return opr_type 操作类型 1充值 2提现
      */
     public Integer getOprType() {
@@ -222,6 +231,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 操作类型 1充值 2提现
+     *
      * @param oprType 操作类型 1充值 2提现 9钱包
      */
     public void setOprType(Integer oprType) {
@@ -230,6 +240,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 对应用户id
+     *
      * @return user_id 对应用户id
      */
     public BigInteger getUserId() {
@@ -238,6 +249,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 对应用户id
+     *
      * @param userId 对应用户id
      */
     public void setUserId(BigInteger userId) {
@@ -246,6 +258,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 订单状态0打包中 1确认中 2确认完毕 9失败
+     *
      * @return status 订单状态0打包中 1确认中 2确认完毕 9失败
      */
     public Integer getStatus() {
@@ -254,6 +267,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 订单状态0打包中 1确认中 2确认完毕 9失败
+     *
      * @param status 订单状态0打包中 1确认中 2确认完毕 9失败
      */
     public void setStatus(Integer status) {
@@ -262,6 +276,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 错误原因
+     *
      * @return error_msg 错误原因
      */
     public String getErrorMsg() {
@@ -270,6 +285,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 错误原因
+     *
      * @param errorMsg 错误原因
      */
     public void setErrorMsg(String errorMsg) {
@@ -278,6 +294,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 错误描述
+     *
      * @return error_data 错误描述
      */
     public String getErrorData() {
@@ -286,6 +303,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 错误描述
+     *
      * @param errorData 错误描述
      */
     public void setErrorData(String errorData) {
@@ -294,6 +312,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 交易数量
+     *
      * @return value 交易数量
      */
     public BigDecimal getValue() {
@@ -302,6 +321,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 交易数量
+     *
      * @param value 交易数量
      */
     public void setValue(BigDecimal value) {
@@ -310,6 +330,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 来源地址
+     *
      * @return from_address 来源地址
      */
     public String getFromAddress() {
@@ -318,6 +339,7 @@ public class BlockTransaction implements Serializable {
 
     /**
      * 来源地址
+     *
      * @param fromAddress 来源地址
      */
     public void setFromAddress(String fromAddress) {

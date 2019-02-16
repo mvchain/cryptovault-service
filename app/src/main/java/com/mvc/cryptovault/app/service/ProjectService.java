@@ -1,15 +1,13 @@
 package com.mvc.cryptovault.app.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mvc.cryptovault.app.bean.dto.PageDTO;
 import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
 import com.mvc.cryptovault.common.bean.AppProject;
 import com.mvc.cryptovault.common.bean.dto.ProjectBuyDTO;
 import com.mvc.cryptovault.common.bean.dto.ProjectDTO;
 import com.mvc.cryptovault.common.bean.dto.ReservationDTO;
-import com.mvc.cryptovault.common.bean.vo.ProjectBuyVO;
-import com.mvc.cryptovault.common.bean.vo.ProjectSimpleVO;
-import com.mvc.cryptovault.common.bean.vo.PurchaseVO;
-import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.bean.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +50,21 @@ public class ProjectService {
 
     public Boolean buy(BigInteger userId, BigInteger id, ProjectBuyDTO dto) {
         Result<Boolean> result = projectRemoteService.buy(userId, id, dto);
+        return result.getData();
+    }
+
+    public List<ProjectPublishVO> getPublish(BigInteger userId, BigInteger id, PageDTO pageDTO) {
+        Result<List<ProjectPublishVO>> result = projectRemoteService.getPublish(userId, id, pageDTO);
+        return result.getData();
+    }
+
+    public ProjectPublishDetailVO getPublishDetail(BigInteger userId, BigInteger projectId) {
+        Result<ProjectPublishDetailVO> result = projectRemoteService.getPublishDetail(userId, projectId);
+        return result.getData();
+    }
+
+    public List<ProjectPublishListVO> getPublishList(BigInteger userId, BigInteger projectId, BigInteger id, PageDTO pageDTO) {
+        Result<List<ProjectPublishListVO>> result = projectRemoteService.getPublishList(userId, projectId, id, pageDTO);
         return result.getData();
     }
 

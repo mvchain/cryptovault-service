@@ -9,6 +9,9 @@ import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.ImportPartake;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.ExportPartake;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishDetailVO;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishListVO;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishVO;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DProjectDTO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DProjectVO;
@@ -43,6 +46,8 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
     AppProjectPartakeService appProjectPartakeService;
     @Autowired
     AppProjectMapper appProjectMapper;
+    @Autowired
+    AppOrderService appOrderService;
 
     public void newProject(DProjectDTO dProjectDTO) {
         AppProject appProject = new AppProject();
@@ -155,6 +160,29 @@ public class AppProjectService extends AbstractService<AppProject> implements Ba
             str = " AND t2.project_id < " + id;
         }
         return appProjectMapper.getMyProject(userId, str, pageSize);
+    }
+
+    public List<ProjectPublishVO> getPublish(BigInteger userId, BigInteger id, PageDTO pageDTO) {
+        return appProjectUserTransactionService.getPublish(userId, id, pageDTO);
+    }
+
+    public ProjectPublishDetailVO getPublishDetail(BigInteger userId, BigInteger projectId) {
+        AppProject project = findById(projectId);
+        if (null == project) {
+            return null;
+        }
+        ProjectPublishDetailVO vo = appProjectUserTransactionService.getPublishDetail(userId, projectId);
+        BeanUtils.copyProperties(project, vo);
+        vo.setProjectId(project.getId());
+        vo.setTokenId(project.getTokenId());
+        vo.setTokenName(project.getTokenName());
+        vo.setBaseTokenName(project.getBaseTokenName());
+        vo.setTotal(project.getProjectTotal());
+        return vo;
+    }
+
+    public List<ProjectPublishListVO> getPublishList(BigInteger userId, BigInteger projectId, BigInteger id, PageDTO pageDTO) {
+        return appOrderService.getPublishList(userId, projectId, id, pageDTO);
     }
 
 }

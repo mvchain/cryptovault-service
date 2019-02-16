@@ -1,8 +1,11 @@
 package com.mvc.cryptovault.console.controller;
 
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mvc.cryptovault.common.bean.AppProject;
+import com.mvc.cryptovault.common.bean.dto.PageDTO;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishDetailVO;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishListVO;
+import com.mvc.cryptovault.common.bean.vo.ProjectPublishVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
@@ -27,7 +30,7 @@ public class AppProjectController extends BaseController {
 
     @GetMapping()
     Result<PageInfo<AppProject>> getProject(@RequestParam("userId") BigInteger userId, @RequestParam Integer projectType, @RequestParam(required = false) BigInteger id, @RequestParam Integer type, @RequestParam Integer pageSize) {
-        if(projectType == 3){
+        if (projectType == 3) {
             return new Result<>(new PageInfo<>(appProjectService.getMyProject(userId, id, pageSize)));
         }
         final BigInteger projectId = id == null ? BigInteger.ZERO : id;
@@ -48,6 +51,24 @@ public class AppProjectController extends BaseController {
     @GetMapping("{id}")
     Result<AppProject> getProjectById(@PathVariable BigInteger id) {
         AppProject result = appProjectService.findById(id);
+        return new Result<>(result);
+    }
+
+    @GetMapping("publish")
+    Result<List<ProjectPublishVO>> getPublish(@RequestParam("userId") BigInteger userId, @RequestParam(value = "id", required = false) BigInteger id, @ModelAttribute PageDTO pageDTO) {
+        List<ProjectPublishVO> result = appProjectService.getPublish(userId, id, pageDTO);
+        return new Result<>(result);
+    }
+
+    @GetMapping("{projectId}/publish")
+    Result<ProjectPublishDetailVO> getPublishDetail(@RequestParam("userId") BigInteger userId, @PathVariable("projectId") BigInteger projectId) {
+        ProjectPublishDetailVO result = appProjectService.getPublishDetail(userId, projectId);
+        return new Result<>(result);
+    }
+
+    @GetMapping("{projectId}/publish/list")
+    Result<List<ProjectPublishListVO>> getPublishList(@RequestParam("userId") BigInteger userId, @PathVariable("projectId") BigInteger projectId, @RequestParam(value = "id", required = false) BigInteger id, @ModelAttribute PageDTO pageDTO) {
+        List<ProjectPublishListVO> result = appProjectService.getPublishList(userId, projectId, id, pageDTO);
         return new Result<>(result);
     }
 
