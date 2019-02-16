@@ -160,9 +160,6 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         BigInteger gasLimit = null;
         if (token.getId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
             //实际转账金额需要扣除手续费
-            gasLimit = BigInteger.valueOf(21000);
-            BigDecimal fee = Convert.fromWei(new BigDecimal(gasLimit.multiply(gasPrice)), Convert.Unit.ETHER);
-            value = value.subtract(fee);
             orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         } else {
             //erc20暂时无法扣除手续费
