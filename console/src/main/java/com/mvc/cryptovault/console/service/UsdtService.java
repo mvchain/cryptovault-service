@@ -211,7 +211,7 @@ public class UsdtService extends BlockService {
         BigDecimal value = new BigDecimal(tx.getAmount());
         CommonAddress address = isOurAddress(tx.getSendingaddress(), tx.getReferenceaddress());
         //非内部地址忽略,非usdt充值忽略
-        if (null == address || !tx.getPropertyid().equals(BigInteger.valueOf(propId))) {
+        if (null == address || !tx.getPropertyid().equals(propId)) {
             return null;
         }
         Long time = System.currentTimeMillis();
@@ -249,6 +249,7 @@ public class UsdtService extends BlockService {
 
     private void oldListener() {
         String lastNumber = getHeight();
+        lastNumber = "0000000000000000002a51608bfb0dd36e8e920bf66840dd01a9d670f20e8c52";
         Block block = null;
         while (true) {
             try {
