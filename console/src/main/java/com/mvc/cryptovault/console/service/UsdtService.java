@@ -249,7 +249,6 @@ public class UsdtService extends BlockService {
 
     private void oldListener() {
         String lastNumber = getHeight();
-        lastNumber = "0000000000000000002a51608bfb0dd36e8e920bf66840dd01a9d670f20e8c52";
         Block block = null;
         while (true) {
             try {
