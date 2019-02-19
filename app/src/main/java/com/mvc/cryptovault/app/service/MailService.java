@@ -26,7 +26,7 @@ public class MailService {
     @Autowired
     private JavaMailSender mailSender;
     public static Queue<String> queue = new ConcurrentLinkedQueue<>();
-    private final static Long EXPIRE = 5L;
+    private final static Long EXPIRE = 10L;
     @Autowired
     StringRedisTemplate redisTemplate;
     @Value("${spring.mail.username}")
