@@ -266,6 +266,9 @@ public class BtcService extends BlockService {
         PageHelper.startPage(1, 10);
         List<BlockTransaction> blockTransaction = blockTransactionService.findByCondition(condition);
         blockTransaction.forEach(obj -> {
+            if(!obj.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_BTC)){
+                return;
+            }
             blockTransactionService.updateSuccess(obj);
             try {
                 updateAddressBalance(obj.getTokenId(), obj.getFromAddress(), BtcAction.getBtcBalance(obj.getFromAddress()));

@@ -352,6 +352,9 @@ public class UsdtService extends BlockService {
         List<BlockTransaction> blockTransaction = blockTransactionService.findByCondition(condition);
         blockTransaction.forEach(obj -> {
             blockTransactionService.updateSuccess(obj);
+            if(!obj.getTokenId().equals(BusinessConstant.BASE_TOKEN_ID_USDT)){
+                return;
+            }
             try {
                 updateAddressBalance(obj.getTokenId(), obj.getFromAddress(), BtcAction.getTetherBalance(obj.getFromAddress()).getBalance());
                 updateAddressBalance(obj.getTokenId(), obj.getToAddress(), BtcAction.getTetherBalance(obj.getToAddress()).getBalance());
