@@ -61,7 +61,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         CommonAddress address = commonAddressService.findOneBy("address", transactionDTO.getAddress());
         CommonToken token = tokenService.findById(transactionDTO.getTokenId());
         //扣除平台手续费
-        appUserBalanceService.updateBalance(address.getUserId(), BusinessConstant.BASE_TOKEN_ID_VRT, BigDecimal.ZERO.subtract(BigDecimal.valueOf(token.getFee())));
+        appUserBalanceService.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_VRT, BigDecimal.ZERO.subtract(BigDecimal.valueOf(token.getFee())));
         if (null != address && !address.getUserId().equals(BigInteger.ZERO)) {
             //inner
             String userAddress = appUserAddressService.getAddress(userId, transactionDTO.getTokenId());
