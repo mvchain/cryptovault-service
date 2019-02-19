@@ -159,6 +159,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         BigDecimal value = transaction.getValue().multiply(BigDecimal.TEN.pow(token.getTokenDecimal()));
         BigInteger gasLimit = null;
         if (token.getId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
+            gasLimit = BigInteger.valueOf(21000);
             //实际转账金额需要扣除手续费
             orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
         } else {
