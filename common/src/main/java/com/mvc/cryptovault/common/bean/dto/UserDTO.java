@@ -26,4 +26,6 @@ public class UserDTO {
     @ApiModelProperty("验证码.登录时返回的错误次数过多时需要输入")
     private String validCode;
 
+    @ApiModelProperty("图片验证token,密码错误次数过多时必须传入")
+    private String imageToken;
 }

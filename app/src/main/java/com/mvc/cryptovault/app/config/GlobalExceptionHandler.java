@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.app.config;
 
 import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.util.PassWrongMoreException;
 import com.mvc.cryptovault.common.util.PvkeyException;
 import com.mvc.cryptovault.common.util.TokenErrorException;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Result tokenErrorExceptionException() {
         return new Result(HttpStatus.UNAUTHORIZED.value(), "token error", null);
+    }
+
+    @ExceptionHandler(PassWrongMoreException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public Result tokenPassWrongMoreException(PassWrongMoreException e) {
+        return new Result(HttpStatus.PAYMENT_REQUIRED.value(), e.getMessage(), null);
     }
 
     @ExceptionHandler(PvkeyException.class)

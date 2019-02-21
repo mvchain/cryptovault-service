@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.app.controller;
 
 import com.mvc.cryptovault.app.service.MailService;
+import com.mvc.cryptovault.app.util.GeetestLib;
 import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.*;
 import com.mvc.cryptovault.common.bean.vo.*;
@@ -15,7 +16,6 @@ import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
-import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,6 +42,47 @@ public class UserController extends BaseController {
 
     @Autowired
     MailService mailService;
+    @Autowired
+    GeetestLib gtSdk;
+
+    @ApiOperation("获取验证码信息")
+    @GetMapping("valid")
+    @NotLogin
+    public Result<ValidVO> getValiMsg(@RequestParam String email) {
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("user_id", email);
+        int gtServerStatus = gtSdk.preProcess(param);
+        //进行验证预处理
+        String resStr = gtSdk.getResponseStr();
+        ValidVO vo = new ValidVO();
+        vo.setResult(resStr);
+        vo.setUid(email);
+        vo.setStatus(gtServerStatus);
+        return new Result(vo);
+    }
+
+    @ApiOperation("验证验证码")
+    @PostMapping("valid")
+    @NotLogin
+    public Result<String> checkValiImage(@RequestBody ValidDTO validDTO) {
+        String challenge = validDTO.getGeetest_challenge();
+        String validate = validDTO.getGeetest_validate();
+        String seccode = validDTO.getGeetest_seccode();
+        //从session中获取userid
+        String userid = validDTO.getUid();
+        //自定义参数,可选择添加
+        HashMap<String, String> param = new HashMap<String, String>();
+        param.put("user_id", userid);
+        int gtResult = 0;
+        if (validDTO.getStatus() == 1) {
+            gtResult = gtSdk.enhencedValidateRequest(challenge, validate, seccode, param);
+        } else {
+            gtResult = gtSdk.failbackValidateRequest(challenge, validate, seccode);
+        }
+        String token = JwtHelper.create(validDTO.getUid(), BigInteger.ZERO, "valiCode");
+        return new Result<>(gtResult == 1 ? token : "");
+    }
+
 
     @ApiOperation("用户登录,缓存登录令牌.登录规则后续确定,如返回406则需要校验助记词(错误信息中返回助记词字符串)")
     @PostMapping("login")
@@ -77,7 +119,7 @@ public class UserController extends BaseController {
         return new Result<>(result);
     }
 
-    @ApiOperation("获取邮箱验证码, 5分钟内有效, 以最后一次为准")
+    @ApiOperation("获取邮箱验证码, 10分钟内有效, 以最后一次为准")
     @GetMapping("email/logout")
     @NotLogin
     public Result<Boolean> getSms(@RequestParam String email) {

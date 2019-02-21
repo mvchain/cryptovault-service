@@ -792,3 +792,366 @@ ADD COLUMN `http_url`  varchar(255) NULL AFTER `app_package`;
 
 ALTER TABLE `block_transaction`
 ADD COLUMN `plat_fee`  decimal(40,20) NULL AFTER `order_number`;
+
+ALTER TABLE `admin_permission`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '记录id' FIRST ;
+
+ALTER TABLE `admin_user`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '管理员id' FIRST ,
+MODIFY COLUMN `username`  varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '用户名' AFTER `id`,
+MODIFY COLUMN `password`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '密码' AFTER `username`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '管理员状态1有效 0无效' AFTER `password`,
+MODIFY COLUMN `nickname`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '昵称' AFTER `status`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `nickname`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `admin_type`  tinyint(4) NULL DEFAULT NULL COMMENT '管理员类型0超级管理员 1普通管理员' AFTER `updated_at`;
+
+ALTER TABLE `admin_user_permission`
+MODIFY COLUMN `user_id`  bigint(20) NULL DEFAULT NULL COMMENT '管理员id' FIRST ,
+MODIFY COLUMN `permission_id`  bigint(20) NULL DEFAULT NULL COMMENT '权限id' AFTER `user_id`;
+
+ALTER TABLE `admin_wallet`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '钱包记录id' FIRST ,
+MODIFY COLUMN `is_hot`  tinyint(4) NULL DEFAULT NULL COMMENT '是否热钱包' AFTER `id`,
+MODIFY COLUMN `address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '钱包地址' AFTER `is_hot`,
+MODIFY COLUMN `balance`  decimal(40,20) NULL DEFAULT NULL COMMENT '余额，保留字段' AFTER `address`,
+MODIFY COLUMN `block_type`  tinyint(4) NULL DEFAULT NULL COMMENT '区块链类型1ETH 2BTC' AFTER `balance`,
+MODIFY COLUMN `pv_key`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '热钱包私钥' AFTER `block_type`;
+
+ALTER TABLE `app_financial`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '理财记录id' FIRST ,
+MODIFY COLUMN `name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '理财项目名' AFTER `id`,
+MODIFY COLUMN `base_token_id`  bigint(20) NULL DEFAULT NULL COMMENT '支付货币id' AFTER `name`,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '收益货币id' AFTER `base_token_id`,
+MODIFY COLUMN `base_token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '支付货币名称' AFTER `token_id`,
+MODIFY COLUMN `token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收益货币名称' AFTER `base_token_name`,
+MODIFY COLUMN `ratio`  float NULL DEFAULT NULL COMMENT '兑换比例' AFTER `token_name`,
+MODIFY COLUMN `depth`  int(11) NULL DEFAULT NULL COMMENT '有效层级' AFTER `ratio`,
+MODIFY COLUMN `income_min`  float NULL DEFAULT NULL COMMENT '最小收益' AFTER `depth`,
+MODIFY COLUMN `income_max`  float NULL DEFAULT NULL COMMENT '最大收益' AFTER `income_min`,
+MODIFY COLUMN `start_at`  bigint(20) NULL DEFAULT NULL COMMENT '开始时间' AFTER `income_max`,
+MODIFY COLUMN `stop_at`  bigint(20) NULL DEFAULT NULL COMMENT '结束时间' AFTER `start_at`,
+MODIFY COLUMN `limit_value`  decimal(40,20) NULL DEFAULT NULL COMMENT '项目总量' AFTER `stop_at`,
+MODIFY COLUMN `user_limit`  decimal(40,20) NULL DEFAULT NULL COMMENT '用户限购' AFTER `limit_value`,
+MODIFY COLUMN `times`  int(11) NULL DEFAULT NULL COMMENT '理财天数' AFTER `user_limit`,
+MODIFY COLUMN `min_value`  decimal(40,20) NULL DEFAULT NULL COMMENT '最小购买量' AFTER `times`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `min_value`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '项目状态0未开始 1已开始 2结束' AFTER `updated_at`,
+MODIFY COLUMN `sold`  decimal(40,20) NULL DEFAULT NULL COMMENT '已出售数量' AFTER `status`,
+MODIFY COLUMN `visible`  tinyint(4) NULL DEFAULT NULL COMMENT '是否可见' AFTER `sold`;
+
+ALTER TABLE `app_financial_content`
+MODIFY COLUMN `financial_id`  bigint(20) NOT NULL COMMENT '理财项目id' FIRST ,
+MODIFY COLUMN `content`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '内容说明' AFTER `financial_id`,
+MODIFY COLUMN `rule`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '规则说明' AFTER `content`;
+
+ALTER TABLE `app_financial_detail`
+MODIFY COLUMN `financial_id`  bigint(20) NOT NULL COMMENT '理财项目id' FIRST ,
+MODIFY COLUMN `depth`  int(11) NOT NULL COMMENT '深度' AFTER `financial_id`,
+MODIFY COLUMN `ratio`  float NULL DEFAULT NULL COMMENT '收益率' AFTER `depth`;
+
+ALTER TABLE `app_info`
+MODIFY COLUMN `app_type`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT 'app类型， apk或ipa' FIRST ,
+MODIFY COLUMN `app_version`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'app版本号' AFTER `app_type`,
+MODIFY COLUMN `app_version_code`  int(11) NULL DEFAULT NULL COMMENT '内部版本号' AFTER `app_version`,
+MODIFY COLUMN `app_package`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '包名' AFTER `app_version_code`,
+MODIFY COLUMN `http_url`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '下载地址' AFTER `app_package`;
+
+ALTER TABLE `app_message`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '消息id' FIRST ,
+MODIFY COLUMN `message`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '消息内容' AFTER `id`,
+MODIFY COLUMN `content_id`  bigint(20) NULL DEFAULT NULL COMMENT '关联数据id' AFTER `message`,
+MODIFY COLUMN `content_type`  varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '关联数据类型' AFTER `content_id`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '状态0未确认 1确认中 2已确认 9取消/失败' AFTER `content_type`,
+MODIFY COLUMN `message_type`  tinyint(4) NULL DEFAULT NULL COMMENT '消息类型0普通消息 1推送消息' AFTER `status`,
+MODIFY COLUMN `is_read`  tinyint(4) NULL DEFAULT NULL COMMENT '已读状态' AFTER `message_type`,
+MODIFY COLUMN `send_flag`  tinyint(4) NULL DEFAULT NULL COMMENT '是否已发送' AFTER `is_read`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `send_flag`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '修改时间' AFTER `created_at`,
+MODIFY COLUMN `user_id`  bigint(20) NOT NULL COMMENT '用户时间' AFTER `updated_at`,
+MODIFY COLUMN `push_time`  bigint(20) NULL DEFAULT NULL COMMENT '推送时间' AFTER `user_id`;
+
+ALTER TABLE `app_order`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '订单记录id' FIRST ,
+MODIFY COLUMN `order_number`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单编号' AFTER `id`,
+MODIFY COLUMN `classify`  tinyint(4) NULL DEFAULT NULL COMMENT '订单种类[0区块链交易 1订单交易 2众筹交易（包含众筹和由众筹引起的释放）3划账 4理財]' AFTER `order_number`,
+MODIFY COLUMN `order_content_id`  bigint(20) NULL DEFAULT NULL COMMENT '关联记录id' AFTER `classify`,
+MODIFY COLUMN `order_content_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '关联内容名称' AFTER `order_content_id`,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '令牌id' AFTER `order_content_name`,
+MODIFY COLUMN `order_type`  tinyint(4) NULL DEFAULT NULL COMMENT '订单类型1转入 2转出' AFTER `token_id`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `order_type`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '修改时间' AFTER `created_at`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '转账状态[0待打包 1确认中 2打包成功 9打包失败]' AFTER `updated_at`,
+MODIFY COLUMN `value`  decimal(40,20) NULL DEFAULT NULL COMMENT '订单数量' AFTER `status`,
+MODIFY COLUMN `user_id`  bigint(20) NOT NULL COMMENT '用户id' AFTER `value`,
+MODIFY COLUMN `hash`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '交易hash' AFTER `user_id`,
+MODIFY COLUMN `from_address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '来源地址' AFTER `hash`,
+MODIFY COLUMN `project_id`  bigint(20) NULL DEFAULT NULL COMMENT '项目id' AFTER `from_address`,
+MODIFY COLUMN `order_remark`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单备注' AFTER `project_id`,
+MODIFY COLUMN `fee`  decimal(40,20) NULL DEFAULT NULL COMMENT '手续费' AFTER `order_remark`,
+MODIFY COLUMN `to_address`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '目标地址' AFTER `fee`;
+
+ALTER TABLE `app_project`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '众筹项目id' FIRST ,
+MODIFY COLUMN `project_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '众筹项目名称' AFTER `id`,
+MODIFY COLUMN `base_token_id`  bigint(20) NULL DEFAULT NULL COMMENT '支付币种id' AFTER `project_name`,
+MODIFY COLUMN `base_token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '支付币种名称' AFTER `base_token_id`,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '收益币种id' AFTER `base_token_name`,
+MODIFY COLUMN `token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '收益币种名称' AFTER `token_id`,
+MODIFY COLUMN `project_image`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '项目图片' AFTER `token_name`,
+MODIFY COLUMN `pair_id`  bigint(20) NULL DEFAULT NULL COMMENT '交易对id' AFTER `project_image`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `pair_id`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '项目状态0即将开始 1进行中 2已结束 3发币中 9取消' AFTER `created_at`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `status`,
+MODIFY COLUMN `visiable`  tinyint(4) NULL DEFAULT NULL COMMENT '是否可见' AFTER `updated_at`,
+MODIFY COLUMN `started_at`  bigint(20) NULL DEFAULT NULL COMMENT '开始时间' AFTER `visiable`,
+MODIFY COLUMN `stop_at`  bigint(20) NULL DEFAULT NULL COMMENT '结束时间' AFTER `started_at`,
+MODIFY COLUMN `publish_at`  bigint(20) NULL DEFAULT NULL COMMENT '发布时间' AFTER `stop_at`,
+MODIFY COLUMN `project_total`  decimal(40,20) NULL DEFAULT NULL COMMENT '项目总量' AFTER `publish_at`,
+MODIFY COLUMN `ratio`  float(40,20) NULL DEFAULT NULL COMMENT '兑换比例' AFTER `project_total`,
+MODIFY COLUMN `release_value`  float NULL DEFAULT NULL COMMENT '释放比例' AFTER `ratio`,
+MODIFY COLUMN `project_limit`  decimal(40,20) NULL DEFAULT NULL COMMENT '限购数量' AFTER `release_value`,
+MODIFY COLUMN `project_min`  decimal(40,20) NULL DEFAULT NULL COMMENT '最小购买金额' AFTER `project_limit`;
+
+ALTER TABLE `app_project_partake`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '众筹记录id' FIRST ,
+MODIFY COLUMN `project_id`  bigint(20) NULL DEFAULT NULL COMMENT '众筹项目id' AFTER `id`,
+MODIFY COLUMN `user_id`  bigint(20) NOT NULL COMMENT '用户id' AFTER `project_id`,
+MODIFY COLUMN `value`  decimal(40,20) NULL DEFAULT NULL COMMENT '金额' AFTER `user_id`,
+MODIFY COLUMN `times`  int(11) NULL DEFAULT NULL COMMENT '剩余发放次数' AFTER `value`,
+MODIFY COLUMN `reverse_value`  decimal(40,20) NULL DEFAULT NULL COMMENT '释放数量' AFTER `times`,
+MODIFY COLUMN `publish_time`  bigint(20) NULL DEFAULT NULL COMMENT '发币时间' AFTER `reverse_value`,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '令牌id' AFTER `publish_time`;
+
+ALTER TABLE `app_project_user_transaction`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户众筹记录id' FIRST ,
+MODIFY COLUMN `user_id`  bigint(20) NOT NULL COMMENT '用户id' AFTER `id`,
+MODIFY COLUMN `project_id`  bigint(20) NULL DEFAULT NULL COMMENT '项目id' AFTER `user_id`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `project_id`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `pair_id`  bigint(20) NULL DEFAULT NULL COMMENT '交易对id' AFTER `updated_at`,
+MODIFY COLUMN `result`  tinyint(4) NULL DEFAULT NULL COMMENT '结果-0等待 1成功 4取消 9失败' AFTER `pair_id`,
+MODIFY COLUMN `value`  decimal(40,20) NULL DEFAULT NULL COMMENT '参与数量' AFTER `result`,
+MODIFY COLUMN `payed`  decimal(40,20) NULL DEFAULT NULL COMMENT '支付金额' AFTER `value`,
+MODIFY COLUMN `success_value`  decimal(40,20) NULL DEFAULT NULL COMMENT '成功预约数量' AFTER `payed`,
+MODIFY COLUMN `success_payed`  decimal(40,20) NULL DEFAULT NULL COMMENT '成功支付数量' AFTER `success_value`,
+MODIFY COLUMN `index`  int(11) NULL DEFAULT NULL COMMENT '排序位置，冗余' AFTER `success_payed`,
+MODIFY COLUMN `project_order_number`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单记录号' AFTER `index`;
+
+ALTER TABLE `app_user`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户id' FIRST ,
+MODIFY COLUMN `cellphone`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '手机号，冗余' AFTER `id`,
+MODIFY COLUMN `password`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '密码' AFTER `cellphone`,
+MODIFY COLUMN `head_image`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '头像地址' AFTER `password`,
+MODIFY COLUMN `transaction_password`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '交易密码' AFTER `head_image`,
+MODIFY COLUMN `nickname`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '昵称' AFTER `transaction_password`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `nickname`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '用户状态1有效0无效' AFTER `updated_at`,
+MODIFY COLUMN `invite_level`  int(20) NULL DEFAULT NULL COMMENT '有效层级' AFTER `status`,
+MODIFY COLUMN `email`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '邮箱地址' AFTER `invite_level`,
+MODIFY COLUMN `pv_key`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '私钥' AFTER `email`,
+MODIFY COLUMN `invite_num`  int(11) NULL DEFAULT NULL COMMENT '邀请数量' AFTER `pv_key`;
+
+ALTER TABLE `app_user_address`
+MODIFY COLUMN `user_id`  bigint(20) NULL DEFAULT NULL COMMENT '用户id' FIRST ,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '令牌id' AFTER `user_id`,
+MODIFY COLUMN `address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '地址' AFTER `token_id`;
+
+ALTER TABLE `app_user_balance`
+MODIFY COLUMN `user_id`  bigint(20) NOT NULL COMMENT '用户id' FIRST ,
+MODIFY COLUMN `token_id`  bigint(20) NOT NULL COMMENT '令牌id' AFTER `user_id`,
+MODIFY COLUMN `balance`  decimal(40,20) NULL DEFAULT NULL COMMENT '余额' AFTER `token_id`,
+MODIFY COLUMN `visible`  tinyint(4) NULL DEFAULT NULL COMMENT '是否可见' AFTER `balance`,
+MODIFY COLUMN `pending_balance`  decimal(40,20) NULL DEFAULT NULL COMMENT '待确认金额，冗余' AFTER `visible`;
+
+ALTER TABLE `app_user_financial_income`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '理财收益记录id' FIRST ,
+MODIFY COLUMN `user_id`  bigint(20) NOT NULL COMMENT '用户id' AFTER `id`,
+MODIFY COLUMN `financial_id`  bigint(20) NULL DEFAULT NULL COMMENT '理财项目id' AFTER `user_id`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `financial_id`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '令牌id' AFTER `updated_at`,
+MODIFY COLUMN `token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌名称' AFTER `token_id`,
+MODIFY COLUMN `value`  decimal(40,20) NULL DEFAULT NULL COMMENT '数量' AFTER `token_name`,
+MODIFY COLUMN `partake_id`  bigint(20) NULL DEFAULT NULL COMMENT '理财参与记录id' AFTER `value`;
+
+ALTER TABLE `app_user_financial_partake`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '理财参与记录id' FIRST ,
+MODIFY COLUMN `user_id`  bigint(20) NOT NULL COMMENT '用户id' AFTER `id`,
+MODIFY COLUMN `financial_id`  bigint(20) NULL DEFAULT NULL COMMENT '理财项目id' AFTER `user_id`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `financial_id`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `value`  decimal(40,20) NULL DEFAULT NULL COMMENT '数量' AFTER `updated_at`,
+MODIFY COLUMN `times`  int(11) NULL DEFAULT NULL COMMENT '次数' AFTER `value`,
+MODIFY COLUMN `shadow_value`  decimal(40,20) NULL DEFAULT NULL COMMENT '影子积分' AFTER `times`,
+MODIFY COLUMN `status`  int(11) NULL DEFAULT NULL COMMENT '数据状态0默认 2成功 9失败' AFTER `shadow_value`,
+MODIFY COLUMN `income`  decimal(40,20) NULL DEFAULT NULL COMMENT '收益' AFTER `status`,
+MODIFY COLUMN `order_number`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单号' AFTER `income`,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '收益货币id' AFTER `order_number`,
+MODIFY COLUMN `base_token_id`  bigint(20) NULL DEFAULT NULL COMMENT '支付货币id' AFTER `token_id`;
+
+ALTER TABLE `app_user_invite`
+MODIFY COLUMN `user_id`  bigint(20) NULL DEFAULT NULL COMMENT '用户id' FIRST ,
+MODIFY COLUMN `invite_user_id`  bigint(20) NULL DEFAULT NULL COMMENT '邀请用户id' AFTER `user_id`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `invite_user_id`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`;
+
+ALTER TABLE `app_user_transaction`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '用户交易记录id' FIRST ,
+MODIFY COLUMN `pair_id`  bigint(20) NULL DEFAULT NULL COMMENT '交易对id' AFTER `id`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `pair_id`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `order_number`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单号' AFTER `updated_at`,
+MODIFY COLUMN `parent_id`  bigint(20) NULL DEFAULT NULL COMMENT '交易对id' AFTER `order_number`,
+MODIFY COLUMN `value`  decimal(40,20) NULL DEFAULT NULL COMMENT '订单数' AFTER `parent_id`,
+MODIFY COLUMN `success_value`  decimal(40,20) NULL DEFAULT NULL COMMENT '成功数量' AFTER `value`,
+MODIFY COLUMN `user_id`  bigint(20) NOT NULL COMMENT '用户id' AFTER `success_value`,
+MODIFY COLUMN `target_user_id`  bigint(20) NULL DEFAULT NULL COMMENT '交易对象用户id' AFTER `user_id`,
+MODIFY COLUMN `price`  decimal(40,20) NULL DEFAULT NULL COMMENT '支付金额' AFTER `target_user_id`,
+MODIFY COLUMN `transaction_type`  tinyint(4) NULL DEFAULT NULL COMMENT '交易类型1购买 2出售' AFTER `price`,
+MODIFY COLUMN `self_order`  tinyint(4) NULL DEFAULT NULL COMMENT '是否为用户自己的订单' AFTER `transaction_type`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '订单状态 0未完成 1全部完成 4取消' AFTER `self_order`;
+
+ALTER TABLE `block_hot_address`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '热地址id' FIRST ,
+MODIFY COLUMN `address`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '热钱包地址' AFTER `id`,
+MODIFY COLUMN `pv_key`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '热钱包私钥' AFTER `address`;
+
+ALTER TABLE `block_sign`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '签名记录id' FIRST ,
+MODIFY COLUMN `opr_type`  tinyint(4) NULL DEFAULT NULL COMMENT '操作类型0汇总 1充值 2提现' AFTER `id`,
+MODIFY COLUMN `order_id`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单号' AFTER `opr_type`,
+MODIFY COLUMN `sign`  longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '签名内容' AFTER `order_id`,
+MODIFY COLUMN `result`  varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '签名结果描述' AFTER `sign`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '签名结果0等待 1已签名 9失败' AFTER `result`,
+MODIFY COLUMN `hash`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '交易hash' AFTER `status`,
+MODIFY COLUMN `started_at`  bigint(20) NULL DEFAULT NULL COMMENT '开始时间' AFTER `hash`,
+MODIFY COLUMN `token_type`  varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌类型, 如ETH或BTC' AFTER `started_at`,
+MODIFY COLUMN `contract_address`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '合约地址' AFTER `token_type`,
+MODIFY COLUMN `from_address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '来源地址' AFTER `contract_address`,
+MODIFY COLUMN `to_address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '目标地址' AFTER `from_address`;
+
+ALTER TABLE `token_volume`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '交易数量记录id' FIRST ,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `id`,
+MODIFY COLUMN `value`  decimal(60,20) NULL DEFAULT NULL COMMENT '数量' AFTER `created_at`,
+MODIFY COLUMN `token_id`  bigint(20) NOT NULL COMMENT '令牌id' AFTER `value`,
+MODIFY COLUMN `used`  tinyint(4) NULL DEFAULT NULL COMMENT '是否已处理' AFTER `token_id`;
+
+ALTER TABLE `common_token_price`
+MODIFY COLUMN `token_id`  bigint(20) NOT NULL COMMENT '令牌id' FIRST ,
+MODIFY COLUMN `token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌名称' AFTER `token_id`,
+MODIFY COLUMN `token_price`  decimal(40,20) NULL DEFAULT NULL COMMENT '令牌价格' AFTER `token_name`;
+
+ALTER TABLE `common_token_history`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '价格记录历史id' FIRST ,
+MODIFY COLUMN `token_id`  bigint(20) NOT NULL COMMENT '令牌id' AFTER `id`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `token_id`,
+MODIFY COLUMN `price`  decimal(40,20) NULL DEFAULT NULL COMMENT '价格' AFTER `created_at`;
+
+ALTER TABLE `common_token_control_next`
+MODIFY COLUMN `token_id`  bigint(20) NOT NULL COMMENT '令牌id' FIRST ,
+MODIFY COLUMN `next_price`  decimal(40,20) NULL DEFAULT NULL COMMENT '下一个目标价格' AFTER `token_id`,
+MODIFY COLUMN `next_type`  tinyint(4) NULL DEFAULT NULL COMMENT '方向1涨 2跌' AFTER `next_price`,
+MODIFY COLUMN `total_success`  decimal(60,20) NULL DEFAULT NULL COMMENT '已完成数量' AFTER `next_type`,
+MODIFY COLUMN `float_price`  decimal(40,20) NULL DEFAULT NULL COMMENT '下一个小浮动价格' AFTER `total_success`;
+
+ALTER TABLE `common_token_control`
+MODIFY COLUMN `token_id`  bigint(20) NOT NULL COMMENT '令牌id' FIRST ,
+MODIFY COLUMN `increase_min`  float NULL DEFAULT NULL COMMENT '最小涨幅' AFTER `token_id`,
+MODIFY COLUMN `increase_max`  float NULL DEFAULT NULL COMMENT '最大涨幅' AFTER `increase_min`,
+MODIFY COLUMN `decrease_min`  float NULL DEFAULT NULL COMMENT '最小跌幅' AFTER `increase_max`,
+MODIFY COLUMN `decrease_max`  float NULL DEFAULT NULL COMMENT '最大跌幅' AFTER `decrease_min`,
+MODIFY COLUMN `buy_min`  float NULL DEFAULT NULL COMMENT '购买定价上限' AFTER `decrease_max`,
+MODIFY COLUMN `buy_max`  float NULL DEFAULT NULL COMMENT '购买定价下限' AFTER `buy_min`,
+MODIFY COLUMN `sell_min`  float NULL DEFAULT NULL COMMENT '最小出售数量' AFTER `buy_max`,
+MODIFY COLUMN `sell_max`  float NULL DEFAULT NULL COMMENT '最大出售数量' AFTER `sell_min`,
+MODIFY COLUMN `price_base`  decimal(40,20) NULL DEFAULT NULL COMMENT '价格波动基数' AFTER `sell_max`,
+MODIFY COLUMN `next_price`  decimal(40,20) NULL DEFAULT NULL COMMENT '下一个目标价格' AFTER `price_base`,
+MODIFY COLUMN `wave_min`  float NULL DEFAULT NULL COMMENT '最小波动值' AFTER `next_price`,
+MODIFY COLUMN `wave_max`  float NULL DEFAULT NULL COMMENT '最大波动值' AFTER `wave_min`,
+MODIFY COLUMN `start_price`  decimal(40,20) NULL DEFAULT NULL COMMENT '初始价格' AFTER `wave_max`,
+MODIFY COLUMN `start_status`  tinyint(4) NULL DEFAULT NULL COMMENT '是否开始' AFTER `start_price`,
+MODIFY COLUMN `transaction_status`  tinyint(4) NULL DEFAULT NULL COMMENT '是否可交易' AFTER `start_status`,
+MODIFY COLUMN `min_limit`  decimal(40,20) NULL DEFAULT NULL COMMENT ' 最小购买量' AFTER `transaction_status`;
+
+ALTER TABLE `common_token`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '令牌记录id' FIRST ,
+MODIFY COLUMN `token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌名称' AFTER `id`,
+MODIFY COLUMN `token_cn_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌中文名称' AFTER `token_name`,
+MODIFY COLUMN `token_en_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌英文名称' AFTER `token_cn_name`,
+MODIFY COLUMN `token_image`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌图片' AFTER `token_en_name`,
+MODIFY COLUMN `token_type`  varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌类型，如ETH BTC' AFTER `token_image`,
+MODIFY COLUMN `link`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '区跨链浏览器地址，冗余' AFTER `token_type`,
+MODIFY COLUMN `token_decimal`  int(11) NULL DEFAULT NULL COMMENT '令牌位数（erc20）' AFTER `link`,
+MODIFY COLUMN `token_contract_address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '合约地址' AFTER `token_decimal`,
+MODIFY COLUMN `index_id`  int(11) NULL DEFAULT NULL COMMENT '排序位置，冗余' AFTER `token_contract_address`,
+MODIFY COLUMN `visible`  tinyint(4) NULL DEFAULT NULL COMMENT '是否可见' AFTER `index_id`,
+MODIFY COLUMN `withdraw`  tinyint(4) NULL DEFAULT NULL COMMENT '是否可提现' AFTER `visible`,
+MODIFY COLUMN `recharge`  tinyint(4) NULL DEFAULT NULL COMMENT '是否可充值' AFTER `withdraw`,
+MODIFY COLUMN `fee`  float NULL DEFAULT NULL COMMENT '提现手续费' AFTER `recharge`,
+MODIFY COLUMN `transafer_fee`  float NULL DEFAULT NULL COMMENT '区块链实际手续费' AFTER `fee`,
+MODIFY COLUMN `withdraw_min`  decimal(40,20) NULL DEFAULT NULL COMMENT '最小提现金额' AFTER `transafer_fee`,
+MODIFY COLUMN `withdraw_max`  decimal(40,20) NULL DEFAULT NULL COMMENT '最大提现金额' AFTER `withdraw_min`,
+MODIFY COLUMN `withdraw_day`  decimal(40,20) NULL DEFAULT NULL COMMENT '单日提现上限' AFTER `withdraw_max`,
+MODIFY COLUMN `delete_status`  tinyint(4) NULL DEFAULT NULL COMMENT '删除标记位' AFTER `withdraw_day`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `delete_status`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `hold`  decimal(40,20) NULL DEFAULT NULL COMMENT '汇总保留金额' AFTER `updated_at`;
+
+ALTER TABLE `common_pair`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '交易对id' FIRST ,
+MODIFY COLUMN `pair_name`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '交易对名称' AFTER `id`,
+MODIFY COLUMN `base_token_id`  bigint(20) NULL DEFAULT NULL COMMENT '基础币种id' AFTER `pair_name`,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '目标币种id' AFTER `base_token_id`,
+MODIFY COLUMN `base_token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '基础币种名称' AFTER `token_id`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT '交易对启用状态，1有效0无效' AFTER `base_token_name`,
+MODIFY COLUMN `token_name`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '目标币种名称' AFTER `status`,
+MODIFY COLUMN `fee`  decimal(40,20) NULL DEFAULT NULL COMMENT '手续费，保留字段' AFTER `token_name`;
+
+ALTER TABLE `common_address`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '地址记录id' FIRST ,
+MODIFY COLUMN `token_type`  varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '区块链类型，eth或btc' AFTER `id`,
+MODIFY COLUMN `address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '地址' AFTER `token_type`,
+MODIFY COLUMN `used`  tinyint(4) NULL DEFAULT NULL COMMENT '是否被使用' AFTER `address`,
+MODIFY COLUMN `balance`  decimal(40,20) NULL DEFAULT NULL COMMENT '余额' AFTER `used`,
+MODIFY COLUMN `user_id`  bigint(20) NULL DEFAULT NULL COMMENT '用户id' AFTER `balance`,
+MODIFY COLUMN `address_type`  varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '令牌名称' AFTER `user_id`,
+MODIFY COLUMN `approve`  tinyint(4) NULL DEFAULT NULL COMMENT '是否已运行approve方法（eth地址）' AFTER `address_type`;
+
+ALTER TABLE `block_usdt_withdraw_queue`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '提现签名记录地址' FIRST ,
+MODIFY COLUMN `order_id`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单号' AFTER `id`,
+MODIFY COLUMN `from_address`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '来源地址' AFTER `order_id`,
+MODIFY COLUMN `fee`  decimal(40,20) NULL DEFAULT NULL COMMENT '收付费' AFTER `from_address`,
+MODIFY COLUMN `to_address`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '目标地址' AFTER `fee`,
+MODIFY COLUMN `status`  int(11) NULL DEFAULT NULL COMMENT '状态0等待1确认中 2已确认 9失败' AFTER `to_address`,
+MODIFY COLUMN `value`  decimal(40,20) NULL DEFAULT NULL COMMENT '数量' AFTER `status`,
+MODIFY COLUMN `started_at`  bigint(20) NULL DEFAULT NULL COMMENT '开始时间' AFTER `value`;
+
+ALTER TABLE `block_transaction`
+MODIFY COLUMN `id`  bigint(20) NOT NULL AUTO_INCREMENT COMMENT '区块链交易id' FIRST ,
+MODIFY COLUMN `hash`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '交易hash' AFTER `id`,
+MODIFY COLUMN `created_at`  bigint(20) NULL DEFAULT NULL COMMENT '创建时间' AFTER `hash`,
+MODIFY COLUMN `updated_at`  bigint(20) NULL DEFAULT NULL COMMENT '更新时间' AFTER `created_at`,
+MODIFY COLUMN `fee`  decimal(40,20) NULL DEFAULT NULL COMMENT '手续费' AFTER `updated_at`,
+MODIFY COLUMN `height`  int(11) NULL DEFAULT NULL COMMENT '出块高度' AFTER `fee`,
+MODIFY COLUMN `token_id`  bigint(20) NULL DEFAULT NULL COMMENT '令牌id' AFTER `height`,
+MODIFY COLUMN `token_type`  varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '区块链类型如btc eth' AFTER `token_id`,
+MODIFY COLUMN `opr_type`  tinyint(4) NULL DEFAULT NULL COMMENT '操作类型0汇总1充值2提现' AFTER `token_type`,
+MODIFY COLUMN `user_id`  bigint(20) NULL DEFAULT NULL COMMENT '用户id' AFTER `opr_type`,
+MODIFY COLUMN `status`  tinyint(4) NULL DEFAULT NULL COMMENT ' 订单状态0打包中 1确认中 2确认完毕 9失败' AFTER `user_id`,
+MODIFY COLUMN `transaction_status`  tinyint(4) NULL DEFAULT NULL COMMENT '交易状态1. 待审核2. 待签名（审核通过后3. 拒绝4. 正在提币（导入签名文件后5. 提币成功（交易确认成功后6. 失败\")' AFTER `status`,
+MODIFY COLUMN `error_msg`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '错误原因' AFTER `transaction_status`,
+MODIFY COLUMN `error_data`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '错误详情' AFTER `error_msg`,
+MODIFY COLUMN `value`  decimal(60,20) NULL DEFAULT NULL COMMENT '数量' AFTER `error_data`,
+MODIFY COLUMN `from_address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '来源地址' AFTER `value`,
+MODIFY COLUMN `to_address`  varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '目标地址' AFTER `from_address`,
+MODIFY COLUMN `order_number`  varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '订单号' AFTER `to_address`,
+MODIFY COLUMN `plat_fee`  decimal(40,20) NULL DEFAULT NULL COMMENT '平台手续费' AFTER `order_number`;
+
+ALTER TABLE `block_sign`
+MODIFY COLUMN `to_address`  text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL COMMENT '目标地址' AFTER `from_address`;
+

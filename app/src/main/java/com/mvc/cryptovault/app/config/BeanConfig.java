@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.app.config;
 
+import com.mvc.cryptovault.app.util.GeetestLib;
 import com.mvc.cryptovault.common.util.JwtHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -19,6 +20,10 @@ public class BeanConfig {
     private Long refresh;
     @Value("${service.base64Secret}")
     private String base64Secret;
+    @Value("${geetest.captchaId}")
+    private String captchaId;
+    @Value("${geetest.privateKey}")
+    private String privateKey;
 
     @Bean
     JwtHelper jwtHelper2() {
@@ -28,4 +33,11 @@ public class BeanConfig {
         JwtHelper.base64Secret = base64Secret;
         return new JwtHelper();
     }
+
+    @Bean
+    GeetestLib geetestLib() {
+        GeetestLib gtSdk = new GeetestLib(captchaId, privateKey, true);
+        return gtSdk;
+    }
+
 }
