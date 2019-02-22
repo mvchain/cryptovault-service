@@ -18,6 +18,9 @@ public interface ConsoleRemoteService {
     @GetMapping("appUserBalance/{userId}")
     Result<List<TokenBalanceVO>> getAsset(@PathVariable("userId") BigInteger userId);
 
+    @GetMapping("appUserBalance/{userId}/{tokenId}")
+    Result<TokenBalanceVO> getAssetByTokenId(@PathVariable("userId") BigInteger userId, @PathVariable("tokenId") BigInteger tokenId);
+
     @PutMapping("appUserBalance/{userId}")
     Result<Boolean> updateVisible(@PathVariable("userId") BigInteger userId, @RequestBody AssertVisibleDTO assertVisibleDTO);
 

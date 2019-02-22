@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * @author qiyichen
@@ -55,4 +56,7 @@ public class TransactionDetailVO {
 
     @ApiModelProperty("1转入 2转出")
     private Integer transactionType;
+
+    @ApiModelProperty("区块高度")
+    private BigInteger height;
 }

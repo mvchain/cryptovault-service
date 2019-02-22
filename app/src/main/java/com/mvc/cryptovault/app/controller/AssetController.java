@@ -34,6 +34,13 @@ public class AssetController extends BaseController {
         return new Result<>(assetService.getAsset(getUserId()));
     }
 
+    @ApiOperation("获取某个币种余额,建议缓存.币种名称图标等信息通过币种获取接口保存,这里不再重复返回.返回需要更具本地列表自行匹配,返回结果无序")
+    @GetMapping("{tokenId}")
+    public @ResponseBody
+    Result<TokenBalanceVO> getAssetByToken(@PathVariable BigInteger tokenId) {
+        return new Result<>(assetService.getAsset(getUserId(), tokenId));
+    }
+
     @ApiOperation("设置币种展示开关,更新优先队列较低")
     @PutMapping
     public @ResponseBody

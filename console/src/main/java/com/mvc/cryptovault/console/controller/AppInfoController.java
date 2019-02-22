@@ -40,6 +40,9 @@ public class AppInfoController extends BaseController {
     @GetMapping("{appType}")
     public Result<AppInfo> getApp(@PathVariable("appType") String appType) {
         AppInfo app = appInfoService.findById(appType);
+        if (null == app) {
+            app = new AppInfo();
+        }
         return new Result<>(app);
     }
 

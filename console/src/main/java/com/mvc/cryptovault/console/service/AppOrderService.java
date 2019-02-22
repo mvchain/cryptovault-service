@@ -12,6 +12,7 @@ import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,8 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
     @Autowired
     CommonAddressService commonAddressService;
     @Autowired
+    BlockTransactionService blockTransactionService;
+    @Autowired
     AppMessageService appMessageService;
     @Autowired
     CommonTokenService tokenService;
@@ -63,6 +66,12 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         vo.setToAddress(order.getToAddress());
         vo.setUpdatedAt(order.getUpdatedAt());
         vo.setValue(null == order.getValue() ? null : order.getValue().abs());
+        if (order.getClassify() == 0 && StringUtils.isNotBlank(vo.getBlockHash())) {
+            List<BlockTransaction> blockTrans = blockTransactionService.findBy("hash", vo.getBlockHash());
+            if (null != blockTrans && blockTrans.size() > 0) {
+                vo.setHeight(blockTrans.get(0).getHeight());
+            }
+        }
         return vo;
     }
 
@@ -87,8 +96,12 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
             CommonTokenPrice price = commonTokenPriceService.findById(token.getId());
             TransactionSimpleVO vo = new TransactionSimpleVO();
             BeanUtils.copyProperties(obj, vo);
+            if (vo.getOrderRemark().equalsIgnoreCase("手续费支出")) {
+                vo.setValue(null == obj.getFee().abs() ? BigDecimal.ZERO : obj.getFee().abs());
+            } else {
+                vo.setValue(vo.getValue().abs());
+            }
             vo.setTokenName(token.getTokenName());
-            vo.setValue(vo.getValue().abs());
             vo.setRatio(null == price ? BigDecimal.ZERO : price.getTokenPrice());
             vo.setTransactionType(obj.getOrderType());
             result.add(vo);

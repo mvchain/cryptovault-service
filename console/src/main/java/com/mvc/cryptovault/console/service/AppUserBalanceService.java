@@ -111,9 +111,31 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         return balance;
     }
 
-
-    public List<TokenBalanceVO> getAsset(BigInteger userId, Boolean ignoreHide) {
+    public TokenBalanceVO getAsset(BigInteger userId, BigInteger tokenId, Boolean ignoreHide) {
         String key = "AppUserBalance".toUpperCase() + "_" + userId;
+        initBalance(userId, key);
+        Object balance = redisTemplate.boundHashOps(key).get(String.valueOf(tokenId));
+        if (null == balance) {
+            return null;
+        }
+        TokenBalanceVO vo = new TokenBalanceVO();
+
+        String value = String.valueOf(balance);
+        BigDecimal tokenBalance = NumberUtils.parseNumber(value.split("#")[1], BigDecimal.class);
+        vo.setTokenId(tokenId);
+        vo.setValue(tokenBalance);
+        CommonToken token = commonTokenService.findById(vo.getTokenId());
+        if (null == token) {
+            return null;
+        }
+        CommonTokenPrice tokenPrice = commonTokenPriceService.findById(vo.getTokenId());
+        vo.setRatio(null == tokenPrice ? BigDecimal.ZERO : tokenPrice.getTokenPrice());
+        vo.setTokenName(token.getTokenName());
+        vo.setTokenImage(token.getTokenImage());
+        return vo;
+    }
+
+    private void initBalance(BigInteger userId, String key) {
         if (!redisTemplate.hasKey(key)) {
             List<AppUserBalance> list = findBy("userId", userId);
             if (null == list) {
@@ -123,6 +145,11 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
                 list.stream().forEach(obj -> redisTemplate.boundHashOps(key).put(String.valueOf(obj.getTokenId()), obj.getVisible() + "#" + String.valueOf(obj.getBalance())));
             }
         }
+    }
+
+    public List<TokenBalanceVO> getAsset(BigInteger userId, Boolean ignoreHide) {
+        String key = "AppUserBalance".toUpperCase() + "_" + userId;
+        initBalance(userId, key);
         Map<Object, Object> map = redisTemplate.boundHashOps(key).entries();
         List<TokenBalanceVO> result = new ArrayList<>(map.size());
         for (Map.Entry<Object, Object> entry : map.entrySet()) {

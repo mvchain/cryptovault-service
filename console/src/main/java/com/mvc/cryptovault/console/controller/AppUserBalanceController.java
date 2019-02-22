@@ -39,6 +39,12 @@ public class AppUserBalanceController extends BaseController {
         return new Result<>(list);
     }
 
+    @GetMapping("{userId}/{tokenId}")
+    public Result<TokenBalanceVO> getAsset(@PathVariable("userId") BigInteger userId, @PathVariable("tokenId") BigInteger tokenId) {
+        TokenBalanceVO list = appUserBalanceService.getAsset(userId, tokenId, false);
+        return new Result<>(list);
+    }
+
     @PutMapping("{userId}")
     public Result<Boolean> setAssetVisible(@RequestBody @Valid AssertVisibleDTO visibleDTO, @PathVariable("userId") BigInteger userId) {
         appUserBalanceService.setAssetVisible(visibleDTO, userId);

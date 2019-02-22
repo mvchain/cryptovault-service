@@ -28,6 +28,11 @@ public class AssetService {
         return result.getData();
     }
 
+    public TokenBalanceVO getAsset(BigInteger userId, BigInteger tokenId) {
+        Result<TokenBalanceVO> result = consoleRemoteService.getAssetByTokenId(userId, tokenId);
+        return result.getData();
+    }
+
     public BigDecimal getBalance(BigInteger userId) {
         Result<BigDecimal> result = consoleRemoteService.getBalance(userId);
         return result.getData();
