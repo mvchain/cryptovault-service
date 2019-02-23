@@ -73,9 +73,9 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         } else {
             PageHelper.orderBy("price desc,id desc");
         }
-        if (dto.getType() == 0 && null != dto.getId()) {
+        if (dto.getType() == 1 && null != dto.getId()) {
             ConditionUtil.andCondition(criteria, "id > ", dto.getId());
-        } else if (dto.getType() == 1 && null != dto.getId()) {
+        } else if (dto.getType() == 0 && null != dto.getId()) {
             AppUserTransaction trans = appUserTransactionMapper.selectByPrimaryKey(dto.getId());
             if(null != trans){
                 if (2 == dto.getTransactionType()) {
