@@ -161,7 +161,7 @@ public class CommonAddressService extends AbstractService<CommonAddress> impleme
         if (token.getId().equals(BusinessConstant.BASE_TOKEN_ID_ETH)) {
             gasLimit = BigInteger.valueOf(21000);
             //实际转账金额需要扣除手续费
-            orders.setValue(Convert.fromWei(value, Convert.Unit.ETHER));
+            orders.setValue(transaction.getValue());
         } else {
             //erc20暂时无法扣除手续费
             gasLimit = blockService.get("ETH").getEthEstimateTransfer(token.getTokenContractAddress(), transaction.getToAddress(), cold.getAddress(), value).multiply(BigInteger.valueOf(2));
