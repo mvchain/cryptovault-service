@@ -31,6 +31,8 @@ public class MailService {
     StringRedisTemplate redisTemplate;
     @Value("${spring.mail.username}")
     String mail;
+    @Value("${spring.mail.sendfrom}")
+    String sendfrom;
 
     @Async
     public void send(String email) {
@@ -43,7 +45,7 @@ public class MailService {
         String key = RedisConstant.MAIL_VALI_PRE + email;
         int code = (int) ((Math.random() * 9 + 1) * 100000);
         message.setTo(email);
-        message.setFrom(mail);
+        message.setFrom(sendfrom);
         message.setSubject(String.format("Identifying code"));
         message.setText(String.format("Your Code:%s", code));
         try {
