@@ -51,7 +51,7 @@ public class InviteUtil {
             sb.append(b);
             Random rnd = new Random();
             for (int i = 1; i < s - str.length(); i++) {
-                sb.append(r[(int) (id + i % binLen)]);
+                sb.append(r[(int) ((id + i) % binLen)]);
             }
             str += sb.toString();
         }
