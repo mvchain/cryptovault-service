@@ -188,7 +188,7 @@ public class UsdtService extends BlockService {
             //开始更新usdt排队列表
             blockUsdtWithdrawQueueService.start(sign.getOrderId(), sign.getToAddress());
         } catch (Exception e) {
-            if (e.getMessage().equalsIgnoreCase("Error #-26: 258: txn-mempool-conflict")) {
+            if (e.getMessage().equalsIgnoreCase("Error #-26: 258: txn-mempool-conflict") || e.getMessage().equalsIgnoreCase("Error #-25: Missing inputs")) {
                 //该种错误添加到重试列表
                 sign.setStartedAt(System.currentTimeMillis() + APPROVE_WAIT);
                 blockSignService.update(sign);
