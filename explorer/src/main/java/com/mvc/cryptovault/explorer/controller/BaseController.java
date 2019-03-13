@@ -1,7 +1,6 @@
 package com.mvc.cryptovault.explorer.controller;
 
 import com.mvc.cryptovault.explorer.service.BlockService;
-import com.mvc.cryptovault.explorer.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
@@ -16,7 +15,5 @@ public class BaseController {
 
     @Autowired
     BlockService blockService;
-    @Autowired
-    UserService userService;
 
 }
