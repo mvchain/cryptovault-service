@@ -2,7 +2,6 @@ package com.mvc.cryptovault.dashboard.controller;
 
 import com.mvc.cryptovault.common.bean.ExplorerBlockSetting;
 import com.mvc.cryptovault.common.bean.vo.Result;
-import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.dashboard.service.ExplorerService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,14 +22,12 @@ public class ExplorerController extends BaseController {
 
     @GetMapping()
     @ApiOperation("查询设置信息")
-    @NotLogin
     public Result<ExplorerBlockSetting> getSetting() {
         return new Result<>(explorerService.getExplorerSetting());
     }
 
     @PostMapping()
     @ApiOperation("编辑设置信息")
-    @NotLogin
     public Result<Boolean> setSetting(@RequestBody ExplorerBlockSetting setting) {
         explorerService.save(setting);
         return new Result<>(true);
