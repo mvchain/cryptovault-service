@@ -4,9 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.dto.TransactionSearchDTO;
-import com.mvc.cryptovault.common.bean.vo.ProjectPublishListVO;
-import com.mvc.cryptovault.common.bean.vo.TransactionDetailVO;
-import com.mvc.cryptovault.common.bean.vo.TransactionSimpleVO;
+import com.mvc.cryptovault.common.bean.vo.*;
 import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.console.common.AbstractService;
@@ -32,6 +30,10 @@ import java.util.stream.Collectors;
 @Transactional(rollbackFor = RuntimeException.class)
 public class AppOrderService extends AbstractService<AppOrder> implements BaseService<AppOrder> {
 
+    @Autowired
+    AppUserTransactionService appUserTransactionService;
+    @Autowired
+    AppUserService appUserService;
     @Autowired
     CommonTokenService commonTokenService;
     @Autowired
@@ -449,4 +451,63 @@ public class AppOrderService extends AbstractService<AppOrder> implements BaseSe
         }).collect(Collectors.toList());
     }
 
+    public List<ExplorerSimpleOrder> findExplorerOrderList(BigInteger userId, Integer pageSize, BigInteger orderId) {
+        PageHelper.startPage(1, pageSize, "id desc");
+        Condition condition = new Condition(AppOrder.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "user_id = ", userId);
+        ConditionUtil.andCondition(criteria, "classify in (0,1) ");
+        ConditionUtil.andCondition(criteria, "status = ", 2);
+        if (null != orderId && !BigInteger.ZERO.equals(orderId)) {
+            ConditionUtil.andCondition(criteria, "id < ", orderId);
+        }
+        List<AppOrder> list = findByCondition(condition);
+        return list.stream().map(obj -> {
+            ExplorerSimpleOrder order = new ExplorerSimpleOrder();
+            order.setClassify(obj.getClassify());
+            order.setCreatedAt(obj.getCreatedAt());
+            order.setId(obj.getId());
+            return order;
+        }).collect(Collectors.toList());
+    }
+
+    public ExplorerOrder findExplorerOrder(BigInteger id) {
+        ExplorerOrder order = new ExplorerOrder();
+        AppOrder appOrder = findById(id);
+        if (null == appOrder || (appOrder.getClassify() != 1 && appOrder.getClassify() != 0)) {
+            return order;
+        }
+        if (appOrder.getClassify() == 1) {
+            AppUserTransaction tx = appUserTransactionService.findById(appOrder.getOrderContentId());
+            if (null == tx) {
+                return order;
+            }
+            AppUser from = appUserService.findById(tx.getUserId());
+            AppUser to = appUserService.findById(tx.getTargetUserId());
+            CommonPair pair = commonPairService.findById(tx.getPairId());
+            order.setBuyTokenId(pair.getTokenId());
+            order.setBuyTokenName(pair.getTokenName());
+            order.setBuyValue(tx.getValue());
+            order.setCreatedAt(tx.getCreatedAt());
+            order.setSellTokenId(pair.getBaseTokenId());
+            order.setSellTokenName(pair.getBaseTokenName());
+            order.setSellValue(tx.getValue().multiply(tx.getPrice()));
+            order.setFrom(from.getPublicKey());
+            order.setTo(to.getPublicKey());
+            order.setClassify(appOrder.getClassify());
+        } else {
+            order.setClassify(appOrder.getClassify());
+            order.setFrom(appOrder.getFromAddress());
+            order.setTo(appOrder.getToAddress());
+            order.setSellValue(appOrder.getValue());
+            order.setBuyValue(appOrder.getValue());
+            order.setSellTokenId(appOrder.getTokenId());
+            String tokenName = commonTokenService.getTokenName(appOrder.getTokenId());
+            order.setBuyTokenId(appOrder.getTokenId());
+            order.setSellTokenName(tokenName);
+            order.setBuyTokenName(tokenName);
+            order.setCreatedAt(appOrder.getCreatedAt());
+        }
+        return order;
+    }
 }

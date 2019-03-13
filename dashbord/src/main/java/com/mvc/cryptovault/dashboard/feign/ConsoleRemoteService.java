@@ -193,4 +193,10 @@ public interface ConsoleRemoteService {
     @PostMapping("appInfo")
     Result<Boolean> saveApp(@RequestBody AppInfo appInfo);
 
+    @GetMapping("explorer/setting")
+    Result<ExplorerBlockSetting> getExplorerSettting();
+
+    @PostMapping("explorer/setting")
+    Result<Boolean> saveExplorerSetting(@RequestBody ExplorerBlockSetting setting);
+
 }

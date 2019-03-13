@@ -7,6 +7,7 @@ import com.mvc.cryptovault.common.bean.*;
 import com.mvc.cryptovault.common.bean.dto.AppUserDTO;
 import com.mvc.cryptovault.common.bean.dto.PageDTO;
 import com.mvc.cryptovault.common.bean.vo.AppUserRetVO;
+import com.mvc.cryptovault.common.bean.vo.ExplorerBalanceVO;
 import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
@@ -14,6 +15,7 @@ import com.mvc.cryptovault.common.util.ConditionUtil;
 import com.mvc.cryptovault.common.util.InviteUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.common.util.MnemonicUtil;
+import com.mvc.cryptovault.common.util.bip39.Words;
 import com.mvc.cryptovault.console.common.AbstractService;
 import com.mvc.cryptovault.console.common.BaseService;
 import com.mvc.cryptovault.console.constant.BusinessConstant;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 import static com.mvc.cryptovault.common.constant.RedisConstant.APP_USER_USERNAME;
 
@@ -127,6 +130,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         appUser.setEmail(appUserDTO.getEmail());
         appUser.setPassword(appUserDTO.getPassword());
         appUser.setInviteLevel(0);
+        appUser.setPublicKey(MnemonicUtil.getRandomCode(Words.TWELVE));
         appUser.setTransactionPassword(appUserDTO.getTransactionPassword());
         String code = getCode();
         appUser.setPvKey(code);
@@ -222,4 +226,30 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
             }
         };
     }
+
+    public void updatePublicKey() {
+        Condition condition = new Condition(AppUser.class);
+        Example.Criteria criteria = condition.createCriteria();
+        ConditionUtil.andCondition(criteria, "public_key is null");
+        List<AppUser> list = findByCondition(condition);
+        list.stream().forEach(obj -> {
+            obj.setPublicKey(MnemonicUtil.getRandomCode(Words.TWELVE));
+            obj.setUpdatedAt(System.currentTimeMillis());
+            update(obj);
+            updateCache(obj.getId());
+        });
+    }
+
+    public List<ExplorerBalanceVO> getExplorerBalance(BigInteger id) {
+        List<CommonToken> tokens = commonTokenService.findAll();
+        tokens = tokens.stream().filter(obj -> obj.getVisible() == 1).collect(Collectors.toList());
+        return tokens.stream().map(obj -> {
+            ExplorerBalanceVO vo = new ExplorerBalanceVO();
+            vo.setTokenId(obj.getId());
+            vo.setTokenName(obj.getTokenName());
+            vo.setValue(appUserBalanceService.getBalanceByTokenId(id, obj.getId()));
+            return vo;
+        }).collect(Collectors.toList());
+    }
+
 }

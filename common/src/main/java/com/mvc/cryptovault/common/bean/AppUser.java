@@ -64,6 +64,8 @@ public class AppUser implements Serializable {
     private Long updatedAt;
 
     private Integer inviteLevel;
+    private String publicKey;
+
     /**
      * 账号状态, 0冻结 1有效 4未验证私钥
      */
