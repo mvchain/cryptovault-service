@@ -20,5 +20,5 @@ public class TokenVO implements Serializable {
     private String token;
     private String refreshToken;
     private String email;
-
+    private String publicKey;
 }

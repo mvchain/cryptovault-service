@@ -64,6 +64,7 @@ public class UserService {
         vo.setToken(token);
         vo.setUserId(user.getId());
         vo.setEmail(user.getEmail());
+        vo.setPublicKey(user.getPublicKey());
         return vo;
     }
 

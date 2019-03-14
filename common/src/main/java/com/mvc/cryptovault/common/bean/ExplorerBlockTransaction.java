@@ -15,7 +15,7 @@ import java.math.BigInteger;
 @Data
 public class ExplorerBlockTransaction {
 
-    final static Integer TX_MAX_NUMBER = 100000;
+   public final static Integer TX_MAX_NUMBER = 1000000;
 
     @Id
     private BigInteger id;

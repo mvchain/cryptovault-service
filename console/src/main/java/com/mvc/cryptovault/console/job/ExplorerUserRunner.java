@@ -26,7 +26,17 @@ public class ExplorerUserRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         try {
             while (true) {
-                addExplorerBlockUser();
+                Long nowNumber = null;
+                ExplorerBlockUser explorerBlockInfo = userService.getLast();
+                if (null == explorerBlockInfo) {
+                    nowNumber = 1L;
+                } else {
+                    nowNumber = explorerBlockInfo.getId().longValue() + 1L;
+                }
+                if (nowNumber >= ExplorerBlockUser.MAX_VALUE) {
+                    break;
+                }
+                addExplorerBlockUser(nowNumber);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,14 +50,8 @@ public class ExplorerUserRunner implements CommandLineRunner {
         }
     }
 
-    private void addExplorerBlockUser() {
-        Long nowNumber = null;
-        ExplorerBlockUser explorerBlockInfo = userService.getLast();
-        if (null == explorerBlockInfo) {
-            nowNumber = 1L;
-        } else {
-            nowNumber = explorerBlockInfo.getId().longValue() + 1L;
-        }
+    private void addExplorerBlockUser(Long nowNumber) {
+
         try {
             ExplorerBlockUser user = new ExplorerBlockUser();
             user.setId(BigInteger.valueOf(nowNumber));

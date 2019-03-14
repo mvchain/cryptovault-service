@@ -35,7 +35,17 @@ public class ExplorerTxRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         try {
             while (true) {
-                addExplorerBlockTx();
+                Long nowNumber = null;
+                ExplorerBlockTransaction explorerBlockInfo = explorerBlockTransactionService.getLast();
+                if (null == explorerBlockInfo) {
+                    nowNumber = 1L;
+                } else {
+                    nowNumber = explorerBlockInfo.getId().longValue() + 1L;
+                }
+                if (nowNumber >= ExplorerBlockTransaction.TX_MAX_NUMBER) {
+                    break;
+                }
+                addExplorerBlockTx(nowNumber);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,14 +59,7 @@ public class ExplorerTxRunner implements CommandLineRunner {
         }
     }
 
-    private void addExplorerBlockTx() {
-        Long nowNumber = null;
-        ExplorerBlockTransaction explorerBlockInfo = explorerBlockTransactionService.getLast();
-        if (null == explorerBlockInfo) {
-            nowNumber = 1L;
-        } else {
-            nowNumber = explorerBlockInfo.getId().longValue() + 1L;
-        }
+    private void addExplorerBlockTx(Long nowNumber) {
         try {
             ExplorerBlockTransaction tx = new ExplorerBlockTransaction();
             BigInteger from = BigInteger.valueOf(1 + (int) (Math.random() * ExplorerBlockUser.MAX_VALUE));

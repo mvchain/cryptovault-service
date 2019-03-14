@@ -116,7 +116,6 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
         }
         ExplorerBlockInfo block = findById(blockId);
         Integer start = ExplorerBlockTransaction.getIndex(blockId);
-        start = 1;
         Condition condition = new Condition(ExplorerBlockInfo.class);
         Example.Criteria criteria = condition.createCriteria();
         PageHelper.startPage(1, pageSize, "id asc");
@@ -145,8 +144,6 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
             ExplorerBlockTransaction tx = blockTransactionService.findOneBy("hash", realHash);
             ExplorerBlockUser from = explorerBlockUserService.findById(tx.getFromUserId());
             ExplorerBlockUser to = explorerBlockUserService.findById(tx.getToUserId());
-            from = explorerBlockUserService.findById(BigInteger.ONE);
-            to = explorerBlockUserService.findById(BigInteger.TWO);
             ExplorerBlockInfo block = findById(blockId);
             ExplorerTransactionDetailVO result = new ExplorerTransactionDetailVO();
             result.setConfirm(nowHeight.getId().subtract(blockId).intValue());
