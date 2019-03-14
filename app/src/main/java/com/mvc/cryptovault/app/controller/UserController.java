@@ -144,6 +144,7 @@ public class UserController extends BaseController {
         vo.setToken(token);
         vo.setEmail(user.getEmail());
         vo.setUserId(user.getId());
+        vo.setPublicKey(user.getPublicKey());
         return new Result<>(vo);
     }
 
