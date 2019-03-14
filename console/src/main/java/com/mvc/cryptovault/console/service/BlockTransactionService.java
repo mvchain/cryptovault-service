@@ -62,9 +62,6 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         CommonToken token = tokenService.findById(transactionDTO.getTokenId());
         //扣除平台手续费
         appUserBalanceService.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_VRT, BigDecimal.ZERO.subtract(BigDecimal.valueOf(token.getFee())));
-        if (null != token.getFee() && token.getFee() > 0) {
-            orderService.saveOrder(transactionDTO.getAddress(), transactionDTO.getAddress(), BusinessConstant.BASE_TOKEN_ID_VRT, BigDecimal.valueOf(token.getFee()), userId, "手续费支出", 2);
-        }
         if (null != address && !address.getUserId().equals(BigInteger.ZERO)) {
             //inner
             String userAddress = appUserAddressService.getAddress(userId, transactionDTO.getTokenId());
@@ -111,13 +108,6 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         appOrder.setFee(BigDecimal.valueOf(token.getFee()));
         appOrder.setOrderType(2);
         orderService.save(appOrder);
-        if (null != token.getFee() && token.getFee() > 0) {
-            AppOrder feeOrder = new AppOrder();
-            BeanUtils.copyProperties(appOrder, feeOrder);
-            feeOrder.setId(null);
-            feeOrder.setOrderRemark("手续费支出");
-            orderService.save(appOrder);
-        }
     }
 
     public void sendTransaction(BigInteger userId, TransactionDTO transactionDTO) {
