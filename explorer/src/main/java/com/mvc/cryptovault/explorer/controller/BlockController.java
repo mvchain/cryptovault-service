@@ -62,7 +62,7 @@ public class BlockController extends BaseController {
 
     @GetMapping("transaction/tx/{hash}")
     @ApiOperation("根据hash查询交易详情")
-    public Result<ExplorerTransactionDetailVO> getTxDetail(@RequestParam String hash) {
+    public Result<ExplorerTransactionDetailVO> getTxDetail(@PathVariable String hash) {
         ExplorerTransactionDetailVO result = blockService.getTxDetail(hash);
         return new Result<>(result);
     }
