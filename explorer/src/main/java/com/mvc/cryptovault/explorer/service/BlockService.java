@@ -53,7 +53,7 @@ public class BlockService extends BaseService {
 
     public List<ExplorerBalanceVO> getBalance(String publicKey) {
         Result<List<ExplorerBalanceVO>> result = remoteService.getBalance(publicKey);
-        return result.getData();
+        return result == null ? null : result.getData();
     }
 
     public List<ExplorerSimpleOrder> getOrders(String publicKey, PageDTO pageDTO, BigInteger id) {

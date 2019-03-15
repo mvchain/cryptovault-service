@@ -32,7 +32,7 @@ public class ExplorerBlockTransaction {
         Double val = Math.cos(value.doubleValue());
         val = val.equals(0D) ? 1 : val;
         int result = Math.abs((int) (TX_MAX_NUMBER * val) - value.intValue());
-        result = result > TX_MAX_NUMBER ? result - TX_MAX_NUMBER : result;
+        result = result > TX_MAX_NUMBER ? result % TX_MAX_NUMBER : result;
         result = result > TX_MAX_NUMBER - 100 ? result - 100 : result;
         return result;
     }

@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.console.service;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.mvc.cryptovault.common.bean.ExplorerBlockInfo;
 import com.mvc.cryptovault.common.bean.ExplorerBlockSetting;
@@ -50,6 +51,7 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
         if (num == 1) {
             nowHeight = explorerBlockInfo;
             settingService.updateValue(explorerBlockInfo.getTransactions());
+            redisTemplate.opsForValue().set("EXPLORER_NOW", JSON.toJSONString(nowHeight));
         }
     }
 
@@ -59,11 +61,13 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
         if (null == result || result.size() == 0) {
             return null;
         }
-        return result.get(0);
+        ExplorerBlockInfo info = result.get(0);
+        redisTemplate.opsForValue().set("EXPLORER_NOW", JSON.toJSONString(info));
+        return info;
     }
 
     public NowBlockVO getLastVO() {
-        ExplorerBlockInfo info = nowHeight;
+        ExplorerBlockInfo info = getNowHeight();
         ExplorerBlockSetting block = explorerBlockSettingService.findById(BigInteger.ONE);
         NowBlockVO vo = new NowBlockVO();
         vo.setBlockId(info.getId());
@@ -76,7 +80,7 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
     }
 
     public List<ExplorerTransactionSimpleVO> getLastTransaction(Integer pageSize) {
-        return getBlockTx(nowHeight.getId(), null, pageSize);
+        return getBlockTx(getNowHeight().getId(), null, pageSize);
     }
 
     public List<ExplorerSimpleVO> getBlocks(BigInteger blockId, Integer pageSize) {
@@ -108,15 +112,23 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
         return result;
     }
 
+    private ExplorerBlockInfo getNowHeight(){
+        String obj = redisTemplate.opsForValue().get("EXPLORER_NOW");
+        if(null != obj){
+            return JSON.parseObject(obj, ExplorerBlockInfo.class);
+        }
+        nowHeight = getLast();
+        return nowHeight;
+    }
+
     public List<ExplorerTransactionSimpleVO> getBlockTx(BigInteger blockId, BigInteger transactionId, Integer pageSize) {
-        BigInteger now = nowHeight.getId();
-        blockId = BigInteger.valueOf(788202);
+        BigInteger now = getNowHeight().getId();
         if (null == blockId || blockId.equals(BigInteger.ZERO)) {
             blockId = BigInteger.ONE;
         }
         ExplorerBlockInfo block = findById(blockId);
         Integer start = ExplorerBlockTransaction.getIndex(blockId);
-        Condition condition = new Condition(ExplorerBlockInfo.class);
+        Condition condition = new Condition(ExplorerBlockTransaction.class);
         Example.Criteria criteria = condition.createCriteria();
         PageHelper.startPage(1, pageSize, "id asc");
         ConditionUtil.andCondition(criteria, "id >= ", BigInteger.valueOf(start));
@@ -129,7 +141,7 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
             ExplorerTransactionSimpleVO vo = new ExplorerTransactionSimpleVO();
             vo.setConfirm(now.subtract(block.getId()));
             vo.setCreatedAt(block.getCreatedAt());
-            vo.setHash(ExplorerBlockTransaction.combineHash(obj.getId(), obj.getHash()));
+            vo.setHash(ExplorerBlockTransaction.combineHash(now, obj.getHash()));
             vo.setHeight(block.getId());
             vo.setTransactionId(obj.getId());
             return vo;
@@ -146,7 +158,7 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
             ExplorerBlockUser to = explorerBlockUserService.findById(tx.getToUserId());
             ExplorerBlockInfo block = findById(blockId);
             ExplorerTransactionDetailVO result = new ExplorerTransactionDetailVO();
-            result.setConfirm(nowHeight.getId().subtract(blockId).intValue());
+            result.setConfirm(getNowHeight().getId().subtract(blockId).intValue());
             result.setCreatedAt(block.getCreatedAt());
             result.setFrom(from.getPublicKey());
             result.setHash(realHash);
