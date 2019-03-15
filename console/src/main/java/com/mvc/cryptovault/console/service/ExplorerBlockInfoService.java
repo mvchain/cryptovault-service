@@ -161,7 +161,7 @@ public class ExplorerBlockInfoService extends AbstractService<ExplorerBlockInfo>
             result.setConfirm(getNowHeight().getId().subtract(blockId).intValue());
             result.setCreatedAt(block.getCreatedAt());
             result.setFrom(from.getPublicKey());
-            result.setHash(realHash);
+            result.setHash(hash);
             result.setHeight(blockId);
             result.setTo(to.getPublicKey());
             result.setTokenName(tx.getTokenName());
