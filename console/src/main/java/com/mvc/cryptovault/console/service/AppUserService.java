@@ -140,9 +140,11 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         vo.setPrivateKey(code);
         //更新邀请人数量
         Long id = InviteUtil.codeToId(appUserDTO.getInviteCode());
-        appUserMapper.updateInvite(BigInteger.valueOf(id));
-        //添加邀请记录
-        appUserInviteService.insert(BigInteger.valueOf(id), appUser.getId());
+        if(null != id && id != 0L){
+            appUserMapper.updateInvite(BigInteger.valueOf(id));
+            //添加邀请记录
+            appUserInviteService.insert(BigInteger.valueOf(id), appUser.getId());
+        }
         updateCache(appUser.getId());
         String key = APP_USER_USERNAME + appUserDTO.getEmail();
         redisTemplate.opsForHash().put(key, key, String.valueOf(appUser.getId()));

@@ -158,9 +158,9 @@ public class UserController extends BaseController {
         AppUser user = userService.getUserByUsername(appuserRegCheckDTO.getEmail());
         Assert.isTrue(null == user, MessageConstants.getMsg("USER_EXIST"));
         Long id = InviteUtil.codeToId(appuserRegCheckDTO.getInviteCode());
-        Assert.isTrue(null != id && !id.equals(0L), MessageConstants.getMsg("INVITE_ERROR"));
-        UserSimpleVO vo = userService.getUserById(BigInteger.valueOf(id));
-        Assert.isTrue(null != vo, MessageConstants.getMsg("INVITE_ERROR"));
+        if(null == id){
+            id = 0L;
+        }
         String tempToken = JwtHelper.createReg(appuserRegCheckDTO.getEmail(), BigInteger.valueOf(id));
         redisTemplate.delete(key);
         return new Result<>(tempToken);
@@ -175,16 +175,7 @@ public class UserController extends BaseController {
         String username = claim.get("username", String.class);
         String type = claim.get("type", String.class);
         Assert.isTrue("reg".equals(type), MessageConstants.getMsg("TOKEN_EXPIRE"));
-        BigInteger userId = null;
-        try {
-            userId = claim.get("userId", BigInteger.class);
-        } catch (Exception e) {
-            Integer userIdInt = claim.get("userId", Integer.class);
-            userId = BigInteger.valueOf(userIdInt);
-        }
-        Long id = InviteUtil.codeToId(appUserDTO.getInviteCode());
-        Boolean checkResult = userId.longValue() == id && appUserDTO.getEmail().equals(username);
-        Assert.isTrue(id != 0L, MessageConstants.getMsg("INVITE_ERROR"));
+        Boolean checkResult = appUserDTO.getEmail().equals(username);
         Assert.isTrue(checkResult, MessageConstants.getMsg("REGISTER_WRONG"));
         AppUserRetVO vo = userService.register(appUserDTO);
         return new Result<>(vo);
