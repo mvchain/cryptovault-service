@@ -75,8 +75,8 @@ public class AppUser implements Serializable {
     private String email;
     private Integer inviteNum;
     private String pvKey;
-
-
+    private String googleSecret;
+    private Integer googleCheck;
     /**
      * app_user
      */

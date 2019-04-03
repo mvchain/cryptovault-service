@@ -14,9 +14,9 @@ import javax.validation.constraints.NotNull;
 @Data
 public class AppuserRegCheckDTO {
 
-    @ApiModelProperty("注册邀请码")
-    @NotNull
-    private String inviteCode;
+//    @ApiModelProperty("注册邀请码")
+//    @NotNull
+//    private String inviteCode;
     @ApiModelProperty("邮箱地址")
     @NotNull
     private String email;

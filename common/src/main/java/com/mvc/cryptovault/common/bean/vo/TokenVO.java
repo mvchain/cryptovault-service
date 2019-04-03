@@ -21,4 +21,7 @@ public class TokenVO implements Serializable {
     private String refreshToken;
     private String email;
     private String publicKey;
+    @ApiModelProperty("当前谷歌验证开关状态1开启0关闭")
+    private Integer googleCheck;
+
 }

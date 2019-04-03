@@ -12,7 +12,7 @@ import lombok.Data;
 @ApiModel("重置密码")
 public class AppUserResetDTO {
 
-    @ApiModelProperty("重置类型0邮箱 1私钥 2助记词")
+    @ApiModelProperty("重置类型0邮箱")
     private Integer resetType;
     @ApiModelProperty("邮箱")
     private String email;

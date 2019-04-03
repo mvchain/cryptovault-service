@@ -4,8 +4,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.math.BigInteger;
-
 /**
  * @author qiyichen
  * @create 2018/11/7 15:52
@@ -18,5 +16,6 @@ public class UserSimpleVO {
     private String nickname;
     @ApiModelProperty("用户登录账户，这里为手机号，中间4位隐藏")
     private String username;
-
+    @ApiModelProperty("invite code")
+    private String inviteCode;
 }

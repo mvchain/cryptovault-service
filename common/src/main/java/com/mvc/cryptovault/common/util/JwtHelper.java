@@ -33,27 +33,27 @@ public class JwtHelper {
         }
     }
 
-    public static String createToken(String username, BigInteger userId) {
-        return createJWT(username, userId, expire, "token");
+    public static String createToken(String username, BigInteger userId, Integer googleCheck) {
+        return createJWT(username, userId, expire, "token", googleCheck);
     }
 
-    public static String createRefresh(String username, BigInteger userId) {
-        return createJWT(username, userId, refresh, "refresh");
+    public static String createRefresh(String username, BigInteger userId, Integer googleCheck) {
+        return createJWT(username, userId, refresh, "refresh", googleCheck);
     }
 
-    public static String createForget(String username, BigInteger userId) {
-        return createJWT(username, userId, refresh, "forget");
+    public static String createForget(String username, BigInteger userId, Integer googleCheck) {
+        return createJWT(username, userId, refresh, "forget", googleCheck);
     }
 
-    public static String createReg(String username, BigInteger userId) {
-        return createJWT(username, userId, refresh, "reg");
+    public static String createReg(String username, BigInteger userId, Integer googleCheck) {
+        return createJWT(username, userId, refresh, "reg", googleCheck);
     }
 
-    public static String create(String username, BigInteger userId, String str) {
-        return createJWT(username, userId, refresh, str);
+    public static String create(String username, BigInteger userId, String str, Integer googleCheck) {
+        return createJWT(username, userId, refresh, str, googleCheck);
     }
 
-    private static String createJWT(String username, BigInteger userId, Long expire, String type) {
+    private static String createJWT(String username, BigInteger userId, Long expire, String type, Integer googleCheck) {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
         //生成签名密钥
         byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(base64Secret);
@@ -64,6 +64,7 @@ public class JwtHelper {
                 .claim("userId", userId)
                 .claim("service", serviceName)
                 .claim("type", type)
+                .claim("googleCheck", googleCheck)
                 .signWith(signatureAlgorithm, signingKey)
                 .setExpiration(new Date(System.currentTimeMillis() + expire));
         return builder.compact();
@@ -74,9 +75,10 @@ public class JwtHelper {
         String username = oldToken.get("username", String.class);
         String service = oldToken.get("service", String.class);
         BigInteger userId = oldToken.get("userId", BigInteger.class);
+        Integer googleCheck = oldToken.get("googleCheck", Integer.class);
         String type = oldToken.get("type", String.class);
         Assert.isTrue(serviceName.equalsIgnoreCase(service) && "refresh".equalsIgnoreCase(type), "token is wrong");
-        return createRefresh(username, userId);
+        return createRefresh(username, userId, googleCheck);
     }
 
 

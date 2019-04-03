@@ -17,9 +17,9 @@ import java.io.Serializable;
 @ApiModel("app用户注册")
 public class AppUserDTO implements Serializable {
 
-    @ApiModelProperty("注册邀请码")
-    @NotNull
-    private String inviteCode;
+//    @ApiModelProperty("注册邀请码")
+//    @NotNull
+//    private String inviteCode;
     @ApiModelProperty("邮箱地址")
     @NotNull
     private String email;

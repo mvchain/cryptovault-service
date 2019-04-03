@@ -1,6 +1,8 @@
 package com.mvc.cryptovault.app.service;
 
 import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
+import com.mvc.cryptovault.app.util.GoogleAuthUtil;
+import com.mvc.cryptovault.app.util.GoogleRegInfo;
 import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.*;
 import com.mvc.cryptovault.common.bean.vo.*;
@@ -15,7 +17,6 @@ import org.springframework.util.Assert;
 import javax.security.auth.login.LoginException;
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -36,6 +37,7 @@ public class UserService {
         Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
         vo.setNickname(user.getNickname());
         vo.setUsername(mailService.getMail(user.getEmail()));
+        vo.setInviteCode(InviteUtil.toSerialCode(userId.longValue()));
         return vo;
     }
 
@@ -50,14 +52,15 @@ public class UserService {
         Assert.isTrue(user.getStatus() == 1 || user.getStatus() == 4, MessageConstants.getMsg("ACCOUNT_LOCK"));
         Boolean passwordCheck = user.getPassword().equals(userDTO.getPassword());
         wrongLogin(passwordCheck, redisKey);
-        if (user.getStatus() == 4) {
-            List<String> list = MnemonicUtil.getWordsList(user.getPvKey());
-            Collections.shuffle(list);
-            throw new PvkeyException(StringUtils.join(list, ","));
-        }
+//        if (user.getStatus() == 4) {
+//            List<String> list = MnemonicUtil.getWordsList(user.getPvKey());
+//            Collections.shuffle(list);
+//            throw new PvkeyException(StringUtils.join(list, ","));
+//        }
+        Integer googleCheck = null == user.getGoogleCheck() || 0 == user.getGoogleCheck() ? 1 : 0;
         Assert.isTrue(passwordCheck, MessageConstants.getMsg("USER_PASS_WRONG"));
-        String token = JwtHelper.createToken(userDTO.getUsername(), user.getId());
-        String refreshToken = JwtHelper.createRefresh(userDTO.getUsername(), user.getId());
+        String token = JwtHelper.createToken(userDTO.getUsername(), user.getId(), googleCheck);
+        String refreshToken = JwtHelper.createRefresh(userDTO.getUsername(), user.getId(), googleCheck);
         //密码正确后清空错误次数
         redisTemplate.delete(redisKey);
         vo.setRefreshToken(refreshToken);
@@ -65,6 +68,7 @@ public class UserService {
         vo.setUserId(user.getId());
         vo.setEmail(user.getEmail());
         vo.setPublicKey(user.getPublicKey());
+        vo.setGoogleCheck(user.getGoogleCheck());
         return vo;
     }
 
@@ -111,7 +115,7 @@ public class UserService {
         if (user.getStatus() == 0) {
             throw new LoginException();
         }
-        return JwtHelper.createToken(username, userId);
+        return JwtHelper.createToken(username, userId, 1);
     }
 
     public String getTag(BigInteger userId) {
@@ -201,4 +205,58 @@ public class UserService {
         AppUser user = userResult.getData();
         return user.getEmail();
     }
+
+    public AppUser getUser(BigInteger userId) {
+        return userRemoteService.getUserById(userId).getData();
+    }
+
+    public GoogleRegInfo createGoogleInfo(AppUser user) {
+        GoogleRegInfo info = GoogleAuthUtil.createCredentials(user.getGoogleSecret());
+        user.setGoogleSecret(info.getSecret());
+        Result<Boolean> result = userRemoteService.updateUser(user);
+        if (result.getData() == false) {
+            return null;
+        }
+        return info;
+    }
+
+    public TokenVO updateTokenSwitch(BigInteger userId, GoogleSetVO googleSetVO) {
+        Result<AppUser> data = userRemoteService.getUserById(userId);
+        AppUser user = data.getData();
+        if (null == user || StringUtils.isBlank(user.getGoogleSecret())) {
+            return null;
+        }
+        Assert.isTrue(null != googleSetVO.getPassword() && user.getPassword().equals(googleSetVO.getPassword()), MessageConstants.getMsg("USER_PASS_WRONG"));
+        Boolean checkResult = GoogleAuthUtil.checkUser(user.getGoogleSecret(), googleSetVO.getGoogleCode());
+        Assert.isTrue(checkResult, MessageConstants.getMsg("SMS_ERROR"));
+        user.setGoogleCheck(1);
+        userRemoteService.updateUser(user);
+        TokenVO tokenVO = getTokenVO(userId, user);
+        return tokenVO;
+    }
+
+    private TokenVO getTokenVO(BigInteger userId, AppUser user) {
+        String token = JwtHelper.createToken(user.getEmail(), userId, 1);
+        String refreshToken = JwtHelper.createRefresh(user.getEmail(), userId, 1);
+        TokenVO tokenVO = new TokenVO();
+        tokenVO.setPublicKey("");
+        tokenVO.setEmail(user.getEmail());
+        tokenVO.setUserId(userId);
+        tokenVO.setRefreshToken(refreshToken);
+        tokenVO.setToken(token);
+        tokenVO.setGoogleCheck(user.getGoogleCheck());
+        return tokenVO;
+    }
+
+    public TokenVO checkGoogleCode(BigInteger userId, Integer googleCode) {
+        Result<AppUser> data = userRemoteService.getUserById(userId);
+        AppUser user = data.getData();
+        if (null == user || StringUtils.isBlank(user.getGoogleSecret())) {
+            return null;
+        }
+        Boolean checkResult = GoogleAuthUtil.checkUser(user.getGoogleSecret(), googleCode);
+        Assert.isTrue(checkResult, MessageConstants.getMsg("SMS_ERROR"));
+        return getTokenVO(userId, user);
+    }
+
 }

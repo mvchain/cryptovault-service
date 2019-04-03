@@ -2,20 +2,20 @@ package com.mvc.cryptovault.app.controller;
 
 import com.mvc.cryptovault.app.service.MailService;
 import com.mvc.cryptovault.app.util.GeetestLib;
+import com.mvc.cryptovault.app.util.GoogleRegInfo;
 import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.dto.*;
 import com.mvc.cryptovault.common.bean.vo.*;
 import com.mvc.cryptovault.common.constant.RedisConstant;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import com.mvc.cryptovault.common.swaggermock.SwaggerMock;
-import com.mvc.cryptovault.common.util.InviteUtil;
 import com.mvc.cryptovault.common.util.JwtHelper;
 import com.mvc.cryptovault.common.util.MessageConstants;
-import com.mvc.cryptovault.common.util.MnemonicUtil;
 import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.security.auth.login.LoginException;
 import javax.validation.Valid;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * 用户相关
@@ -79,10 +76,9 @@ public class UserController extends BaseController {
         } else {
             gtResult = gtSdk.failbackValidateRequest(challenge, validate, seccode);
         }
-        String token = JwtHelper.create(validDTO.getUid(), BigInteger.ZERO, "valiCode");
+        String token = JwtHelper.create(validDTO.getUid(), BigInteger.ZERO, "valiCode", 1);
         return new Result<>(gtResult == 1 ? token : "");
     }
-
 
     @ApiOperation("用户登录,缓存登录令牌.登录规则后续确定,如返回406则需要校验助记词(错误信息中返回助记词字符串)")
     @PostMapping("login")
@@ -127,26 +123,27 @@ public class UserController extends BaseController {
         return new Result<>(true);
     }
 
-    @ApiOperation("校验助记词并激活用户")
-    @PostMapping("mnemonics")
-    @NotLogin
-    public Result<TokenVO> mnemonicsCheck(@RequestBody MnemonicsDTO mnemonicsDTO) {
-        AppUser user = userService.getUserByUsername(mnemonicsDTO.getEmail());
-        Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
-        Assert.isTrue(user.getStatus() == 4, MessageConstants.getMsg("USER_ACTIVE"));
-        Boolean result = MnemonicUtil.equals(user.getPvKey(), Arrays.asList(mnemonicsDTO.getMnemonics().split(",")));
-        Assert.isTrue(result, MessageConstants.getMsg("MNEMONICS_ERROR"));
-        userService.mnemonicsActive(mnemonicsDTO.getEmail());
-        TokenVO vo = new TokenVO();
-        String token = JwtHelper.createToken(mnemonicsDTO.getEmail(), user.getId());
-        String refreshToken = JwtHelper.createRefresh(mnemonicsDTO.getEmail(), user.getId());
-        vo.setRefreshToken(refreshToken);
-        vo.setToken(token);
-        vo.setEmail(user.getEmail());
-        vo.setUserId(user.getId());
-        vo.setPublicKey(user.getPublicKey());
-        return new Result<>(vo);
-    }
+//    @ApiOperation("校验助记词并激活用户")
+//    @PostMapping("mnemonics")
+//    @NotLogin
+//    public Result<TokenVO> mnemonicsCheck(@RequestBody MnemonicsDTO mnemonicsDTO) {
+//        AppUser user = userService.getUserByUsername(mnemonicsDTO.getEmail());
+//        Assert.notNull(user, MessageConstants.getMsg("USER_PASS_WRONG"));
+//        Assert.isTrue(user.getStatus() == 4, MessageConstants.getMsg("USER_ACTIVE"));
+//        Boolean result = MnemonicUtil.equals(user.getPvKey(), Arrays.asList(mnemonicsDTO.getMnemonics().split(",")));
+//        Assert.isTrue(result, MessageConstants.getMsg("MNEMONICS_ERROR"));
+//        userService.mnemonicsActive(mnemonicsDTO.getEmail());
+//        TokenVO vo = new TokenVO();
+//        String token = JwtHelper.createToken(mnemonicsDTO.getEmail(), user.getId(), 1);
+//        String refreshToken = JwtHelper.createRefresh(mnemonicsDTO.getEmail(), user.getId(), 1);
+//        vo.setRefreshToken(refreshToken);
+//        vo.setToken(token);
+//        vo.setEmail(user.getEmail());
+//        vo.setUserId(user.getId());
+//        vo.setPublicKey(user.getPublicKey());
+//        vo.setGoogleCheck(user.getGoogleCheck());
+//        return new Result<>(vo);
+//    }
 
     @ApiOperation("校验注册信息,返回一个一次性的token,需要在后续注册时传入")
     @NotLogin
@@ -157,11 +154,11 @@ public class UserController extends BaseController {
         Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
         AppUser user = userService.getUserByUsername(appuserRegCheckDTO.getEmail());
         Assert.isTrue(null == user, MessageConstants.getMsg("USER_EXIST"));
-        Long id = InviteUtil.codeToId(appuserRegCheckDTO.getInviteCode());
-        if(null == id){
-            id = 0L;
-        }
-        String tempToken = JwtHelper.createReg(appuserRegCheckDTO.getEmail(), BigInteger.valueOf(id));
+//        Long id = InviteUtil.codeToId(appuserRegCheckDTO.getInviteCode());
+//        if (null == id) {
+//            id = 0L;
+//        }
+        String tempToken = JwtHelper.createReg(appuserRegCheckDTO.getEmail(), BigInteger.ZERO, 1);
         redisTemplate.delete(key);
         return new Result<>(tempToken);
     }
@@ -169,7 +166,7 @@ public class UserController extends BaseController {
     @ApiOperation("用户注册,需要将之前的信息和token一起带入进行校验")
     @NotLogin
     @PostMapping("register")
-    public Result<AppUserRetVO> register(@RequestBody AppUserDTO appUserDTO) {
+    public Result<TokenVO> register(@RequestBody AppUserDTO appUserDTO) {
         Claims claim = JwtHelper.parseJWT(appUserDTO.getToken());
         Assert.notNull(claim, MessageConstants.getMsg("TOKEN_EXPIRE"));
         String username = claim.get("username", String.class);
@@ -177,28 +174,38 @@ public class UserController extends BaseController {
         Assert.isTrue("reg".equals(type), MessageConstants.getMsg("TOKEN_EXPIRE"));
         Boolean checkResult = appUserDTO.getEmail().equals(username);
         Assert.isTrue(checkResult, MessageConstants.getMsg("REGISTER_WRONG"));
-        AppUserRetVO vo = userService.register(appUserDTO);
+        userService.register(appUserDTO);
+        AppUser user = userService.getUserByUsername(appUserDTO.getEmail());
+        TokenVO vo = new TokenVO();
+        String token = JwtHelper.createToken(appUserDTO.getEmail(), user.getId(), 1);
+        String refreshToken = JwtHelper.createRefresh(user.getEmail(), user.getId(), 1);
+        vo.setRefreshToken(refreshToken);
+        vo.setToken(token);
+        vo.setEmail(user.getEmail());
+        vo.setUserId(user.getId());
+        vo.setPublicKey(user.getPublicKey());
+        vo.setGoogleCheck(user.getGoogleCheck());
         return new Result<>(vo);
     }
 
-    @ApiOperation("获取邀请码")
-    @GetMapping("invitation")
-    public Result<String> getInvitation() {
-        BigInteger userId = getUserId();
-        String code = InviteUtil.toSerialCode(userId.longValue());
-        return new Result<>(code);
-    }
+//    @ApiOperation("获取邀请码")
+//    @GetMapping("invitation")
+//    public Result<String> getInvitation() {
+//        BigInteger userId = getUserId();
+//        String code = InviteUtil.toSerialCode(userId.longValue());
+//        return new Result<>(code);
+//    }
 
-    @ApiOperation("获取助记词(打乱)")
-    @GetMapping("mnemonics")
-    @NotLogin
-    public Result<List<String>> getInvitation(@RequestParam String email) {
-        AppUser appUser = userService.getUserByUsername(email);
-        Assert.notNull(appUser, MessageConstants.getMsg("USER_PASS_WRONG"));
-        List<String> list = MnemonicUtil.getWordsList(appUser.getPvKey());
-        Collections.shuffle(list);
-        return new Result<>(list);
-    }
+//    @ApiOperation("获取助记词(打乱)")
+//    @GetMapping("mnemonics")
+//    @NotLogin
+//    public Result<List<String>> getInvitation(@RequestParam String email) {
+//        AppUser appUser = userService.getUserByUsername(email);
+//        Assert.notNull(appUser, MessageConstants.getMsg("USER_PASS_WRONG"));
+//        List<String> list = MnemonicUtil.getWordsList(appUser.getPvKey());
+//        Collections.shuffle(list);
+//        return new Result<>(list);
+//    }
 
     @ApiOperation("重置密码,返回一次性token")
     @PostMapping("reset")
@@ -206,7 +213,7 @@ public class UserController extends BaseController {
     public Result<String> reset(@RequestBody AppUserResetDTO appUserResetDTO) {
         AppUser user = userService.reset(appUserResetDTO);
         Assert.notNull(user, MessageConstants.getMsg("SMS_ERROR"));
-        String tempToken = JwtHelper.createForget(user.getEmail(), user.getId());
+        String tempToken = JwtHelper.createForget(user.getEmail(), user.getId(), 1);
         return new Result<>(tempToken);
     }
 
@@ -271,7 +278,7 @@ public class UserController extends BaseController {
         String email = userService.getEmail(getUserId());
         Boolean result = mailService.checkSmsValiCode(email, appUserEmailDTO.getValiCode());
         Assert.isTrue(result, MessageConstants.getMsg("SMS_ERROR"));
-        String token = JwtHelper.create(email, getUserId(), "email");
+        String token = JwtHelper.create(email, getUserId(), "email", 1);
         return new Result<>(token);
     }
 
@@ -283,14 +290,13 @@ public class UserController extends BaseController {
         return new Result<>(true);
     }
 
-
-    @ApiOperation("获取推荐人列表,分页加载")
-    @GetMapping("recommend")
-    public Result<List<RecommendVO>> getRecommend(@ModelAttribute RecommendDTO recommendDTO) {
-        recommendDTO.setUserId(getUserId());
-        List<RecommendVO> result = userService.getRecommend(recommendDTO);
-        return new Result<>(result);
-    }
+//    @ApiOperation("获取推荐人列表,分页加载")
+//    @GetMapping("recommend")
+//    public Result<List<RecommendVO>> getRecommend(@ModelAttribute RecommendDTO recommendDTO) {
+//        recommendDTO.setUserId(getUserId());
+//        List<RecommendVO> result = userService.getRecommend(recommendDTO);
+//        return new Result<>(result);
+//    }
 
     @ApiOperation("用户签到")
     @PutMapping("sign")
@@ -298,10 +304,36 @@ public class UserController extends BaseController {
         return new Result<>(userService.sign(getUserId()));
     }
 
-    @ApiOperation("获取用户是否已签到")
-    @GetMapping("sign")
-    public Result<Boolean> getSign() {
-        return new Result<>(userService.getSign(getUserId()));
+//    @ApiOperation("获取用户是否已签到")
+//    @GetMapping("sign")
+//    public Result<Boolean> getSign() {
+//        return new Result<>(userService.getSign(getUserId()));
+//    }
+
+    @ApiOperation("20190403获取谷歌验证信息")
+    @GetMapping("google")
+    public Result<GoogleRegInfo> getGoogleInfo() {
+        BigInteger userId = getUserId();
+        AppUser user = userService.getUser(userId);
+        if (user == null || StringUtils.isNotBlank(user.getGoogleSecret())) {
+            return null;
+        }
+        GoogleRegInfo info = userService.createGoogleInfo(user);
+        return new Result<>(info);
+    }
+
+    @ApiOperation("20190403开启谷歌验证,开启后重新返回通过验证的token(0关闭 1开启)")
+    @PutMapping("google")
+    public Result<TokenVO> updateTokenSwitch(@RequestBody GoogleSetVO googleSetVO) {
+        TokenVO result = userService.updateTokenSwitch(getUserId(), googleSetVO);
+        return new Result<>(result);
+    }
+
+    @ApiOperation("20190403验证咕嘎验证码,通过后返回新token")
+    @PostMapping("google")
+    public Result<TokenVO> checkGoogleCode(@RequestParam Integer googleCode) {
+        TokenVO tokenVO = userService.checkGoogleCode(getUserId(), googleCode);
+        return new Result<>(tokenVO);
     }
 
 }
