@@ -259,4 +259,10 @@ public class UserService {
         return getTokenVO(userId, user);
     }
 
+    public String getSalt(BigInteger userId) {
+        Result<AppUser> userResult = userRemoteService.getUserById(userId);
+        AppUser user = userResult.getData();
+        return user.getSalt();
+    }
+
 }

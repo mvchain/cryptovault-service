@@ -31,5 +31,9 @@ public class FinancialSimpleVO {
     private Integer times;
     @ApiModelProperty("基础货币名称")
     private String baseTokenName;
+    @ApiModelProperty("产品总额度")
+    private BigDecimal limitValue;
+    @ApiModelProperty("产品已购买额度")
+    private BigDecimal sold;
 
 }

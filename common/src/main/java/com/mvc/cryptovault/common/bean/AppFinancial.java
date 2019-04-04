@@ -27,12 +27,12 @@ public class AppFinancial {
     private Long stopAt;
     private Long createdAt;
     private Long updatedAt;
-    private BigDecimal limitValue;
     private BigDecimal userLimit;
     private Integer times;
     private BigDecimal minValue;
     private Integer status;
+    private BigDecimal limitValue;
     private BigDecimal sold;
     private Integer visible;
-
+    private BigDecimal addSold;
 }

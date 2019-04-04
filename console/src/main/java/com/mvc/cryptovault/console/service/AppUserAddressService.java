@@ -1,5 +1,6 @@
 package com.mvc.cryptovault.console.service;
 
+import com.mvc.cryptovault.common.bean.AppUser;
 import com.mvc.cryptovault.common.bean.AppUserAddress;
 import com.mvc.cryptovault.common.bean.CommonAddress;
 import com.mvc.cryptovault.common.bean.CommonToken;
@@ -22,6 +23,10 @@ public class AppUserAddressService extends AbstractService<AppUserAddress> imple
     CommonAddressMapper commonAddressMapper;
     @Autowired
     CommonTokenService commonTokenService;
+    @Autowired
+    AppUserService appUserService;
+    @Autowired
+    CommonAddressService commonAddressService;
 
     public String getAddress(BigInteger userId, BigInteger tokenId) {
         String key = "AppUserAddress".toUpperCase() + "_" + userId;
@@ -58,4 +63,15 @@ public class AppUserAddressService extends AbstractService<AppUserAddress> imple
         save(appUserAddress);
         return appUserAddress;
     }
+
+    public boolean isInner(String address) {
+        if (address.indexOf("@") > 0) {
+            AppUser user = appUserService.findOneBy("email", address);
+            return null != user;
+        } else {
+            CommonAddress innerAddress = commonAddressService.findOneBy("address", address);
+            return null != innerAddress;
+        }
+    }
+
 }

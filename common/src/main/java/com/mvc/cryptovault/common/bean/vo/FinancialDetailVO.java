@@ -22,5 +22,10 @@ public class FinancialDetailVO extends FinancialSimplePartakeVO {
     private String content;
     @ApiModelProperty("产品规则介绍")
     private String rule;
+    @ApiModelProperty("产品总额度")
+    private BigDecimal limitValue;
+    @ApiModelProperty("产品已购买额度")
+    private BigDecimal sold;
+
 
 }

@@ -87,4 +87,8 @@ public class AssetService {
         return result.getData();
     }
 
+    public Boolean isInner(String address) {
+        Result<Boolean> result = consoleRemoteService.isInner(address);
+        return result.getData();
+    }
 }

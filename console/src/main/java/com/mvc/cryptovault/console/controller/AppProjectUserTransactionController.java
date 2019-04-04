@@ -25,39 +25,38 @@ import java.util.List;
 @RequestMapping("appProjectUserTransaction")
 public class AppProjectUserTransactionController extends BaseController {
 
-    @Autowired
-    AppProjectUserTransactionService appProjectUserTransactionService;
-    @Autowired
-    AppProjectService appProjectService;
-    @Autowired
-    AppUserBalanceService appUserBalanceService;
+//    @Autowired
+//    AppProjectUserTransactionService appProjectUserTransactionService;
+//    @Autowired
+//    AppProjectService appProjectService;
+//    @Autowired
+//    AppUserBalanceService appUserBalanceService;
+//
+//    @GetMapping()
+//    Result<PageInfo<PurchaseVO>> getReservation(@RequestParam("userId") BigInteger userId, @ModelAttribute ReservationDTO reservationDTO) {
+//        List<PurchaseVO> list = appProjectUserTransactionService.getReservation(userId, reservationDTO);
+//        return new Result<>(new PageInfo<>(list));
+//    }
+//
+//    @GetMapping("chaseInfo")
+//    Result<ProjectBuyVO> getPurchaseInfo(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger projectId) {
+//        AppProject project = appProjectService.findById(projectId);
+//        ProjectBuyVO vo = appUserBalanceService.getBalance(userId, project);
+//        return new Result<>(vo);
+//    }
+//
+//    /**
+//     * TODO 操作耗时则修改为队列
+//     *
+//     * @param userId
+//     * @param projectId
+//     * @param dto
+//     * @return
+//     */
+//    @PostMapping("buy")
+//    Result<Boolean> buy(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger projectId, @RequestBody ProjectBuyDTO dto) {
+//        Boolean result = appProjectUserTransactionService.buy(userId, projectId, dto);
+//        return new Result<>(result);
+//    }
 
-    @GetMapping()
-    Result<PageInfo<PurchaseVO>> getReservation(@RequestParam("userId") BigInteger userId, @ModelAttribute ReservationDTO reservationDTO) {
-        List<PurchaseVO> list = appProjectUserTransactionService.getReservation(userId, reservationDTO);
-        return new Result<>(new PageInfo<>(list));
-    }
-
-    @GetMapping("chaseInfo")
-    Result<ProjectBuyVO> getPurchaseInfo(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger projectId) {
-        AppProject project = appProjectService.findById(projectId);
-        ProjectBuyVO vo = appUserBalanceService.getBalance(userId, project);
-        return new Result<>(vo);
-    }
-
-    /**
-     * TODO 操作耗时则修改为队列
-     *
-     * @param userId
-     * @param projectId
-     * @param dto
-     * @return
-     */
-    @PostMapping("buy")
-    Result<Boolean> buy(@RequestParam("userId") BigInteger userId, @RequestParam("projectId") BigInteger projectId, @RequestBody ProjectBuyDTO dto) {
-        Boolean result = appProjectUserTransactionService.buy(userId, projectId, dto);
-        return new Result<>(result);
-    }
-
-    ;
 }

@@ -176,4 +176,7 @@ public interface ConsoleRemoteService {
     @GetMapping("appInfo/{appType}")
     Result<AppInfo> getApp(@PathVariable("appType") String appType);
 
+    @GetMapping("appUserAddress/address")
+    Result<Boolean> isInner(@RequestParam("address") String address);
+
 }

@@ -70,7 +70,7 @@ public class ExplorerTxRunner implements CommandLineRunner {
             tx.setHash(MnemonicUtil.getRandomCode(Words.TWELVE));
             tx.setId(BigInteger.valueOf(nowNumber));
             tx.setTokenId(BigInteger.TWO);
-            tx.setTokenName("BZT");
+            tx.setTokenName("MVC");
             tx.setToUserId(to);
             tx.setValue(new BigDecimal(Math.random() * 50).setScale(2, RoundingMode.DOWN));
             explorerBlockTransactionService.saveInfo(tx);

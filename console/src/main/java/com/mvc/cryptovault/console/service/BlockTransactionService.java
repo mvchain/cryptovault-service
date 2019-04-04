@@ -61,7 +61,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         CommonAddress address = commonAddressService.findOneBy("address", transactionDTO.getAddress());
         CommonToken token = tokenService.findById(transactionDTO.getTokenId());
         //扣除平台手续费
-        appUserBalanceService.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_VRT, BigDecimal.ZERO.subtract(BigDecimal.valueOf(token.getFee())));
+//        appUserBalanceService.updateBalance(userId, BusinessConstant.BASE_TOKEN_ID_VRT, BigDecimal.ZERO.subtract(BigDecimal.valueOf(token.getFee())));
         if (null != address && !address.getUserId().equals(BigInteger.ZERO)) {
             //inner
             String userAddress = appUserAddressService.getAddress(userId, transactionDTO.getTokenId());
@@ -80,7 +80,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         transaction.setCreatedAt(now);
         transaction.setUpdatedAt(now);
         transaction.setOprType(BusinessConstant.OPR_TYPE_WITHDRAW);
-        transaction.setValue(transactionDTO.getValue());
+        transaction.setValue(transactionDTO.getValue().subtract(BigDecimal.valueOf(token.getFee())));
         transaction.setUserId(userId);
         transaction.setTokenId(transactionDTO.getTokenId());
         transaction.setPlatFee(BigDecimal.valueOf(token.getFee()));
@@ -125,8 +125,7 @@ public class BlockTransactionService extends AbstractService<BlockTransaction> i
         Assert.isTrue(transactionDTO.getPassword().equalsIgnoreCase(user.getTransactionPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
         //校验手续费是否足够
         CommonToken token = tokenService.findById(transactionDTO.getTokenId());
-        BigDecimal feeBalance = appUserBalanceService.getBalanceByTokenId(userId, BusinessConstant.BASE_TOKEN_ID_VRT);
-        Assert.isTrue(feeBalance.compareTo(BigDecimal.valueOf(token.getFee())) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
+        Assert.isTrue(transactionDTO.getValue().compareTo(BigDecimal.valueOf(token.getFee())) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
         //校验余额是否足够
         BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, transactionDTO.getTokenId());
         Assert.isTrue(balance.compareTo(transactionDTO.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));

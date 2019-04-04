@@ -273,16 +273,16 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
             return;
         }
         CommonTokenControl tokenControl = commonTokenControlService.findById(pair.getTokenId());
-        Float floatValue = dto.getPrice().subtract(tokenPrice.getTokenPrice()).divide(tokenPrice.getTokenPrice(), 10, RoundingMode.HALF_DOWN).floatValue();
+//        Float floatValue = dto.getPrice().subtract(tokenPrice.getTokenPrice()).divide(tokenPrice.getTokenPrice(), 10, RoundingMode.HALF_DOWN).floatValue();
         if (null != tokenControl.getMinLimit() && !tokenControl.getMinLimit().equals(BigDecimal.ZERO)) {
             //如果设置了最小购买数量,需要校验
             Assert.isTrue(dto.getValue().compareTo(tokenControl.getMinLimit()) >= 0, MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
         }
-        if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
-            Assert.isTrue(tokenControl.getBuyMin() / 100 <= floatValue && tokenControl.getBuyMax() / 100 >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
-        } else {
-            Assert.isTrue(tokenControl.getSellMin() / 100 <= floatValue && tokenControl.getSellMax() / 100 >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
-        }
+//        if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
+//            Assert.isTrue(tokenControl.getBuyMin() / 100 <= floatValue && tokenControl.getBuyMax() / 100 >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
+//        } else {
+//            Assert.isTrue(tokenControl.getSellMin() / 100 <= floatValue && tokenControl.getSellMax() / 100 >= floatValue, MessageConstants.getMsg("APP_TRANSACTION_LIMIT_OVER"));
+//        }
     }
 
     private void checkValue(TransactionBuyDTO dto, AppUserTransaction targetTransaction) {

@@ -72,15 +72,22 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         if (null == user || null == financial) {
             return false;
         }
+        BigDecimal addValue = financial.getAddSold() == null || financial.getAddSold().equals(BigDecimal.ZERO) ? BigDecimal.ZERO : financial.getAddSold().divide(BigDecimal.valueOf(100)).multiply(financial.getLimitValue());
         Assert.isTrue(financialBuyDTO.getTransactionPassword().equals(user.getTransactionPassword()), MessageConstants.getMsg("USER_TRANS_PASS_WRONG"));
         Assert.isTrue(financialBuyDTO.getValue().compareTo(financial.getMinValue()) >= 0, MessageConstants.getMsg("APP_TRANSACTION_MIN_OVER"));
         BigDecimal partake = appUserFinancialPartakeService.getPartake(userId, id);
         Assert.isTrue(partake.add(financialBuyDTO.getValue()).compareTo(financial.getUserLimit()) <= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, financial.getBaseTokenId());
-        Integer num = financialMapper.updateSold(financial.getId(), financialBuyDTO.getValue());
+        Integer num = financialMapper.updateSold(financial.getId(), financialBuyDTO.getValue().add(addValue));
         Assert.isTrue(num == 1, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         Assert.isTrue(balance.compareTo(financialBuyDTO.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
         appUserFinancialPartakeService.buy(financial, financialBuyDTO, userId);
+        if(addValue.add(financial.getSold()).compareTo(financial.getLimitValue()) >= 0){
+            financial = financialMapper.selectByPrimaryKey(financial.getId());
+            financial.setStatus(2);
+            update(financial);
+        }
+        updateCache(financial.getId());
         return true;
     }
 
@@ -139,6 +146,9 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         vo.setPurchased(partake);
         vo.setContent(content.getContent());
         vo.setRule(content.getRule());
+        vo.setLimitValue(appFinancial.getLimitValue());
+        BigDecimal sold = appFinancial.getAddSold() == null || appFinancial.getAddSold().equals(BigDecimal.ZERO) ? appFinancial.getSold() : appFinancial.getSold().add(appFinancial.getLimitValue().multiply(appFinancial.getAddSold().divide(BigDecimal.valueOf(100))));
+        vo.setSold(sold.compareTo(appFinancial.getLimitValue()) > 0 ? appFinancial.getLimitValue() : sold);
         return vo;
     }
 
@@ -200,6 +210,9 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         return list.stream().map(obj -> {
             FinancialSimpleVO vo = new FinancialSimpleVO();
             BeanUtils.copyProperties(obj, vo);
+            vo.setLimitValue(obj.getLimitValue());
+            BigDecimal sold = obj.getAddSold() == null || obj.getAddSold().equals(BigDecimal.ZERO) ? obj.getSold() : obj.getSold().add(obj.getLimitValue().multiply(obj.getAddSold().divide(BigDecimal.valueOf(100))));
+            vo.setSold(sold.compareTo(obj.getLimitValue()) > 0 ? obj.getLimitValue() : sold);
             return vo;
         }).collect(Collectors.toList());
     }

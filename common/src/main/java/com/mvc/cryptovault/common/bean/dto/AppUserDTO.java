@@ -32,4 +32,7 @@ public class AppUserDTO implements Serializable {
     private String transactionPassword;
     @ApiModelProperty("token")
     private String token;
+    @ApiModelProperty("salt")
+    private String salt;
+
 }

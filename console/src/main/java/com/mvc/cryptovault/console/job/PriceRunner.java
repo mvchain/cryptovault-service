@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
  * @author qiyichen
  * @create 2018/12/10 16:55
  */
-@Component
+//@Component
 public class PriceRunner implements CommandLineRunner {
 
     @Autowired

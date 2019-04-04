@@ -39,13 +39,11 @@ public class AppUserTransactionController extends BaseController {
         return new Result<>(result);
     }
 
-
     @GetMapping("userId/{userId}")
     public Result<List<MyOrderVO>> getUserTransactions(@PathVariable("userId") BigInteger userId, @ModelAttribute MyTransactionDTO dto) {
         List<MyOrderVO> result = appUserTransactionService.getUserTransactions(userId, dto);
         return new Result<>(result);
     }
-
 
     @PostMapping("userId/{userId}")
     public Result<Boolean> buy(@PathVariable("userId") BigInteger userId, @RequestBody TransactionBuyDTO dto) {
@@ -54,7 +52,6 @@ public class AppUserTransactionController extends BaseController {
         appUserTransactionService.buy(userId, dto);
         return new Result<>(true);
     }
-
 
     @PutMapping("userId/{userId}")
     public Result<Boolean> cancel(@PathVariable("userId") BigInteger userId, @RequestParam("id") BigInteger id) {

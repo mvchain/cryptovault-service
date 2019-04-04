@@ -108,4 +108,10 @@ public class AssetController extends BaseController {
         return new Result<>(assetService.sendTransaction(getUserId(), transactionDTO));
     }
 
+    @ApiOperation("Verify if the internal address")
+    @GetMapping("inner")
+    @SwaggerMock("${asset.address}")
+    public Result<Boolean> getAddress(@RequestParam String address) {
+        return new Result<>(assetService.isInner(address));
+    }
 }

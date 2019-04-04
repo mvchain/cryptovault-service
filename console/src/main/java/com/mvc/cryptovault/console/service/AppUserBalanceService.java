@@ -42,15 +42,15 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
         }
     };
 
-    public ProjectBuyVO getBalance(BigInteger userId, AppProject appProject) {
-        ProjectBuyVO vo = new ProjectBuyVO();
-        vo.setBalance(getBalanceByTokenId(userId, appProject.getBaseTokenId()));
-        BigDecimal userBuyTotal = appProjectUserTransactionService.getUserBuyTotal(userId, appProject.getId());
-        BigDecimal limit = appProject.getProjectLimit().subtract(userBuyTotal);
-        vo.setLimitValue(limit);
-        vo.setProjectMin(null == appProject.getProjectMin() ? BigDecimal.ZERO : appProject.getProjectMin());
-        return vo;
-    }
+//    public ProjectBuyVO getBalance(BigInteger userId, AppProject appProject) {
+//        ProjectBuyVO vo = new ProjectBuyVO();
+//        vo.setBalance(getBalanceByTokenId(userId, appProject.getBaseTokenId()));
+//        BigDecimal userBuyTotal = appProjectUserTransactionService.getUserBuyTotal(userId, appProject.getId());
+//        BigDecimal limit = appProject.getProjectLimit().subtract(userBuyTotal);
+//        vo.setLimitValue(limit);
+//        vo.setProjectMin(null == appProject.getProjectMin() ? BigDecimal.ZERO : appProject.getProjectMin());
+//        return vo;
+//    }
 
     public BigDecimal getBalanceByTokenId(BigInteger userId, BigInteger tokenId) {
         String key = "AppUserBalance".toUpperCase() + "_" + userId;

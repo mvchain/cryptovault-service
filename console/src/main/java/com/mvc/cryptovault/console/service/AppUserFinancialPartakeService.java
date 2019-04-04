@@ -124,4 +124,8 @@ public class AppUserFinancialPartakeService extends AbstractService<AppUserFinan
         List<AppUserFinancialPartake> list = findByCondition(condition);
         return list.size() == 0 ? null : list.get(0);
     }
+
+    public List<BigInteger> getAllUserId() {
+        return appUserFinancialPartakeMapper.getAllUserId();
+    }
 }

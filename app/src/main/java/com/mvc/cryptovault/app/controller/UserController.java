@@ -185,6 +185,7 @@ public class UserController extends BaseController {
         vo.setUserId(user.getId());
         vo.setPublicKey(user.getPublicKey());
         vo.setGoogleCheck(user.getGoogleCheck());
+        vo.setSalt(user.getSalt());
         return new Result<>(vo);
     }
 
@@ -298,11 +299,11 @@ public class UserController extends BaseController {
 //        return new Result<>(result);
 //    }
 
-    @ApiOperation("用户签到")
-    @PutMapping("sign")
-    public Result<Boolean> sign() {
-        return new Result<>(userService.sign(getUserId()));
-    }
+//    @ApiOperation("用户签到")
+//    @PutMapping("sign")
+//    public Result<Boolean> sign() {
+//        return new Result<>(userService.sign(getUserId()));
+//    }
 
 //    @ApiOperation("获取用户是否已签到")
 //    @GetMapping("sign")
@@ -336,4 +337,16 @@ public class UserController extends BaseController {
         return new Result<>(tokenVO);
     }
 
+    @ApiOperation("20190403获取用户盐")
+    @PostMapping("salt")
+    @NotLogin
+    public Result<String> getSalt(@RequestParam String email) {
+        AppUser user = userService.getUserByUsername(email);
+        if (null == user) {
+            return new Result<>("");
+        } else {
+            String salt = userService.getSalt(user.getId());
+            return new Result<>(salt);
+        }
+    }
 }

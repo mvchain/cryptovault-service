@@ -57,5 +57,7 @@ public class AppFinancialDTO {
     private AppFinancialContent content;
     @ApiModelProperty("产品提成详情")
     private List<AppFinancialDetail> details;
+    @ApiModelProperty("附加卖出百分比")
+    private BigDecimal addSold;
 
 }

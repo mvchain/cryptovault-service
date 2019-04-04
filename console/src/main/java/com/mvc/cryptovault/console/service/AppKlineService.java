@@ -19,6 +19,7 @@ import org.springframework.util.NumberUtils;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -155,20 +156,22 @@ public class AppKlineService extends AbstractService<AppKline> implements BaseSe
 
     public TickerVO getTickers(BigInteger pairId) {
         CommonPair pair = commonPairService.findById(pairId);
-        if(null == pair){
+        if (null == pair) {
             return new TickerVO();
         }
+        //mvc
+        CommonTokenPrice baseToken = commonTokenPriceService.findById(pair.getBaseTokenId());
         String key = "AppKline".toUpperCase() + "_Tickers_" + pair.getTokenId();
         String priceObj = redisTemplate.opsForValue().get(key);
         if (StringUtils.isBlank(priceObj)) {
             TickerVO vo = commonTokenHistoryMapper.findTicker(pair.getTokenId(), System.currentTimeMillis() - RedisConstant.ONE_DAY);
             CommonTokenPrice price = commonTokenPriceService.findOneBy("tokenId", pair.getTokenId());
-            if(null == price){
+            if (null == price) {
                 return null;
             }
-            vo.setPrice(null == price ? BigDecimal.ZERO : price.getTokenPrice());
-            vo.setLow(BigDecimal.ZERO.compareTo(vo.getLow()) == 0 ? vo.getPrice(): vo.getLow());
-            vo.setHigh(BigDecimal.ZERO.compareTo(vo.getHigh()) == 0? vo.getPrice(): vo.getHigh());
+            vo.setPrice(null == price ? BigDecimal.ZERO : baseToken.getTokenPrice().divide(price.getTokenPrice(), 20, RoundingMode.DOWN));
+            vo.setLow(BigDecimal.ZERO.compareTo(vo.getLow()) == 0 ? vo.getPrice() : baseToken.getTokenPrice().divide(vo.getLow(), 20, RoundingMode.DOWN));
+            vo.setHigh(BigDecimal.ZERO.compareTo(vo.getHigh()) == 0 ? vo.getPrice() : baseToken.getTokenPrice().divide(vo.getHigh(), 20, RoundingMode.DOWN));
             redisTemplate.opsForValue().set(key, JSON.toJSONString(vo), 10, TimeUnit.SECONDS);
             return vo;
         }

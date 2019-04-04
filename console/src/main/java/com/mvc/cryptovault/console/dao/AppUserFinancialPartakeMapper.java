@@ -23,4 +23,7 @@ public interface AppUserFinancialPartakeMapper extends MyMapper<AppUserFinancial
 
     @Update("update app_user_financial_partake set shadow_value = shadow_value + #{value}, updated_at = #{currentTimeMillis} where id = #{id} and updated_at = #{updatedAt}")
     Integer updateShadow(@Param("id") BigInteger id, @Param("value") BigDecimal incomeParent, @Param("currentTimeMillis") Long currentTimeMillis, @Param("updatedAt") Long updatedAt);
+
+    @Select("SELECT DISTINCT(user_id) FROM app_user_financial_partake")
+    List<BigInteger> getAllUserId();
 }
