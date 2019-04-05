@@ -98,11 +98,28 @@ public class AppUserFinancialPartakeService extends AbstractService<AppUserFinan
         return partake.getValue().divide(BigDecimal.valueOf(100)).multiply(BigDecimal.valueOf(ratio)).multiply(BigDecimal.valueOf(appFinancial.getRatio()));
     }
 
+    public Boolean setIncomeNextDay(BigInteger id, Float value) {
+        String key = RedisConstant.APPFINANCIAL_RATIO + getNowDate() + id;
+        redisTemplate.opsForValue().set(key, String.valueOf(value), 2, TimeUnit.DAYS);
+        return true;
+    }
 
-    public static void main(String[] args) {
-        Float a = 10f;
-        Float b = 15f;
-        System.out.println();
+    public String getIncomeNextDay(AppFinancial appFinancial) {
+        String key = RedisConstant.APPFINANCIAL_RATIO + getNowDate() + appFinancial.getId();
+        Object ratioStr = redisTemplate.opsForValue().get(key);
+        if (null == ratioStr) {
+            ratioStr = (Math.random() * (appFinancial.getIncomeMax() - appFinancial.getIncomeMin()) + appFinancial.getIncomeMin()) / 365;
+            redisTemplate.opsForValue().set(key, String.valueOf(ratioStr), 2, TimeUnit.DAYS);
+        }
+        return String.valueOf(ratioStr);
+    }
+
+    public String getNextDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, 1);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        String str = sdf.format(calendar.getTime());
+        return str;
     }
 
     public void addShadow(BigInteger userId, BigDecimal incomeParent, BigInteger id) {

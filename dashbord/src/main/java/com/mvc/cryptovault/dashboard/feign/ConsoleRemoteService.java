@@ -151,6 +151,9 @@ public interface ConsoleRemoteService {
     @PutMapping("dashboard/appUser/{id}/status")
     Result<Boolean> updateUserStatus(@PathVariable("id") BigInteger id, @RequestParam("status") Integer status);
 
+    @PutMapping("dashboard/appUser/{id}/google")
+    Result<Boolean> updateUserGoogleStatus(@PathVariable("id") BigInteger id, @RequestParam("status") Integer status);
+
     @GetMapping("dashboard/appProject/{id}/partake")
     Result<List<ExportPartake>> exportPartake(@PathVariable("id") BigInteger id);
 

@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.app.config;
 
 import com.mvc.cryptovault.common.bean.vo.Result;
+import com.mvc.cryptovault.common.util.GoogleTokenErrorException;
 import com.mvc.cryptovault.common.util.PassWrongMoreException;
 import com.mvc.cryptovault.common.util.PvkeyException;
 import com.mvc.cryptovault.common.util.TokenErrorException;
@@ -30,6 +31,12 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public Result tokenErrorExceptionException() {
         return new Result(HttpStatus.UNAUTHORIZED.value(), "token error", null);
+    }
+
+    @ExceptionHandler(GoogleTokenErrorException.class)
+    @ResponseStatus(HttpStatus.OK)
+    public Result googleTokenErrorExceptionException() {
+        return new Result(HttpStatus.PROXY_AUTHENTICATION_REQUIRED.value(), "token error", null);
     }
 
     @ExceptionHandler(PassWrongMoreException.class)

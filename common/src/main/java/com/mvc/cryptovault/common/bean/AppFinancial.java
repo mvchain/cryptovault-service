@@ -35,4 +35,7 @@ public class AppFinancial {
     private BigDecimal sold;
     private Integer visible;
     private BigDecimal addSold;
+    private Float showIncomeMin;
+    private Float showIncomeMax;
+
 }

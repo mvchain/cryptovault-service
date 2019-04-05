@@ -56,5 +56,11 @@ public class AppFinancialVO {
     private Integer status;
     @ApiModelProperty("是否展示")
     private Integer visible;
+    @ApiModelProperty("次日提成百分比")
+    private Float nextIncome;
+    @ApiModelProperty("展示收益最小百分比")
+    private Float showIncomeMin;
+    @ApiModelProperty("展示收益最大百分比")
+    private Float showIncomeMax;
 
 }

@@ -73,21 +73,21 @@ public class Job {
     RestTemplate restTemplate = new RestTemplate();
     @Value("${coinmarketcap.key}")
     String apiKey;
+
     /**
      * 修改任务状态
      */
-//    @Scheduled(cron = "*/2 * * * * ?")
-//    public void newAccount() {
-//        final String key = RedisConstant.PROJECT_START;
-//        Boolean result = getRedisLock(key, 5);
-//        usdtService.getHotWallet();
-//        if (!result) {
-//            return;
-//        }
-//        appProjectService.updateProjectStatus();
-//        financialService.updateStatus();
-//        redisTemplate.delete(key);
-//    }
+    @Scheduled(cron = "*/2 * * * * ?")
+    public void newAccount() {
+        final String key = RedisConstant.PROJECT_START;
+        Boolean result = getRedisLock(key, 5);
+        usdtService.getHotWallet();
+        if (!result) {
+            return;
+        }
+        financialService.updateStatus();
+        redisTemplate.delete(key);
+    }
 
 
     /**
@@ -107,7 +107,6 @@ public class Job {
     /**
      * 生成k线数据
      */
-
 //    @Scheduled(cron = "${scheduled.kline}")
 //    public void kLine() {
 //        List<CommonToken> tokens = commonTokenService.findKlineToken();
@@ -161,9 +160,9 @@ public class Job {
     @Scheduled(cron = "${scheduled.usdt}")
     private void updateUsdtPrice() {
         List<NameValuePair> paratmers = new ArrayList<NameValuePair>();
-        String usdtUrl = "https://data.block.cc/api/v1/price?symbol=USDT";
-        String mvcUrl = "https://data.block.cc/api/v1/price?symbol=MVC";
-        String btcUrl = "https://data.block.cc/api/v1/price?symbol=BTC";
+        String usdtUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=USDT";
+        String mvcUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=MVC";
+        String btcUrl = "https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=BTC";
         String usdtResult = null;
         String btcResult = null;
         String mvcResult = null;

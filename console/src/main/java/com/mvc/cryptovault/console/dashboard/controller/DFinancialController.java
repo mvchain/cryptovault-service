@@ -9,6 +9,7 @@ import com.mvc.cryptovault.common.bean.vo.AppFinancialOrderVO;
 import com.mvc.cryptovault.common.bean.vo.AppFinancialVO;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.console.common.BaseController;
+import com.mvc.cryptovault.console.service.AppUserFinancialPartakeService;
 import com.mvc.cryptovault.console.service.FinancialService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +29,17 @@ public class DFinancialController extends BaseController {
 
     @Autowired
     FinancialService financialService;
+    @Autowired
+    AppUserFinancialPartakeService partakeService;
 
     @GetMapping("")
     public Result<PageInfo<AppFinancialVO>> getFinancialList(@ModelAttribute PageDTO pageDTO, @RequestParam(value = "financialName", required = false) String financialName) {
         List<AppFinancial> list = financialService.getDFinancialList(pageDTO, financialName);
         PageInfo result = new PageInfo<>(list);
-        result.setList(list.stream().map(obj-> {AppFinancialVO vo = new AppFinancialVO();
+        result.setList(list.stream().map(obj -> {
+            AppFinancialVO vo = new AppFinancialVO();
             BeanUtils.copyProperties(obj, vo);
+            vo.setNextIncome(Float.valueOf(partakeService.getIncomeNextDay(obj)));
             return vo;
         }).collect(Collectors.toList()));
         return new Result<>(result);
@@ -59,7 +64,7 @@ public class DFinancialController extends BaseController {
     }
 
     @GetMapping("{id}/order")
-    public Result<PageInfo<AppFinancialOrderVO>> getFinancialOrderList(@PathVariable("id") BigInteger id, @ModelAttribute PageDTO pageDTO, @RequestParam(value = "searchKey", required = false) String searchKey,  @RequestParam(value = "status", required = false) Integer status) {
+    public Result<PageInfo<AppFinancialOrderVO>> getFinancialOrderList(@PathVariable("id") BigInteger id, @ModelAttribute PageDTO pageDTO, @RequestParam(value = "searchKey", required = false) String searchKey, @RequestParam(value = "status", required = false) Integer status) {
         PageInfo<AppFinancialOrderVO> result = financialService.getFinancialOrderList(id, pageDTO, searchKey, status);
         return new Result<>(result);
     }

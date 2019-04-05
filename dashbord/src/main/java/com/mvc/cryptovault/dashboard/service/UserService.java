@@ -57,4 +57,9 @@ public class UserService extends BaseService {
     public void debitRecharge(DebitRechargeDTO rechargeDTO) {
         remoteService.debit(rechargeDTO);
     }
+
+    public Boolean updateGoogle(BigInteger userId, Integer status) {
+        remoteService.updateUserGoogleStatus(userId, status);
+        return true;
+    }
 }

@@ -82,7 +82,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         Assert.isTrue(num == 1, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         Assert.isTrue(balance.compareTo(financialBuyDTO.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
         appUserFinancialPartakeService.buy(financial, financialBuyDTO, userId);
-        if(addValue.add(financial.getSold()).compareTo(financial.getLimitValue()) >= 0){
+        if (addValue.add(financial.getSold()).compareTo(financial.getLimitValue()) >= 0) {
             financial = financialMapper.selectByPrimaryKey(financial.getId());
             financial.setStatus(2);
             update(financial);
@@ -211,6 +211,8 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
             FinancialSimpleVO vo = new FinancialSimpleVO();
             BeanUtils.copyProperties(obj, vo);
             vo.setLimitValue(obj.getLimitValue());
+            vo.setIncomeMax(obj.getShowIncomeMax() == null ? obj.getIncomeMax() : obj.getShowIncomeMax());
+            vo.setIncomeMin(obj.getShowIncomeMin() == null ? obj.getIncomeMin() : obj.getShowIncomeMin());
             BigDecimal sold = obj.getAddSold() == null || obj.getAddSold().equals(BigDecimal.ZERO) ? obj.getSold() : obj.getSold().add(obj.getLimitValue().multiply(obj.getAddSold().divide(BigDecimal.valueOf(100))));
             vo.setSold(sold.compareTo(obj.getLimitValue()) > 0 ? obj.getLimitValue() : sold);
             return vo;
@@ -251,6 +253,9 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         appFinancialContentService.save(appFinancialDTO.getContent());
         appFinancialContentService.updateCache(appFinancial.getId());
         appFinancialDetailService.updateDetail(appFinancial.getId(), appFinancialDTO.getDetails());
+        if (null != appFinancialDTO.getNextIncome()) {
+            appUserFinancialPartakeService.setIncomeNextDay(appFinancial.getId(), appFinancialDTO.getNextIncome());
+        }
     }
 
     public void updateAppFinancial(AppFinancialDTO appFinancialDTO) {
@@ -263,6 +268,9 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         appFinancialContentService.update(appFinancialDTO.getContent());
         appFinancialContentService.updateCache(appFinancialDTO.getId());
         appFinancialDetailService.updateDetail(appFinancialDTO.getId(), appFinancialDTO.getDetails());
+        if (null != appFinancialDTO.getNextIncome()) {
+            appUserFinancialPartakeService.setIncomeNextDay(appFinancial.getId(), appFinancialDTO.getNextIncome());
+        }
     }
 
     public PageInfo<AppFinancialOrderVO> getFinancialOrderList(BigInteger id, PageDTO pageDTO, String searchKey, Integer status) {

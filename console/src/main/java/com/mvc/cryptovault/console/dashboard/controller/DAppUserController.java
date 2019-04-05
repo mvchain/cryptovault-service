@@ -87,6 +87,15 @@ public class DAppUserController extends BaseController {
         return new Result<>(true);
     }
 
+    @PutMapping("{id}/google")
+    public Result<Boolean> updateUserGoogleStatus(@PathVariable("id") BigInteger id, @RequestParam("status") Integer status) {
+        AppUser user = appUserService.findById(id);
+        user.setGoogleCheck(status);
+        appUserService.update(user);
+        appUserService.updateCache(user.getId());
+        return new Result<>(true);
+    }
+
     @PostMapping()
     public Result<Boolean> importAppUser(@RequestBody List<AppUser> list, @RequestParam("fileName") String fileName) {
         String obj = redisTemplate.boundValueOps(RedisConstant.USER_IMPORT + fileName).get();

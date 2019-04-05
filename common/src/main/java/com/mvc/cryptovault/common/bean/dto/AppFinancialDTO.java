@@ -59,5 +59,10 @@ public class AppFinancialDTO {
     private List<AppFinancialDetail> details;
     @ApiModelProperty("附加卖出百分比")
     private BigDecimal addSold;
-
+    @ApiModelProperty("次日提成百分比,不传则以默认方式计算")
+    private Float nextIncome;
+    @ApiModelProperty("展示收益最小百分比")
+    private Float showIncomeMin;
+    @ApiModelProperty("展示收益最大百分比")
+    private Float showIncomeMax;
 }
