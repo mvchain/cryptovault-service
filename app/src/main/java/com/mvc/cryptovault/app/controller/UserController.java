@@ -15,7 +15,6 @@ import io.jsonwebtoken.Claims;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
@@ -316,7 +315,7 @@ public class UserController extends BaseController {
     public Result<GoogleRegInfo> getGoogleInfo() {
         BigInteger userId = getUserId();
         AppUser user = userService.getUser(userId);
-        if (user == null || StringUtils.isNotBlank(user.getGoogleSecret())) {
+        if (user == null) {
             return null;
         }
         GoogleRegInfo info = userService.createGoogleInfo(user);
@@ -330,7 +329,7 @@ public class UserController extends BaseController {
         return new Result<>(result);
     }
 
-    @ApiOperation("20190403验证咕嘎验证码,通过后返回新token")
+    @ApiOperation("20190403验证谷歌验证码,通过后返回新token")
     @PostMapping("google")
     public Result<TokenVO> checkGoogleCode(@RequestParam Integer googleCode) {
         TokenVO tokenVO = userService.checkGoogleCode(getUserId(), googleCode);

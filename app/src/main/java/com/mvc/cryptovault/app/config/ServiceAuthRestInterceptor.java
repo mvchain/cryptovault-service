@@ -37,9 +37,11 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
         NotLogin loginAnn = handlerMethod.getMethodAnnotation(NotLogin.class);
         checkAnnotation(claim, loginAnn, request.getRequestURI());
         setUserInfo(claim);
-        Integer googleCheck = claim.get("googleCheck", Integer.class);
-        if(null != googleCheck && 0== googleCheck){
-            throw new GoogleTokenErrorException(MessageConstants.getMsg("TOKEN_EXPIRE"), MessageConstants.TOKEN_EXPIRE_CODE);
+        if (null != claim) {
+            Integer googleCheck = claim.get("googleCheck", Integer.class);
+            if (null != googleCheck && 0 == googleCheck) {
+                throw new GoogleTokenErrorException(MessageConstants.getMsg("TOKEN_EXPIRE"), MessageConstants.TOKEN_EXPIRE_CODE);
+            }
         }
         return super.preHandle(request, response, handler);
     }

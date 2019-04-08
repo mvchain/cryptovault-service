@@ -28,7 +28,6 @@ import java.util.Arrays;
 @Component
 public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
 
-    @Autowired
     AdminService adminService;
     @Autowired
     StringRedisTemplate redisTemplate;
@@ -75,7 +74,7 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
         }
         String permissionStr = redisTemplate.opsForValue().get("ADMIN_PERMISSON_" + userId);
         if (StringUtils.isBlank(permissionStr)) {
-            AdminDetailVO user = adminService.getAdminDetail(BigInteger.valueOf(userId));
+            AdminDetailVO user = getAdminService().getAdminDetail(BigInteger.valueOf(userId));
             permissionStr = user.getPermissions();
             if (StringUtils.isBlank(permissionStr)) {
                 throw new IllegalArgumentException("没有权限,请联系管理员");
@@ -87,6 +86,13 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
         if (!Arrays.asList(permissionArr).contains(needPermission)) {
             throw new IllegalArgumentException("没有权限,请联系管理员");
         }
+    }
+
+    private AdminService getAdminService() {
+        if (adminService == null) {
+            adminService = SpringContextUtil.getBean("adminService");
+        }
+        return adminService;
     }
 
     //校验权限

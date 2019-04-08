@@ -86,6 +86,7 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
             vo.setBalance(sum);
             vo.setInviteNum(appUser.getInviteNum());
             vo.setFinancialBalance(financialService.getFinancialBalanceSum(appUser.getId()));
+            vo.setGoogleCheck(appUser.getGoogleCheck());
             vos.add(vo);
         }
         PageInfo result = new PageInfo(list);

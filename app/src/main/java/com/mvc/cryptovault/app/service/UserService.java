@@ -211,7 +211,7 @@ public class UserService {
     }
 
     public GoogleRegInfo createGoogleInfo(AppUser user) {
-        GoogleRegInfo info = GoogleAuthUtil.createCredentials(user.getGoogleSecret());
+        GoogleRegInfo info = GoogleAuthUtil.createCredentials(user.getEmail(), user.getGoogleSecret());
         user.setGoogleSecret(info.getSecret());
         Result<Boolean> result = userRemoteService.updateUser(user);
         if (result.getData() == false) {

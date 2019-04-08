@@ -16,7 +16,6 @@ import com.mvc.cryptovault.dashboard.util.ExcelException;
 import com.mvc.cryptovault.dashboard.util.ExcelUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.models.auth.In;
 import lombok.Cleanup;
 import org.apache.commons.io.IOUtils;
 import org.springframework.util.Assert;
@@ -117,9 +116,9 @@ public class UserController extends BaseController {
     }
 
     @ApiOperation("修改用户谷歌验证码启用状态（1开启0关闭）")
-    @PutMapping("google")
-    public Result<Boolean> updateGoogle(@RequestParam Integer status){
-        userService.updateGoogle(getUserId(), status);
+    @PutMapping("{id}/google")
+    public Result<Boolean> updateGoogle(@PathVariable BigInteger id, @RequestParam Integer status) {
+        userService.updateGoogle(id, status);
         return new Result<>(true);
     }
 

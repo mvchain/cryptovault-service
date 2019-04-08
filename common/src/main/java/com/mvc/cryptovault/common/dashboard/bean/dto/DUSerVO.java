@@ -31,5 +31,7 @@ public class DUSerVO implements Serializable {
     private BigDecimal financialBalance;
     @ApiModelProperty("邮箱地址")
     private String email;
+    @ApiModelProperty("谷歌验证码开关状态1开0关闭")
+    private Integer googleCheck;
 
 }
