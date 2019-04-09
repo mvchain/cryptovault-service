@@ -78,7 +78,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         BigDecimal partake = appUserFinancialPartakeService.getPartake(userId, id);
         Assert.isTrue(partake.add(financialBuyDTO.getValue()).compareTo(financial.getUserLimit()) <= 0, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         BigDecimal balance = appUserBalanceService.getBalanceByTokenId(userId, financial.getBaseTokenId());
-        Integer num = financialMapper.updateSold(financial.getId(), financialBuyDTO.getValue().add(addValue));
+        Integer num = financialMapper.updateSold(financial.getId(), financialBuyDTO.getValue(), addValue);
         Assert.isTrue(num == 1, MessageConstants.getMsg("PROJECT_LIMIT_OVER"));
         Assert.isTrue(balance.compareTo(financialBuyDTO.getValue()) >= 0, MessageConstants.getMsg("INSUFFICIENT_BALANCE"));
         appUserFinancialPartakeService.buy(financial, financialBuyDTO, userId);
