@@ -39,7 +39,7 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
         setUserInfo(claim);
         if (null != claim) {
             Integer googleCheck = claim.get("googleCheck", Integer.class);
-            if (null != googleCheck && 0 == googleCheck) {
+            if (null != googleCheck && 0 == googleCheck && uri.indexOf("user/google") < 0 && !request.getMethod().equalsIgnoreCase("GET")) {
                 throw new GoogleTokenErrorException(MessageConstants.getMsg("TOKEN_EXPIRE"), MessageConstants.TOKEN_EXPIRE_CODE);
             }
         }
@@ -55,6 +55,9 @@ public class ServiceAuthRestInterceptor extends HandlerInterceptorAdapter {
 
     //校验权限
     private void checkAnnotation(Claims claim, NotLogin loginAnn, String uri) throws LoginException {
+        if(null != loginAnn){
+            return;
+        }
         if (null == claim && null == loginAnn) {
             if (uri.indexOf("/refresh") > 0) {
                 throw new LoginException(MessageConstants.getMsg("TOKEN_EXPIRE"));

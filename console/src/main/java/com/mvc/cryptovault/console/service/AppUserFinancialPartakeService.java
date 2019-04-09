@@ -100,12 +100,19 @@ public class AppUserFinancialPartakeService extends AbstractService<AppUserFinan
 
     public Boolean setIncomeNextDay(BigInteger id, Float value) {
         String key = RedisConstant.APPFINANCIAL_RATIO + getNextDate() + id;
+        //未到1点还是用当前时间
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 0) {
+            key = RedisConstant.APPFINANCIAL_RATIO + getNowDate() + id;
+        }
         redisTemplate.opsForValue().set(key, String.valueOf(value), 2, TimeUnit.DAYS);
         return true;
     }
 
     public String getIncomeNextDay(AppFinancial appFinancial) {
         String key = RedisConstant.APPFINANCIAL_RATIO + getNextDate() + appFinancial.getId();
+        if (Calendar.getInstance().get(Calendar.HOUR_OF_DAY) == 0) {
+            key = RedisConstant.APPFINANCIAL_RATIO + getNowDate() + appFinancial.getId();
+        }
         Object ratioStr = redisTemplate.opsForValue().get(key);
         if (null == ratioStr) {
             ratioStr = (Math.random() * (appFinancial.getIncomeMax() - appFinancial.getIncomeMin()) + appFinancial.getIncomeMin()) / 365;

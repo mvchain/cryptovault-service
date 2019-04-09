@@ -62,5 +62,7 @@ public class AppFinancialVO {
     private Float showIncomeMin;
     @ApiModelProperty("展示收益最大百分比")
     private Float showIncomeMax;
+    @ApiModelProperty("附加卖出百分比")
+    private BigDecimal addSold;
 
 }

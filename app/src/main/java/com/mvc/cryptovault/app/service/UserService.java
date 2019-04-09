@@ -67,6 +67,7 @@ public class UserService {
         vo.setToken(token);
         vo.setUserId(user.getId());
         vo.setEmail(user.getEmail());
+        vo.setSalt(user.getSalt());
         vo.setPublicKey(user.getPublicKey());
         vo.setGoogleCheck(user.getGoogleCheck());
         return vo;
@@ -229,7 +230,7 @@ public class UserService {
         Assert.isTrue(null != googleSetVO.getPassword() && user.getPassword().equals(googleSetVO.getPassword()), MessageConstants.getMsg("USER_PASS_WRONG"));
         Boolean checkResult = GoogleAuthUtil.checkUser(user.getGoogleSecret(), googleSetVO.getGoogleCode());
         Assert.isTrue(checkResult, MessageConstants.getMsg("SMS_ERROR"));
-        user.setGoogleCheck(1);
+        user.setGoogleCheck(googleSetVO.getStatus());
         userRemoteService.updateUser(user);
         TokenVO tokenVO = getTokenVO(userId, user);
         return tokenVO;
@@ -242,6 +243,7 @@ public class UserService {
         tokenVO.setPublicKey(user.getPublicKey());
         tokenVO.setEmail(user.getEmail());
         tokenVO.setUserId(userId);
+        tokenVO.setSalt(user.getSalt());
         tokenVO.setRefreshToken(refreshToken);
         tokenVO.setToken(token);
         tokenVO.setGoogleCheck(user.getGoogleCheck());
