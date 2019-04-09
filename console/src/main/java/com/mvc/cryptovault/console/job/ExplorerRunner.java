@@ -72,7 +72,7 @@ public class ExplorerRunner implements CommandLineRunner {
             newInfo.setTransactions(setting.getRandomTransactionCount());
             explorerBlockInfoService.saveInfo(newInfo);
         } catch (Exception e) {
-            e.printStackTrace();
+           // e.printStackTrace();
         }
     }
 

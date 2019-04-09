@@ -239,7 +239,7 @@ public class UserService {
         String token = JwtHelper.createToken(user.getEmail(), userId, 1);
         String refreshToken = JwtHelper.createRefresh(user.getEmail(), userId, 1);
         TokenVO tokenVO = new TokenVO();
-        tokenVO.setPublicKey("");
+        tokenVO.setPublicKey(user.getPublicKey());
         tokenVO.setEmail(user.getEmail());
         tokenVO.setUserId(userId);
         tokenVO.setRefreshToken(refreshToken);

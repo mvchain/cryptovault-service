@@ -236,6 +236,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         BeanUtils.copyProperties(financial, vo);
         vo.setContent(appFinancialContentService.findById(id));
         vo.setDetails(appFinancialDetailService.findDetails(id));
+        vo.setNextIncome(Float.valueOf(appUserFinancialPartakeService.getIncomeNextDay(financial)));
         return vo;
     }
 
