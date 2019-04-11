@@ -16,5 +16,7 @@ public class GoogleSetVO {
     private Integer googleCode;
     @ApiModelProperty("开关设置,0关闭 1开启")
     private Integer status;
+    @ApiModelProperty("google secret")
+    private String googleSecret;
 
 }

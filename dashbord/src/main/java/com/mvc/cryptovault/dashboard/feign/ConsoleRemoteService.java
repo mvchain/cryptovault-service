@@ -202,4 +202,13 @@ public interface ConsoleRemoteService {
     @PostMapping("explorer/setting")
     Result<Boolean> saveExplorerSetting(@RequestBody ExplorerBlockSetting setting);
 
+    @GetMapping("banner")
+    Result<List<AppBanner>> bannerList();
+
+    @DeleteMapping("banner/{id}")
+    Result<Boolean> delBanner(@PathVariable("id") BigInteger id);
+
+    @PostMapping("banner")
+    Result<Boolean> saveBanner(@RequestBody AppBanner appBanner);
+
 }

@@ -12,7 +12,6 @@ import com.mvc.cryptovault.common.bean.vo.TokenBalanceVO;
 import com.mvc.cryptovault.common.dashboard.bean.dto.DUSerVO;
 import com.mvc.cryptovault.common.dashboard.bean.vo.DUserLogVO;
 import com.mvc.cryptovault.common.util.ConditionUtil;
-import com.mvc.cryptovault.common.util.InviteUtil;
 import com.mvc.cryptovault.common.util.MessageConstants;
 import com.mvc.cryptovault.common.util.MnemonicUtil;
 import com.mvc.cryptovault.common.util.bip39.Words;
@@ -173,11 +172,11 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
         updateCache(appUser.getId());
     }
 
-    public void sign(BigInteger userId) {
-        executorService.submit(signJob(userId));
+    public void sign(BigInteger userId, Integer isSign) {
+        executorService.submit(signJob(userId, isSign));
     }
 
-    private Runnable signJob(final BigInteger userId) {
+    private Runnable signJob(final BigInteger userId, Integer isSign) {
         return new Runnable() {
             @Override
             public void run() {
@@ -185,6 +184,9 @@ public class AppUserService extends AbstractService<AppUser> implements BaseServ
                 List<AppUserFinancialPartake> list = appUserFinancialPartakeService.findBy("userId", userId);
                 for (AppUserFinancialPartake partake : list) {
                     AppFinancial appFinancial = financialService.findById(partake.getFinancialId());
+                    if (appFinancial.getNeedSign() != isSign) {
+                        continue;
+                    }
                     BigDecimal value = partake.getCreatedAt() < TimeUtil.getDayZeroTime() ? appUserFinancialPartakeService.getIncomeDay(partake, appFinancial) : BigDecimal.ZERO;
                     BigDecimal shadow = partake.getShadowValue();
                     BigDecimal income = value.add(shadow);

@@ -27,4 +27,9 @@ public class AppService {
         return appInfoResult.getData();
     }
 
+    public String getView(Integer type, BigInteger id) {
+        Result<String> result = consoleRemoteService.getView(type, id);
+        return result.getData();
+    }
+
 }

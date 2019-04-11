@@ -172,6 +172,8 @@ public class AppUserBalanceService extends AbstractService<AppUserBalance> imple
             }
         }
         initDefault(map, BusinessConstant.BASE_TOKEN_ID_VRT, result);
+        initDefault(map, BusinessConstant.BASE_TOKEN_ID_BTC, result);
+        initDefault(map, BusinessConstant.BASE_TOKEN_ID_USDT, result);
         Collections.sort(result, comparator);
         return result;
     }

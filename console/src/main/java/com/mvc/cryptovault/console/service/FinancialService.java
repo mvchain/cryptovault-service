@@ -128,6 +128,8 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         BeanUtils.copyProperties(appFinancial, vo);
         vo.setIncome(partake.getIncome());
         vo.setFinancialName(appFinancial.getName());
+        vo.setIncomeMax(appFinancial.getShowIncomeMax());
+        vo.setIncomeMin(appFinancial.getShowIncomeMin());
         vo.setTimes(appFinancial.getTimes() - partake.getTimes());
         vo.setValue(partake.getValue());
         return vo;
@@ -146,6 +148,8 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
         vo.setPurchased(partake);
         vo.setContent(content.getContent());
         vo.setRule(content.getRule());
+        vo.setIncomeMin(appFinancial.getShowIncomeMin());
+        vo.setIncomeMax(appFinancial.getShowIncomeMax());
         vo.setLimitValue(appFinancial.getLimitValue());
         BigDecimal sold = appFinancial.getAddSold() == null || appFinancial.getAddSold().equals(BigDecimal.ZERO) ? appFinancial.getSold() : appFinancial.getSold().add(appFinancial.getLimitValue().multiply(appFinancial.getAddSold().divide(BigDecimal.valueOf(100))));
         vo.setSold(sold.compareTo(appFinancial.getLimitValue()) > 0 ? appFinancial.getLimitValue() : sold);

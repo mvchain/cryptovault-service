@@ -15,3 +15,17 @@ ALTER TABLE `app_financial`
 ADD COLUMN `show_income_min`  float NULL AFTER `add_sold`,
 ADD COLUMN `show_income_max`  float NULL AFTER `show_income_min`;
 
+CREATE TABLE `app_banner` (
+`id`  bigint NULL AUTO_INCREMENT ,
+`title`  varchar(255) NULL ,
+`content`  longtext NULL ,
+`created_at`  bigint NULL ,
+PRIMARY KEY (`id`)
+)
+;
+
+ALTER TABLE `app_financial`
+ADD COLUMN `need_sign`  int NULL AFTER `show_income_max`;
+
+
+

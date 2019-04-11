@@ -16,6 +16,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,8 @@ public class UserController extends BaseController {
     MailService mailService;
     @Autowired
     GeetestLib gtSdk;
+    @Value("${google.url}")
+    String url;
 
     @ApiOperation("获取验证码信息")
     @GetMapping("valid")
@@ -298,17 +301,17 @@ public class UserController extends BaseController {
 //        return new Result<>(result);
 //    }
 
-//    @ApiOperation("用户签到")
-//    @PutMapping("sign")
-//    public Result<Boolean> sign() {
-//        return new Result<>(userService.sign(getUserId()));
-//    }
+    @ApiOperation("用户签到")
+    @PutMapping("sign")
+    public Result<Boolean> sign() {
+        return new Result<>(userService.sign(getUserId()));
+    }
 
-//    @ApiOperation("获取用户是否已签到")
-//    @GetMapping("sign")
-//    public Result<Boolean> getSign() {
-//        return new Result<>(userService.getSign(getUserId()));
-//    }
+    @ApiOperation("获取用户是否已签到")
+    @GetMapping("sign")
+    public Result<Boolean> getSign() {
+        return new Result<>(userService.getSign(getUserId()));
+    }
 
     @ApiOperation("20190403获取谷歌验证信息")
     @GetMapping("google")
@@ -319,6 +322,7 @@ public class UserController extends BaseController {
             return null;
         }
         GoogleRegInfo info = userService.createGoogleInfo(user);
+        info.setDownloadUrl(url);
         return new Result<>(info);
     }
 

@@ -65,4 +65,6 @@ public class AppFinancialDTO {
     private Float showIncomeMin;
     @ApiModelProperty("展示收益最大百分比")
     private Float showIncomeMax;
+    @ApiModelProperty("是否需要签到")
+    private Integer needSign;
 }

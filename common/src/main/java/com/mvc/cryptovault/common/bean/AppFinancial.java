@@ -37,5 +37,5 @@ public class AppFinancial {
     private BigDecimal addSold;
     private Float showIncomeMin;
     private Float showIncomeMax;
-
+    private Integer needSign;
 }

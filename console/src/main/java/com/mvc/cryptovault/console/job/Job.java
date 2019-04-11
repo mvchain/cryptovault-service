@@ -194,7 +194,8 @@ public class Job {
         }
         List<BigInteger> ids = appUserFinancialPartakeService.getAllUserId();
         ids.forEach(userId -> {
-            appUserService.sign(userId);
+            //只解锁不需要签到的理财
+            appUserService.sign(userId, 0);
         });
         redisTemplate.delete(key);
     }

@@ -136,7 +136,7 @@ public class UserController extends BaseController {
         redisTemplate.opsForHash().delete(key, "SIGN_DATE");
         Boolean result = redisTemplate.opsForHash().putIfAbsent(key, "SIGN_DATE", getNowDate());
         if (result) {
-            appUserService.sign(userId);
+            appUserService.sign(userId, 1);
         }
         return new Result<>(result);
     }

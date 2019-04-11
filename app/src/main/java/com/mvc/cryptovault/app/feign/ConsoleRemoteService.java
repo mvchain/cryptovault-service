@@ -179,4 +179,6 @@ public interface ConsoleRemoteService {
     @GetMapping("appUserAddress/address")
     Result<Boolean> isInner(@RequestParam("address") String address);
 
+    @GetMapping("appInfo/view")
+    Result<String> getView(@RequestParam("type") Integer type, @RequestParam("id") BigInteger id);
 }

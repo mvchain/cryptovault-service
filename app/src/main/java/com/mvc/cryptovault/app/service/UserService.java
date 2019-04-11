@@ -212,25 +212,22 @@ public class UserService {
     }
 
     public GoogleRegInfo createGoogleInfo(AppUser user) {
-        GoogleRegInfo info = GoogleAuthUtil.createCredentials(user.getEmail(), user.getGoogleSecret());
-        user.setGoogleSecret(info.getSecret());
-        Result<Boolean> result = userRemoteService.updateUser(user);
-        if (result.getData() == false) {
-            return null;
-        }
+        GoogleRegInfo info = GoogleAuthUtil.createCredentials(user.getEmail(), null);
         return info;
     }
 
     public TokenVO updateTokenSwitch(BigInteger userId, GoogleSetVO googleSetVO) {
         Result<AppUser> data = userRemoteService.getUserById(userId);
         AppUser user = data.getData();
-        if (null == user || StringUtils.isBlank(user.getGoogleSecret())) {
+        if (null == user) {
             return null;
         }
+        String secret = googleSetVO.getStatus() == 1 ? googleSetVO.getGoogleSecret() : user.getGoogleSecret();
         Assert.isTrue(null != googleSetVO.getPassword() && user.getPassword().equals(googleSetVO.getPassword()), MessageConstants.getMsg("USER_PASS_WRONG"));
-        Boolean checkResult = GoogleAuthUtil.checkUser(user.getGoogleSecret(), googleSetVO.getGoogleCode());
+        Boolean checkResult = GoogleAuthUtil.checkUser(secret, googleSetVO.getGoogleCode());
         Assert.isTrue(checkResult, MessageConstants.getMsg("SMS_ERROR"));
         user.setGoogleCheck(googleSetVO.getStatus());
+        user.setGoogleSecret(googleSetVO.getGoogleSecret());
         userRemoteService.updateUser(user);
         TokenVO tokenVO = getTokenVO(userId, user);
         return tokenVO;

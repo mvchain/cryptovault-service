@@ -27,5 +27,4 @@ public class FinancialDetailVO extends FinancialSimplePartakeVO {
     @ApiModelProperty("产品已购买额度")
     private BigDecimal sold;
 
-
 }

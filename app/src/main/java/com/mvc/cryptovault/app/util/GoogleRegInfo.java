@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class GoogleRegInfo {
     private String secret;
     private String otpAuthURL;
+    private String downloadUrl;
 }

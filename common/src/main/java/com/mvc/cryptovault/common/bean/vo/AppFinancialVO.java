@@ -1,6 +1,5 @@
 package com.mvc.cryptovault.common.bean.vo;
 
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -64,5 +63,7 @@ public class AppFinancialVO {
     private Float showIncomeMax;
     @ApiModelProperty("附加卖出百分比")
     private BigDecimal addSold;
+    @ApiModelProperty("是否需要签到")
+    private Integer needSign;
 
 }
