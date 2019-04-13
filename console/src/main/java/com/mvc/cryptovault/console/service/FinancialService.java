@@ -204,7 +204,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
     public List<FinancialSimpleVO> getFinancialList(PageDTO pageDTO, BigInteger id) {
         Condition condition = new Condition(AppFinancial.class);
         Example.Criteria criteria = condition.createCriteria();
-        ConditionUtil.andCondition(criteria, "status = ", 1);
+        ConditionUtil.andCondition(criteria, "status in (0,1)");
         ConditionUtil.andCondition(criteria, "visible = ", 1);
         PageHelper.startPage(1, pageDTO.getPageSize(), "id desc");
         if (null != id && !id.equals(BigInteger.ZERO)) {

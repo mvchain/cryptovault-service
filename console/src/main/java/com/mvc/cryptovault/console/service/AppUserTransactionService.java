@@ -211,12 +211,12 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
         //成交后根据买卖分类更新对应余额
         if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
             //购买成功时添加币种余额
-            appUserBalanceService.updateBalance(userId, pair.getTokenId(), dto.getValue());
-            appUserBalanceService.updateBalance(targetTransaction.getUserId(), pair.getBaseTokenId(), dto.getValue().multiply(dto.getPrice()));
+            appUserBalanceService.updateBalance(userId, pair.getTokenId(), dto.getValue().multiply(dto.getPrice()));
+            appUserBalanceService.updateBalance(targetTransaction.getUserId(), pair.getBaseTokenId(), dto.getValue());
         } else {
             //出售时添加基础货币余额
-            appUserBalanceService.updateBalance(userId, pair.getBaseTokenId(), dto.getValue().multiply(dto.getPrice()));
-            appUserBalanceService.updateBalance(targetTransaction.getUserId(), pair.getBaseTokenId(), dto.getValue());
+            appUserBalanceService.updateBalance(userId, pair.getBaseTokenId(), dto.getValue());
+            appUserBalanceService.updateBalance(targetTransaction.getUserId(), pair.getTokenId(), dto.getValue().multiply(dto.getPrice()));
         }
         updateCache(dto.getId());
     }
@@ -233,10 +233,10 @@ public class AppUserTransactionService extends AbstractService<AppUserTransactio
     private void updateBalance(BigInteger userId, TransactionBuyDTO dto, CommonPair pair) {
         if (dto.getTransactionType().equals(BusinessConstant.TRANSACTION_TYPE_BUY)) {
             //购买挂单时扣除基础货币价格*购买数量
-            appUserBalanceService.updateBalance(userId, pair.getBaseTokenId(), BigDecimal.ZERO.subtract(dto.getValue().multiply(dto.getPrice())));
+            appUserBalanceService.updateBalance(userId, pair.getBaseTokenId(), BigDecimal.ZERO.subtract(dto.getValue()));
         } else {
             //出售时扣除目标货币数量
-            appUserBalanceService.updateBalance(userId, pair.getTokenId(), BigDecimal.ZERO.subtract(dto.getValue()));
+            appUserBalanceService.updateBalance(userId, pair.getTokenId(), BigDecimal.ZERO.subtract(dto.getValue().multiply(dto.getPrice())));
         }
     }
 

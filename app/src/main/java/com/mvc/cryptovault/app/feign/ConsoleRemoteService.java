@@ -181,4 +181,8 @@ public interface ConsoleRemoteService {
 
     @GetMapping("appInfo/view")
     Result<String> getView(@RequestParam("type") Integer type, @RequestParam("id") BigInteger id);
+
+    @GetMapping("banner")
+    Result<List<AppBanner>> bannerList();
+
 }

@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.app.controller;
 
 import com.mvc.cryptovault.app.service.AppService;
+import com.mvc.cryptovault.common.bean.AppBanner;
 import com.mvc.cryptovault.common.bean.vo.Result;
 import com.mvc.cryptovault.common.permission.NotLogin;
 import io.swagger.annotations.Api;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * @author qiyichen
@@ -31,4 +33,10 @@ public class ViewController {
         return new Result<>(appService.getView(type, id));
     }
 
+    @ApiOperation("获取banner列表,不分页, 内容过多时需要删除")
+    @GetMapping("banner")
+    public Result<List<AppBanner>> getList() {
+        List<AppBanner> list = appService.bannerList();
+        return new Result<>(list);
+    }
 }

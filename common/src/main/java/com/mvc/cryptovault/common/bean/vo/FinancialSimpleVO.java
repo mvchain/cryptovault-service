@@ -2,6 +2,7 @@ package com.mvc.cryptovault.common.bean.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -35,5 +36,7 @@ public class FinancialSimpleVO {
     private BigDecimal limitValue;
     @ApiModelProperty("产品已购买额度")
     private BigDecimal sold;
+    @ApiModelProperty("是否需要签到")
+     private Integer needSign;
 
 }

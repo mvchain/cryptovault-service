@@ -1,6 +1,7 @@
 package com.mvc.cryptovault.app.service;
 
 import com.mvc.cryptovault.app.feign.ConsoleRemoteService;
+import com.mvc.cryptovault.common.bean.AppBanner;
 import com.mvc.cryptovault.common.bean.AppInfo;
 import com.mvc.cryptovault.common.bean.dto.AssertVisibleDTO;
 import com.mvc.cryptovault.common.bean.dto.DebitDTO;
@@ -32,4 +33,8 @@ public class AppService {
         return result.getData();
     }
 
+    public List<AppBanner> bannerList() {
+        Result<List<AppBanner>> result = consoleRemoteService.bannerList();
+        return result.getData();
+    }
 }

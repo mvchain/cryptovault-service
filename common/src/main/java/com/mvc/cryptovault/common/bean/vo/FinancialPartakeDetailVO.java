@@ -30,5 +30,6 @@ public class FinancialPartakeDetailVO {
     private String tokenName;
     @ApiModelProperty("基础货币名称")
     private String baseTokenName;
-
+    @ApiModelProperty("是否需要签到")
+    private Integer needSign;
 }

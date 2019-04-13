@@ -77,7 +77,9 @@ public class AssetService {
             //ETH OR ERC20
             regResult = transactionDTO.getAddress().matches(ETH_REG);
         }
-        Assert.isTrue(regResult, MessageConstants.getMsg("ADDRESS_FAIL"));
+        if(transactionDTO.getAddress().indexOf("@") < 0){
+            Assert.isTrue(regResult, MessageConstants.getMsg("ADDRESS_FAIL"));
+        }
         Result<Boolean> result = consoleRemoteService.sendTransaction(userId, transactionDTO);
         return result.getData();
     }
