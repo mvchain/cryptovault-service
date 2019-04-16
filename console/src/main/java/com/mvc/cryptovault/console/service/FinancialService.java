@@ -186,6 +186,7 @@ public class FinancialService extends AbstractService<AppFinancial> implements B
             AppFinancial financial = findById(obj.getFinancialId());
             vo.setBaseTokenName(financial.getBaseTokenName());
             vo.setName(financial.getName());
+            vo.setNeedSign(financial.getNeedSign());
             vo.setTokenName(financial.getTokenName());
             vo.setTimes(financial.getTimes().intValue() - obj.getTimes());
             vo.setId(obj.getId());
