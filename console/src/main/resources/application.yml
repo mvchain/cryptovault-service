@@ -8,15 +8,15 @@ spring:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
   redis:
-    database: 8
-    host: 192.168.15.31
+    database: 10
+    host: 47.110.144.216
     #    timeout: 1000ms
     jedis:
       pool:
         max-idle: 8
         max-active: 8
         min-idle: 0
-#    password: mvc123$%^
+  #    password: mvc123$%^
   mvc:
     async:
       request-timeout: 10ms
@@ -51,7 +51,7 @@ mybatis:
   type-aliases-package: tk.mybatis.springboot.model
 mapper:
   mappers:
-  - com.mvc.cryptovault.console.common.MyMapper
+    - com.mvc.cryptovault.console.common.MyMapper
   not-empty: false
   identity: MYSQL
 
@@ -69,15 +69,15 @@ eth:
   geth: http://47.75.14.213:8545
 
 node.bitcoind.rpc.protocol: http
-node.bitcoind.rpc.host: 47.75.14.213
+node.bitcoind.rpc.host: 3.112.66.210
 #node.bitcoind.rpc.host: localhost
 node.bitcoind.rpc.port: 12421
-node.bitcoind.rpc.user: test
-node.bitcoind.rpc.password: test
+node.bitcoind.rpc.user: mvc-usdt
+node.bitcoind.rpc.password: mvc()mvc
 node.bitcoind.http.auth_scheme: Basic
 node.bitcoind.notification.alert.port: 5158
 node.bitcoind.notification.block.port: 5159
-usdt.propId: 1
+usdt.propId: 31
 
 
 #scheduled.kline: '0 0 12 * * ?'
@@ -96,3 +96,7 @@ kline:
   start: 43200000
 #  step: 3600000
 #  start: 604800000
+
+coinmarketcap.key: deebfadf-98a0-4ecf-bcc1-d3123d9b4b8e
+
+incorme.time:

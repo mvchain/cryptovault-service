@@ -125,6 +125,7 @@
             <groupId>org.apkinfo.api</groupId>
             <artifactId>apktool</artifactId>
             <version>1.0</version>
+            <classifier>apktool</classifier>
         </dependency>
     </dependencies>
 
