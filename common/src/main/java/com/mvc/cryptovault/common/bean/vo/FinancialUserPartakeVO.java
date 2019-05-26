@@ -29,4 +29,6 @@ public class FinancialUserPartakeVO {
     private Integer times;
     @ApiModelProperty("记录id")
     private BigInteger id;
+    @ApiModelProperty("是否需要签名")
+    private Integer needSign;
 }

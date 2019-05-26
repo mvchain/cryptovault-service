@@ -25,7 +25,7 @@ truncate table block_usdt_withdraw_queue;
 truncate table common_address;
 truncate table common_pair;
 truncate table common_token;
-truncate table common_token_control;
+--truncate table common_token_control;
 truncate table common_token_control_next;
 truncate table common_token_history;
 truncate table common_token_price;

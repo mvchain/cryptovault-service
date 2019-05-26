@@ -21,20 +21,20 @@ public class OrderSendRedisConsumer extends Thread {
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                String value = container.getRedisQueue().takeFromTail();
-                //逐个执行
-                if (value != null) {
-                    try {
-                        consumer.accept(value);
-                    } catch (Exception e) {
-                        logger.error("调用失败", e);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            logger.error("轮循线程异常退出", e);
-        }
+//        try {
+//            while (true) {
+//                String value = container.getRedisQueue().takeFromTail();
+//                //逐个执行
+//                if (value != null) {
+//                    try {
+//                        consumer.accept(value);
+//                    } catch (Exception e) {
+//                        logger.error("调用失败", e);
+//                    }
+//                }
+//            }
+//        } catch (Exception e) {
+//            logger.error("轮循线程异常退出", e);
+//        }
     }
 }

@@ -9,14 +9,15 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
   redis:
     database: 10
-    host: 47.110.144.216
+    host: 47.99.103.238
+    password: mvc123$%^
     #    timeout: 1000ms
     jedis:
       pool:
         max-idle: 8
         max-active: 8
         min-idle: 0
-  #    password: mvc123$%^
+      password: mvc123$%^
   mvc:
     async:
       request-timeout: 10ms
@@ -69,15 +70,20 @@ eth:
   geth: http://47.75.14.213:8545
 
 node.bitcoind.rpc.protocol: http
-node.bitcoind.rpc.host: 3.112.66.210
-#node.bitcoind.rpc.host: localhost
+#node.bitcoind.rpc.host: 3.112.66.210
+#node.bitcoind.rpc.port: 12421
+#node.bitcoind.rpc.user: mvc-usdt
+#node.bitcoind.rpc.password: mvc()mvc
+#node.bitcoind.rpc.port: 12421
+node.bitcoind.rpc.host:  47.75.14.213
+node.bitcoind.rpc.user: test
+node.bitcoind.rpc.password: test
 node.bitcoind.rpc.port: 12421
-node.bitcoind.rpc.user: mvc-usdt
-node.bitcoind.rpc.password: mvc()mvc
 node.bitcoind.http.auth_scheme: Basic
 node.bitcoind.notification.alert.port: 5158
 node.bitcoind.notification.block.port: 5159
-usdt.propId: 31
+#usdt.propId: 31 # main
+usdt.propId: 1 # test
 
 
 #scheduled.kline: '0 0 12 * * ?'
