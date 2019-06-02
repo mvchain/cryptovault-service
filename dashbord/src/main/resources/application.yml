@@ -1,6 +1,7 @@
 spring:
   redis:
     database: 1
+    #aliyun server move to xxxz
     host: 192.168.15.31
     timeout: 1000ms
     jedis:
